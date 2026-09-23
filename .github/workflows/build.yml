@@ -44,7 +44,14 @@ jobs:
           echo "full=${V}.${B}" >> "$GITHUB_OUTPUT"
 
       - name: Configure (Visual Studio, x64)
-        run: cmake -S plugin-chain -B build -G "Visual Studio 17 2022" -A x64 -DJUCE_DIR="${{ github.workspace }}/JUCE"
+        # No -G: let CMake auto-pick whichever Visual Studio generator
+        # matches what's actually on the runner. Naming "Visual Studio 17
+        # 2022" explicitly failed ("could not find any instance of Visual
+        # Studio") on a windows-latest runner that plainly has SOME VS on
+        # it (the default generator without -G works) -- windows-latest
+        # tracks whatever VS version GitHub currently ships, which moves
+        # out from under a hardcoded generator name.
+        run: cmake -S plugin-chain -B build -A x64 -DJUCE_DIR="${{ github.workspace }}/JUCE"
 
       - name: Build AX330G_VST3 (Release)
         run: cmake --build build --config Release --target AX330G_VST3
