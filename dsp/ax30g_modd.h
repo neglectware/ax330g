@@ -3,7 +3,11 @@
 // Mirrors models/ax30g-modd.json (NOT engine/effects.py::render_modd's
 // current defaults -- see "damp" below), at the device rate:
 //   mono in    : L and R each ADC'd (18-bit) then averaged, (l+r)*0.5,
-//                exactly as render_modd's xin = (x[:,0]+x[:,1])*0.5
+//                exactly as render_modd's xin = (x[:,0]+x[:,1])*0.5 --
+//                the EFFECT input only; each channel's dry is its own
+//                channel (routing (c), docs/chain-rules-2026-09-17.md
+//                Sec 1.4; fixed 2026-09-23, identical for a mono source).
+//                Optional "Stereo In" (what-if): one line per channel.
 //   delay      : round(ms * 39) + 2 device samples (same "samples_per_ms"
 //                map, with SdlyMaps::delayOffsetSamples, as Stereo Delay --
 //                the "Adopted 2026-09-16" law in docs/sdly-clock-2026-09-16.md),
@@ -147,6 +151,7 @@ public:
     explicit ModDelay(double fs = 39062.5, int maxMs = 700) : fs_(fs) {
         n_ = int(maxMs * fs_ / 1000.0) + 64;
         buf_.assign(size_t(n_), 0.0);
+        bufR_.assign(size_t(n_), 0.0);
         setParams(p_);
     }
 
@@ -175,36 +180,65 @@ public:
 
     void reset() {
         std::fill(buf_.begin(), buf_.end(), 0.0);
+        std::fill(bufR_.begin(), bufR_.end(), 0.0);
         count_ = 0;
         y_ = 0.0;
+        yR_ = 0.0;
         phase_ = 0.0;   // matches a freshly-constructed engine.blocks.LFO(phase=0.0)
     }
 
+    // "Stereo In" (a what-if -- the unit never had it, 2026-09-23): false =
+    // the unit's routing (c), one line fed the mono sum; true = one line per
+    // channel (own feedback and High Damp state), the ONE LFO shared, the L
+    // line feeding the L output and the R line the R output. With l == r
+    // both modes are bit-identical (same operations, same order).
+    void setStereoIn(bool on) { stereoIn_ = on; }
+
     // one device-rate sample per channel, in place. Input/output in [-1, 1).
+    // Routing (c) (docs/chain-rules-2026-09-17.md Sec 1.4): the effect input
+    // is the mono sum, but each channel's DRY is its own channel (2026-09-23;
+    // before that both dry paths carried the mono sum).
     inline void process(double& l, double& r) {
         l = quantize(l, maps_.converterBits, true);          // ADC L
         r = quantize(r, maps_.converterBits, true);          // ADC R
-        const double xi = (l + r) * 0.5;                     // mono mix, render_modd's xin
         const double lfo = lfoTableLookup(phase_);            // value at the CURRENT phase, then advance
         phase_ += lfoInc_;
         if (phase_ >= 1.0) phase_ -= 1.0;
         const double mod = base_ + depth_ * lfo;              // unipolar above nominal: range [D, D+2*depth]
-        const double rd = readFrac(mod);                      // in-loop: the modulated read feeds the loop
-        double v = fb_ * rd;                                  // High Damp is NOT here -- line-input position now
-        v = quantize(v, maps_.fbBits, false);                 // feedback multiply, truncating
-        double w = xi + v;
-        if (w > 0.999969) w = 0.999969; else if (w < -1.0) w = -1.0;
-        if (a_ < 1.0) { y_ += a_ * (w - y_); w = y_; }        // High Damp on the LINE INPUT, like the SDLY core
-        buf_[size_t(count_ % n_)] = quantize(w, maps_.storeBits, true);   // 16-bit store
+        const size_t wi = size_t(count_ % n_);
+        double rdL, rdR;
+        if (!stereoIn_) {
+            const double xi = (l + r) * 0.5;                  // mono mix, render_modd's xin
+            rdL = rdR = line(buf_, y_, wi, xi, mod);
+            bufR_[wi] = buf_[wi];                              // keep the R line mirrored so a switch to Stereo is seamless
+            yR_ = y_;
+        } else {
+            rdL = line(buf_, y_, wi, l, mod);
+            rdR = line(bufR_, yR_, wi, r, mod);
+        }
         ++count_;
-        const double outL = dry_[0] * xi + wet_[0] * rd;
-        const double outR = dry_[1] * xi + wet_[1] * rd;
+        const double outL = dry_[0] * l + wet_[0] * rdL;
+        const double outR = dry_[1] * r + wet_[1] * rdR;
         l = quantize(outL, maps_.converterBits, true);        // DAC L
         r = quantize(outR, maps_.converterBits, true);        // DAC R
     }
 
 private:
-    inline double readFrac(double delaySamples) const {
+    // One delay line's step: the modulated read (before this sample's
+    // write), feedback, clip, High Damp on the line input, 16-bit store.
+    // Returns the read.
+    inline double line(std::vector<double>& buf, double& y, size_t wi, double xi, double mod) {
+        const double rd = readFrac(buf, mod);                  // in-loop: the modulated read feeds the loop
+        double v = fb_ * rd;                                  // High Damp is NOT here -- line-input position now
+        v = quantize(v, maps_.fbBits, false);                 // feedback multiply, truncating
+        double w = xi + v;
+        if (w > 0.999969) w = 0.999969; else if (w < -1.0) w = -1.0;
+        if (a_ < 1.0) { y += a_ * (w - y); w = y; }           // High Damp on the LINE INPUT, like the SDLY core
+        buf[wi] = quantize(w, maps_.storeBits, true);         // 16-bit store
+        return rd;
+    }
+
+    inline double readFrac(const std::vector<double>& buf, double delaySamples) const {
         const double pos = double(count_) - delaySamples;
         const long long i = (long long) std::floor(pos);
         const double frac = pos - double(i);
@@ -212,7 +246,7 @@ private:
         auto at = [&](long long idx) {
             long long m = idx % n;
             if (m < 0) m += n;
-            return buf_[size_t(m)];
+            return buf[size_t(m)];
         };
         const double a = at(i);
         const double b = at(i + 1);
@@ -238,10 +272,11 @@ private:
     ModdParams p_{};
     double D_ = 7800.0, fb_ = 0.0, a_ = 1.0, depth_ = 0.0, base_ = 7800.0;
     double wet_[2] = {1.0, 1.0}, dry_[2] = {0.0, 0.0};
-    double lfoInc_ = 0.0, phase_ = 0.0, y_ = 0.0;
+    double lfoInc_ = 0.0, phase_ = 0.0, y_ = 0.0, yR_ = 0.0;
     long long count_ = 0;
     int n_ = 0;
-    std::vector<double> buf_;
+    bool stereoIn_ = false;
+    std::vector<double> buf_, bufR_;   // buf_: the (mono / L) line; bufR_: the R line in Stereo In, a mirror otherwise
 };
 
 } // namespace ax30g

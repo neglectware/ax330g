@@ -1,6 +1,6 @@
 # Hyper Resonator (HYPR)
 
-NOTE: This block is not in the plugin yet. This chapter describes the measured behavior of the original unit.
+NOTE: **Not in the plugin yet.** This chapter describes the measured behavior of the original unit.
 
 NOTE: Mark O'Brien made a second set of captures. Claude will revise this chapter when the new model is ready. The first set of measurements could not settle some properties. This chapter marks each of these properties as "not confirmed".
 
@@ -114,7 +114,7 @@ Not confirmed: The range of the movement at DOWN. There is only one DOWN capture
 
 ### Depth
 
-Depth sets the size of the corner movement. The model uses a linear law: Depth 0 gives no movement, Depth 25 gives half of the full movement, and Depth 50 gives the full movement.
+Depth sets the size of the corner movement. The model uses a linear law. Depth 0 gives no movement, Depth 25 gives half of the full movement, and Depth 50 gives the full movement.
 
 Not confirmed: The Depth law. The first captures do not measure it. On the test signals with the quietest driver, Depth 25 and Depth 50 gave almost the same result.
 

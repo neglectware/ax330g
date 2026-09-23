@@ -29,7 +29,7 @@
 //                Mode 0..1, 0 = "Inverted LFO" default, 1 = "Split", CE-1
 //                style -- docs/scho-cpp-2026-09-16.md). "3BEQ" is the
 //                3-Band EQ (Block 1, mono in/out): field order
-//                Bass,MidFreq,MidGain,Treble,Trim -- Bass/MidGain/Treble
+//                Bass,MidFreq,MidGain,Treble,Trim[,StereoIn] -- Bass/MidGain/Treble
 //                -16..16 dB, MidFreq in Hz (snapped to the nearest of the
 //                13 steps 250/315/400/500/630/800/1000/1250/1600/2000/2500/
 //                3150/4000), Trim -18..6 dB; every gain in 0.5 dB steps
@@ -43,6 +43,10 @@
 //                -- docs/rev-cpp-spec.md. "COMP" is the Compressor (Block 1,
 //                mono in/out): field order Sensitivity,Level,Attack, all
 //                0..50 integers, Level 0 is a MUTE -- docs/comp-cpp-spec.md.
+//                "Stereo In" (2026-09-23, a what-if the unit never had,
+//                0 = mono as the unit, 1 = per-channel) is an optional LAST
+//                field on 3BEQ, CHO, SCHO, MODD, REV and COMP -- e.g.
+//                "CHO:100,25,1", "MODD:200,0,0,100,25,50,50,1".
 //                Tag -> type index is resolved by
 //                name against ax30g::BlockFactory::entries(), not
 //                hardcoded, so it can't go stale when a new block lands.
@@ -195,7 +199,7 @@ static ax30g::Chain buildChain(const std::string& spec, double rate) {
             for (const auto& tok : splitAll(rest, ',')) {
                 // 3BEQ's gains (every field but Mid Freq) are given in dB,
                 // 0.5 dB steps; the block takes half-dB integers.
-                const bool eqGain = tag == "3BEQ" && i != 1;
+                const bool eqGain = tag == "3BEQ" && i != 1 && i < 5;   // field 5 is Stereo In (0/1)
                 if (!tok.empty())
                     chain.setSlotParam(int(k), i, eqGain ? int(std::lround(std::atof(tok.c_str()) * 2.0))
                                                          : std::atoi(tok.c_str()));

@@ -6,6 +6,8 @@
 //   routing    : Block 1, mono in, mono out -- xi = (l+r)*0.5, the same
 //                convention every other Block 1 effect (dsp/ax30g_3beq.h)
 //                uses. Both outputs carry the identical mono result.
+//                Optional "Stereo In" (a what-if, 2026-09-23): the shared
+//                detector's gain applied to each channel's own path.
 //   law        : y[n] = x[n] / (a + b*E[n]), E the PEAK envelope of |x|.
 //                The RECIPROCAL of the gain is affine in the envelope --
 //                there is no threshold, no knee and no ratio. As E -> 0 the
@@ -96,30 +98,48 @@ public:
     void reset() {
         pre_ = Shelf1{};
         de_ = Shelf1{};
+        preR_ = Shelf1{};
+        deR_ = Shelf1{};
         env_ = 0.0;
         smo_ = 0.0;
     }
 
+    // "Stereo In" (a what-if -- the unit's Block 1 is mono in/mono out,
+    // 2026-09-23; the shared detector approved by Mark): ONE detector on
+    // the mono sum, as in mono, and the same gain applied to each channel's
+    // own signal path (its own local pre/de-emphasis state). The detector
+    // input is (preEmph(l) + preEmph(r))/2, which is preEmph((l+r)/2) --
+    // the filter is linear -- without a third filter state. With l == r
+    // both modes are bit-identical.
+    void setStereoIn(bool on) { stereoIn_ = on; }
+
     // one device-rate sample, in place, stereo -- mono core, both channels
-    // carry the identical result.
+    // carry the identical result (unless Stereo In).
     inline void process(double& l, double& r) {
         if (mute_) { l = 0.0; r = 0.0; return; }   // Level 0: nothing runs at all
-        const double xi = (l + r) * 0.5;
-        // recreate the pre-emphasised domain locally (see file header)
-        const double v = preEmph(pre_, xi);
-        const double av = std::fabs(v);
-        env_ += (av > env_ ? aa_ : ar_) * (av - env_);      // fixed peak follower
-        smo_ += smoothCoef_ * (env_ - smo_);                 // Attack's smoother, AFTER the detector
-        const double e = std::max(smo_, kCompEnvFloor);      // floor applied after the smoother, no feedback
-        const double g = 1.0 / (a_ + b_ * e);
-        double y = v * g;
-        y = deEmph(de_, y);
-        // engine/render.py::render_spec's own `y = _converter(y, bits)` --
-        // the 18-bit ADC/DAC round every block boundary gets (see
-        // dsp/ax30g_3beq.h's identical comment for why this must be
-        // applied here explicitly rather than assumed).
-        y = quantize(y, kConverterBits, true);
-        l = y; r = y;
+        if (!stereoIn_) {
+            const double xi = (l + r) * 0.5;
+            // recreate the pre-emphasised domain locally (see file header)
+            const double v = preEmph(pre_, xi);
+            const double g = gainFor(v);
+            double y = v * g;
+            y = deEmph(de_, y);
+            // engine/render.py::render_spec's own `y = _converter(y, bits)` --
+            // the 18-bit ADC/DAC round every block boundary gets (see
+            // dsp/ax30g_3beq.h's identical comment for why this must be
+            // applied here explicitly rather than assumed).
+            y = quantize(y, kConverterBits, true);
+            preR_ = pre_;   // keep the R path's filter state mirrored so a switch to Stereo is seamless
+            deR_ = de_;
+            l = y; r = y;
+        } else {
+            const double vL = preEmph(pre_, l);
+            const double vR = preEmph(preR_, r);
+            const double g = gainFor((vL + vR) * 0.5);
+            const double yL = quantize(deEmph(de_, vL * g), kConverterBits, true);
+            const double yR = quantize(deEmph(deR_, vR * g), kConverterBits, true);
+            l = yL; r = yR;
+        }
     }
 
     // Exposed for the raw-core test vectors (docs/comp-cpp-spec.md Sec 8.1,
@@ -136,6 +156,16 @@ public:
 
 private:
     struct Shelf1 { double x1 = 0.0, y1 = 0.0; };
+
+    // The detector, the Attack smoother and the gain law, on the
+    // pre-emphasised detector input v (the pre-2026-09-23 process() body).
+    inline double gainFor(double v) {
+        const double av = std::fabs(v);
+        env_ += (av > env_ ? aa_ : ar_) * (av - env_);      // fixed peak follower
+        smo_ += smoothCoef_ * (env_ - smo_);                 // Attack's smoother, AFTER the detector
+        const double e = std::max(smo_, kCompEnvFloor);      // floor applied after the smoother, no feedback
+        return 1.0 / (a_ + b_ * e);
+    }
     static double preEmph(Shelf1& s, double x) {
         const double y = kPreB0 * x + kPreB1 * s.x1 - kPreA1 * s.y1;
         s.x1 = x; s.y1 = y;
@@ -192,7 +222,9 @@ private:
     double a_ = 0.0, b_ = 0.0;
     double aa_ = 0.0, ar_ = 0.0, smoothCoef_ = 0.0;
     double env_ = 0.0, smo_ = 0.0;
-    Shelf1 pre_, de_;
+    Shelf1 pre_, de_;     // the mono / L path's local pre/de-emphasis
+    Shelf1 preR_, deR_;   // the R path's in Stereo In, a mirror otherwise
+    bool stereoIn_ = false;
     static constexpr int kConverterBits = 18;
 };
 

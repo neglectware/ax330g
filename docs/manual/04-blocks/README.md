@@ -96,9 +96,10 @@ The **Speed** parameter sets the LFO rate.
 | Property | Value |
 |---|---|
 | Range | 0.02 Hz to 9.50 Hz |
-| Step in the plugin | 0.01 Hz |
-| Steps of the unit's dial | 0.02 Hz from 0.02 to 0.20 Hz, then 0.1 Hz from 0.2 to 9.5 Hz |
+| Steps, plugin and unit | 0.02 Hz from 0.02 to 0.20 Hz, then 0.1 Hz from 0.2 to 9.5 Hz (103 settings) |
 | Default | 1.00 Hz |
+
+The Speed knob snaps to these 103 settings, the same steps as the unit's own dial.
 
 The real rate is a little lower than the displayed rate. Claude measured this table from the captures:
 
@@ -131,7 +132,7 @@ The delay moves only above its static value. At the lowest point of the LFO cycl
 
 ### Phase
 
-The LFO of the unit runs freely from power-on. The LFO of the plugin starts at the start of its cycle when the host starts or resets the plugin. Thus, the LFO phase at a given time is not the same as on the unit.
+The LFO of the unit runs freely from power-on. The LFO of the plugin starts at the start of its cycle when the host starts or resets the plugin. Thus, the LFO phase at a given time is not the same as on the unit. This is deliberate; see [chapter 6](../06-limitations.md#64-the-delay-blocks) for the reason.
 
 ## 4.8 High Damp in the delays
 

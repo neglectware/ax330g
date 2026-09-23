@@ -14,6 +14,9 @@
 // Mono, Block 1 slot: the core sums to mono at its own input
 // (xi = (l+r)*0.5, dsp/ax30g_comp.h) and writes the identical result to
 // both channels, the same convention every other Block 1 effect uses.
+// "Stereo In" (fourth parameter, 0..1, default 0 -- a what-if the unit
+// never had, 2026-09-23): the one shared detector's gain applied to each
+// channel's own signal path.
 #pragma once
 #include "block.h"
 #include "ax30g_comp.h"
@@ -31,10 +34,10 @@ public:
 
     const BlockInfo& info() const override {
         static const BlockInfo i = {
-            "Compressor", 3,
-            {"Sensitivity", "Level", "Attack", nullptr, nullptr, nullptr, nullptr, nullptr},
+            "Compressor", 4,
+            {"Sensitivity", "Level", "Attack", "Stereo In", nullptr, nullptr, nullptr, nullptr},
             {0, 0, 0, 0, 0, 0, 0, 0},
-            {50, 50, 50, 0, 0, 0, 0, 0},
+            {50, 50, 50, 1, 0, 0, 0, 0},
             {40, 25, 25, 0, 0, 0, 0, 0},
         };
         return i;
@@ -48,6 +51,7 @@ public:
             case 0: p_.sensitivity = v; break;
             case 1: p_.level = v; break;
             case 2: p_.attack = v; break;
+            case 3: core_.setStereoIn(v != 0); return;
             default: return;
         }
         core_.setParams(p_);

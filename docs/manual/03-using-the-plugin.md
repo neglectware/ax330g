@@ -36,6 +36,8 @@ To change a value, do one of these steps:
 
 The knob moves only in the steps of its parameter. For example, a 0 to 50 parameter moves in steps of 1.
 
+Some knobs have no number at all. Mid Freq, Reverb Type and Stereo Chorus Mode are each a list of named items. The box below the knob shows the name of the current item, for example "HALL", and the knob steps from one item to the next.
+
 ## 3.3 Input and Output
 
 | Control | Range | Default | Unit |
@@ -152,20 +154,38 @@ The Type menu has these items:
 
 ### Mono and stereo blocks
 
-The unit has one guitar input. Most of its blocks add the left and right channels together at their input and process one mono signal. The plugin keeps this behavior.
+The unit has one guitar input, so most of its blocks process one mono signal throughout. Three blocks are different: the unit routes each channel of these three on its own path, at least for the dry signal. The owner's manual draws five such routings, lettered ⓐ to ⓔ. The table below gives the routing of each block that can carry a stereo signal.
 
-| Block | Input | Output |
-|---|---|---|
-| Stereo Delay | Stereo: each channel has its own delay line | Stereo |
-| Mod Delay | Mono sum | Stereo, from two balance controls |
-| Stereo Mod Delay | Mono sum | Stereo |
-| Chorus | Mono sum | Mono, the same signal on both channels |
-| Stereo Chorus | Mono sum | Stereo |
-| 3-Band EQ | Mono sum | Mono, the same signal on both channels |
-| Reverb | Mono sum | Stereo |
-| Compressor | Mono sum | Mono, the same signal on both channels |
+| Block | Input | Output | Routing |
+|---|---|---|---|
+| Stereo Delay | Stereo: each channel keeps its own signal | Stereo: each channel independent | ⓔ, two independent effects |
+| Mod Delay | Wet: mono sum. Dry: each channel keeps its own signal | Stereo, from two balance controls | ⓒ, one effect, two dry paths |
+| Stereo Mod Delay | Stereo: each channel keeps its own signal | Stereo | ⓔ, two independent effects |
+| Chorus | Mono sum | Mono, the same signal on both channels | mono throughout |
+| Stereo Chorus | Mono sum | Stereo | not on the unit |
+| 3-Band EQ | Mono sum | Mono, the same signal on both channels | mono throughout |
+| Reverb | Wet: mono sum. Dry: each channel keeps its own signal | Stereo | ⓒ, one effect, two dry paths |
+| Compressor | Mono sum | Mono, the same signal on both channels | mono throughout |
 
 NOTE: A block with a mono sum at its input removes the stereo image of the slots before it. For example, a Chorus after a Stereo Delay makes the stereo delay mono. Put the stereo blocks after the mono blocks to keep the stereo image.
+
+NOTE: Version 0.8.6 fixed the routing of the Mod Delay, the Reverb and the Stereo Mod Delay to match the table above. Claude checked the fix: outputs stay bit-identical with a mono source. See [chapter 6](06-limitations.md#64-the-delay-blocks).
+
+### Stereo In
+
+Six blocks have a mono input in Mono mode: 3-Band EQ, Chorus, Stereo Chorus, Mod Delay, Reverb and Compressor. Each one now has a **Stereo In** parameter, the last parameter of the block.
+
+**Stereo In** is a list of two items: Mono and Stereo. The box below the knob shows the name of the item. Mono is the default, and it matches the unit.
+
+In Mono, the block mixes the left and right inputs to one signal, as the unit does. In Stereo, each channel keeps its own path through the block. Each block's chapter in [chapter 4](04-blocks/README.md) gives its exact Stereo behavior.
+
+With a mono source, Stereo and Mono give the same output. Claude checked this: the two settings are bit-identical. With a left-only input in Stereo, the right output is exactly silent. With different left and right inputs, Stereo keeps the two channels separate, at a correlation of 0.00, against 1.00 in Mono.
+
+**Stereo In** is a "what if" addition. The unit never had it.
+
+Put a stereo block early in the chain to keep a wide sound through later blocks. For example, put the Stereo Chorus in Stereo before a Reverb in Stereo.
+
+NOTE: Stereo In fits the spirit of the "Open" Mode only. The Mode control does not enforce this yet.
 
 ### Host automation
 
@@ -228,7 +248,7 @@ The sample rate converters are flat to 19 kHz. The converter chain then limits t
 | 19.5 kHz | −10.3 dB |
 | 20 kHz | −14.4 dB |
 
-The plugin tells the host its latency. The host uses this value to align the plugin output with the other tracks. The latency has three parts. These are the delay of the two sample rate converters, the 0.27 ms latency of the unit, and the delay of the converter chain filter. At a host rate of 48 kHz, the reported latency was 355 samples (7.4 ms) in a measurement.
+The plugin tells the host its latency. The host uses this value to align the plugin output with the other tracks. The latency has three parts. These are the delay of the two sample rate converters, the unit's own 0.27 ms latency, and the delay of the converter chain filter. At a host rate of 48 kHz, the reported latency was 355 samples (7.4 ms) in a measurement.
 
 The plugin tells the host that its tail is 10 s long. The tail is the time that the plugin can continue to give output after the input stops.
 

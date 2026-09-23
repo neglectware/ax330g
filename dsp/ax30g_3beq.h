@@ -7,6 +7,8 @@
 //                ax30g::Chorus/ModDelay/StereoModDelay use (the unit has one
 //                guitar input, Block 1). Both outputs carry the identical
 //                mono result.
+//                Optional "Stereo In" (a what-if, 2026-09-23): an
+//                independent EQ per channel, same coefficients.
 //   order      : Trim Gain (plain scalar) -> Bass -> Mid -> Treble -> hard
 //                clip. Fixed in this order (the three bands are linear and
 //                commute, but this is the order the Python engine and the
@@ -130,49 +132,36 @@ public:
     }
 
     void reset() {
-        bassS_.reset();
-        midS_.reset();
-        trebS_.reset();
-        pre_ = Shelf1{};
-        de_ = Shelf1{};
-        delayed_ = 0.0;
+        for (auto& c : ch_) {
+            c.bass.reset();
+            c.mid.reset();
+            c.treb.reset();
+            c.pre = Shelf1{};
+            c.de = Shelf1{};
+            c.delayed = 0.0;
+        }
     }
+
+    // "Stereo In" (a what-if -- the unit's Block 1 is mono in/mono out,
+    // 2026-09-23): true = an independent EQ per channel (second filter
+    // state, the same coefficients). With l == r both modes are
+    // bit-identical.
+    void setStereoIn(bool on) { stereoIn_ = on; }
 
     // one device-rate sample per channel, in place.
     inline void process(double& l, double& r) {
-        const double xi = (l + r) * 0.5;
-        // recreate the pre-emphasised domain locally (see file header)
-        double v = preEmph(pre_, xi);
-        v *= trimLin_;
-        if (clipPos_ == ClipPosition::PerBand) v = clampLevel(v);
-        v = bassS_.process(v);                          // Bass -- always runs (allpass at 0 dB)
-        if (clipPos_ == ClipPosition::PerBand) v = clampLevel(v);
-        if (midOn_) {
-            v = midS_.process(v);                        // Mid -- bypassed entirely at Mid Gain 0
-            if (clipPos_ == ClipPosition::PerBand) v = clampLevel(v);
+        if (!stereoIn_) {
+            const double xi = (l + r) * 0.5;
+            const double out = run(ch_[0], xi);
+            ch_[1] = ch_[0];     // keep channel 1's state mirrored so a switch to Stereo is seamless
+            l = out;
+            r = out;
+        } else {
+            const double outL = run(ch_[0], l);
+            const double outR = run(ch_[1], r);
+            l = outL;
+            r = outR;
         }
-        v = trebS_.process(v);                           // Treble -- always runs (allpass at 0 dB)
-        if (clipPos_ == ClipPosition::PerBand) v = clampLevel(v);
-        if (clipPos_ == ClipPosition::Output) v = clampLevel(v);
-        v *= pathGainLin_;
-        v = deEmph(de_, v);
-        // engine/render.py::render_spec's own `y = _converter(y, bits)` --
-        // the 18-bit ADC/DAC round every block boundary gets, applied here
-        // (after de-emphasis, matching render_spec's literal order) because
-        // engine/effects.py::render_3beq itself never quantizes -- render_spec
-        // wraps EVERY renderer with this, and unlike SDLY/MODD/CHO (which
-        // replicate it internally at their own converter() calls) this
-        // block had no such call, which is why omitting it left a
-        // systematic ~1 LSB (7.629e-6) discrepancy in early testing. MUST
-        // run after pathGainLin_ and deEmph (quantize does not commute with
-        // either -- it is nonlinear), but may run before or after the
-        // 1-sample delay below (delay only changes WHEN a value is
-        // emitted, not its value).
-        v = quantize(v, kConverterBits, true);
-        const double out = delayed_;     // kPathDelaySamples (1) device sample of delay
-        delayed_ = v;
-        l = out;
-        r = out;
     }
 
 private:
@@ -197,6 +186,14 @@ private:
     // state -- see the file header for why re-deriving the pre-emphasised
     // domain locally with the SAME coefficients is exact.
     struct Shelf1 { double x1 = 0.0, y1 = 0.0; };
+
+    // One channel's filter state (coefficients are shared: they live in
+    // ch_[0] and recompute() writes the same values into ch_[1]).
+    struct Chan {
+        Biquad bass, mid, treb;
+        Shelf1 pre, de;
+        double delayed = 0.0;   // kPathDelaySamples (1) device sample of output delay
+    };
     static double preEmph(Shelf1& s, double x) {
         const double y = kPreB0 * x + kPreB1 * s.x1 - kPreA1 * s.y1;
         s.x1 = x; s.y1 = y;
@@ -276,6 +273,42 @@ private:
         }
     }
 
+    // The EQ proper on one channel's state -- the pre-2026-09-23 process()
+    // body, unchanged apart from reading its filter state from `c`.
+    inline double run(Chan& c, double xi) {
+        // recreate the pre-emphasised domain locally (see file header)
+        double v = preEmph(c.pre, xi);
+        v *= trimLin_;
+        if (clipPos_ == ClipPosition::PerBand) v = clampLevel(v);
+        v = c.bass.process(v);                          // Bass -- always runs (allpass at 0 dB)
+        if (clipPos_ == ClipPosition::PerBand) v = clampLevel(v);
+        if (midOn_) {
+            v = c.mid.process(v);                        // Mid -- bypassed entirely at Mid Gain 0
+            if (clipPos_ == ClipPosition::PerBand) v = clampLevel(v);
+        }
+        v = c.treb.process(v);                           // Treble -- always runs (allpass at 0 dB)
+        if (clipPos_ == ClipPosition::PerBand) v = clampLevel(v);
+        if (clipPos_ == ClipPosition::Output) v = clampLevel(v);
+        v *= pathGainLin_;
+        v = deEmph(c.de, v);
+        // engine/render.py::render_spec's own `y = _converter(y, bits)` --
+        // the 18-bit ADC/DAC round every block boundary gets, applied here
+        // (after de-emphasis, matching render_spec's literal order) because
+        // engine/effects.py::render_3beq itself never quantizes -- render_spec
+        // wraps EVERY renderer with this, and unlike SDLY/MODD/CHO (which
+        // replicate it internally at their own converter() calls) this
+        // block had no such call, which is why omitting it left a
+        // systematic ~1 LSB (7.629e-6) discrepancy in early testing. MUST
+        // run after pathGainLin_ and deEmph (quantize does not commute with
+        // either -- it is nonlinear), but may run before or after the
+        // 1-sample delay below (delay only changes WHEN a value is
+        // emitted, not its value).
+        v = quantize(v, kConverterBits, true);
+        const double out = c.delayed;    // kPathDelaySamples (1) device sample of delay
+        c.delayed = v;
+        return out;
+    }
+
     void recompute() {
         // Bass (always active -- allpass_flat true)
         {
@@ -284,7 +317,7 @@ private:
             double b0, b1, b2, a1, a2;
             mixSection(fb0, fb1, 0.0, fa1, 0.0, p_.bass, kBassOffBoostDb, kBassOffCutDb, true,
                        b0, b1, b2, a1, a2);
-            bassS_.b0 = b0; bassS_.b1 = b1; bassS_.b2 = b2; bassS_.a1 = a1; bassS_.a2 = a2;
+            for (auto& c : ch_) { c.bass.b0 = b0; c.bass.b1 = b1; c.bass.b2 = b2; c.bass.a1 = a1; c.bass.a2 = a2; }
         }
         // Mid (bypassed at Mid Gain 0 -- allpass_flat false, so only wired
         // in when the gain is nonzero; midOn_ gates process())
@@ -296,7 +329,7 @@ private:
             double b0, b1, b2, a1, a2;
             mixSection(fb0, 0.0, fb2, fa1, fa2, p_.midGain, kMidOffBoostDb, kMidOffCutDb, false,
                        b0, b1, b2, a1, a2);
-            midS_.b0 = b0; midS_.b1 = b1; midS_.b2 = b2; midS_.a1 = a1; midS_.a2 = a2;
+            for (auto& c : ch_) { c.mid.b0 = b0; c.mid.b1 = b1; c.mid.b2 = b2; c.mid.a1 = a1; c.mid.a2 = a2; }
         }
         // Treble (always active -- allpass_flat true)
         {
@@ -305,7 +338,7 @@ private:
             double b0, b1, b2, a1, a2;
             mixSection(fb0, fb1, 0.0, fa1, 0.0, p_.treble, kTrebleOffBoostDb, kTrebleOffCutDb, true,
                        b0, b1, b2, a1, a2);
-            trebS_.b0 = b0; trebS_.b1 = b1; trebS_.b2 = b2; trebS_.a1 = a1; trebS_.a2 = a2;
+            for (auto& c : ch_) { c.treb.b0 = b0; c.treb.b1 = b1; c.treb.b2 = b2; c.treb.a1 = a1; c.treb.a2 = a2; }
         }
         trimLin_ = std::pow(10.0, p_.trimGain / 20.0);
         pathGainLin_ = std::pow(10.0, kPathGainDb / 20.0);
@@ -313,11 +346,10 @@ private:
 
     double fs_;
     Eq3Params p_{};
-    Biquad bassS_, midS_, trebS_;
+    Chan ch_[2];             // [0]: the mono / L channel; [1]: R in Stereo In, a mirror of [0] otherwise
     bool midOn_ = false;
-    Shelf1 pre_, de_;
+    bool stereoIn_ = false;
     double trimLin_ = 1.0, pathGainLin_ = 1.0;
-    double delayed_ = 0.0;   // kPathDelaySamples (1) device sample of output delay
     ClipPosition clipPos_ = ClipPosition::Output;
     static constexpr int kConverterBits = 18;
 };

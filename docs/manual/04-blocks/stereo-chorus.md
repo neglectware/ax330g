@@ -6,6 +6,8 @@ NOTE: The unit does not have a Stereo Chorus. This block is a "what-if" block. I
 
 The Stereo Chorus is the [Chorus](chorus.md) of the unit with a stereo output. It has a mono input. The **Mode** parameter selects one of two ways to make the stereo output.
 
+A **Stereo In** parameter can give it a stereo input too; see Parameters below.
+
 Claude made this block from measured parts of the unit:
 
 - The delay, the mix, the LFO and the Depth law come from the Chorus.
@@ -15,13 +17,17 @@ Claude made this block from measured parts of the unit:
 
 | Name in the plugin | Range | Step | Unit | Default |
 |---|---|---|---|---|
-| **Speed** | 0.02 to 9.50 | 0.01 | Hz | 1.00 |
+| **Speed** | 0.02 to 9.50 | see [4.7](README.md#47-the-lfo-and-the-speed-parameter) | Hz | 1.00 |
 | **Depth** | 0 to 50 | 1 | — | 25 |
-| **Mode** | 0 to 1 | 1 | — | 0 |
+| **Mode** | Inverted LFO, Split | — | — | Inverted LFO |
+| **Stereo In** | Mono, Stereo | — | — | Mono |
 
 - **Speed** sets the rate of the LFO.
 - **Depth** sets how far the LFO moves the delay.
-- **Mode** selects the stereo method. The knob shows the number of the mode.
+- **Mode** selects the stereo method. The Mode control is a list of two items, and the box below the knob shows the name of the item.
+- **Stereo In** selects Mono or Stereo processing. In Stereo, each tap reads its own channel's input.
+
+**Stereo In** is a list of two items too: Mono and Stereo. The box below the knob shows the name of the item. Mono is the default.
 
 | Mode | Name | Left output | Right output |
 |---|---|---|---|
@@ -34,11 +40,15 @@ The block reads the delay line at two positions. The left position follows the L
 
 Each channel has the Chorus mix of 0.75 dry and 0.25 wet. The two channels differ only in their wet copies.
 
+With **Stereo In** at Stereo, the left tap reads the left input, and the right tap reads the right input, instead of the mono sum.
+
 ### Mode 1: Split
 
 The left channel has only the dry signal. The right channel has only the wet copy of the Chorus. This is the method of some classic stereo chorus pedals.
 
 In this mode, the sum of the left and right channels is exactly the output of the mono Chorus at the same Speed and Depth. Thus, a mono mix of the output sounds the same as the mono Chorus.
+
+With **Stereo In** at Stereo, the left output is the dry left input only. The right output is the wet tap of the right input only.
 
 ## How it works
 
@@ -46,4 +56,4 @@ The block has one delay line with a fixed delay of 939 device samples (24.04 ms)
 
 ## Limits
 
-- The unit does not have this block. A future "As the unit" mode will not offer it.
+- **Not in the plugin's "As the unit" mode.** The unit does not have this block. A future "As the unit" mode will not offer it.

@@ -26,6 +26,8 @@
 // Mono, Block 1 slot: the core sums to mono at its own input
 // (xi = (l+r)*0.5, dsp/ax30g_3beq.h) and writes the identical result to
 // both channels, the same convention every other Block 1 effect uses.
+// "Stereo In" (sixth parameter, 0..1, default 0 -- a what-if the unit never
+// had, 2026-09-23) runs an independent EQ per channel instead.
 #pragma once
 #include "block.h"
 #include "ax30g_3beq.h"
@@ -42,10 +44,10 @@ public:
 
     const BlockInfo& info() const override {
         static const BlockInfo i = {
-            "3-Band EQ", 5,
-            {"Bass", "Mid Freq", "Mid Gain", "Treble", "Trim Gain", nullptr, nullptr, nullptr},
+            "3-Band EQ", 6,
+            {"Bass", "Mid Freq", "Mid Gain", "Treble", "Trim Gain", "Stereo In", nullptr, nullptr},
             {-32, 250, -32, -32, -36, 0, 0, 0},   // every gain in half-dB units
-            {32, 4000, 32, 32, 12, 0, 0, 0},
+            {32, 4000, 32, 32, 12, 1, 0, 0},
             {0, 1000, 0, 0, 0, 0, 0, 0},
         };
         return i;
@@ -61,6 +63,7 @@ public:
             case 2: p_.midGain = 0.5 * v; break;
             case 3: p_.treble = 0.5 * v; break;
             case 4: p_.trimGain = 0.5 * v; break;
+            case 5: core_.setStereoIn(v != 0); return;
             default: return;
         }
         core_.setParams(p_);

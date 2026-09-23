@@ -5,8 +5,10 @@
 // docs/rev-highdamp-2026-09-18.md and docs/rev-cpp-spec.md (updated for this
 // pass -- it is the port's contract).
 //
-//   routing    : mono in (xi = (l+r)*0.5, the same convention every other
-//                Block 1/Ambience-slot effect in dsp/ uses), STEREO out --
+//   routing    : mono EFFECT in (xi = (l+r)*0.5), each channel's DRY its own
+//                channel (routing (c); fixed 2026-09-23, identical for a
+//                mono source; optional "Stereo In" what-if runs two
+//                network instances, see setStereoIn()), STEREO out --
 //                the manual's routing (c) as drawn is mono-in/mono-out, but
 //                L and R are genuinely different signals here (measured,
 //                docs/rev-model-2026-09-18.md Sec 1), so this model does not
@@ -105,8 +107,8 @@ struct RevParams {
 class Reverb {
 public:
     explicit Reverb(double fs = 39062.5) : fs_(fs) {
-        preBuf_.assign(size_t(kMaxPreBuf), 0.0);
-        for (auto& c : combBuf_) c.assign(size_t(kMaxCombBuf), 0.0);
+        for (auto& b : preBuf_) b.assign(size_t(kMaxPreBuf), 0.0);
+        for (auto& bank : combBuf_) for (auto& c : bank) c.assign(size_t(kMaxCombBuf), 0.0);
         for (auto& b : inDelayBuf_) b.assign(size_t(kMaxInDelayBuf), 0.0);
         for (int ch = 0; ch < 2; ++ch)
             for (int s = 0; s < kRevNumAllpass; ++s) {
@@ -132,46 +134,61 @@ public:
     }
 
     void reset() {
-        std::fill(preBuf_.begin(), preBuf_.end(), 0.0);
+        for (auto& b : preBuf_) std::fill(b.begin(), b.end(), 0.0);
         preW_ = 0;
         clearLines();
     }
 
+    // "Stereo In" (a what-if -- the unit's Reverb is routing (c), mono
+    // effect input, 2026-09-23): true = two network instances, the left
+    // output from the network driven by l and the right output from a
+    // second instance driven by r -- out = (a(l), b(r)), where (a(x), b(x))
+    // is the model's left/right wet response to x. Pre Dly and the four
+    // combs are per instance; the L and R allpass cascades already are. With
+    // l == r both modes are bit-identical.
+    void setStereoIn(bool on) { stereoIn_ = on; }
+
     // one device-rate sample per channel, in place.
+    // Routing (c) (docs/chain-rules-2026-09-17.md Sec 1.4): the effect input
+    // is the mono sum, but each channel's DRY is its own channel (2026-09-23;
+    // before that both dry paths carried the mono sum).
     inline void process(double& l, double& r) {
         const double mono = 0.5 * (l + r);
+        // instance 0 feeds the L output, instance 1 the R output; in mono
+        // both are driven by the mono sum and instance 1 is only a mirror
+        // (written, never read) so a switch to Stereo In is seamless.
+        const double in0 = stereoIn_ ? l : mono;
+        const double in1 = stereoIn_ ? r : mono;
+        const int rb = stereoIn_ ? 1 : 0;   // the comb bank the R taps read
 
         // Pre Dly: write then read, so a small offset (min 41 samples here,
         // always > 0) is unambiguous either way; kept the same
         // write-then-read shape as the per-channel input delay below, which
         // DOES need to support a zero offset.
-        preBuf_[size_t(preW_)] = mono;
-        const double src = preBuf_[size_t((preW_ - preSamples_ + kMaxPreBuf) % kMaxPreBuf)];
+        preBuf_[0][size_t(preW_)] = in0;
+        preBuf_[1][size_t(preW_)] = in1;
+        const size_t preR = size_t((preW_ - preSamples_ + kMaxPreBuf) % kMaxPreBuf);
+        const double src0 = preBuf_[0][preR];
+        const double src1 = preBuf_[1][preR];
         preW_ = (preW_ + 1) % kMaxPreBuf;
 
         const RevTypeTable& T = kRevTypes[p_.type];
         double tapL[kRevNumCombs], tapR[kRevNumCombs];
         for (int i = 0; i < kRevNumCombs; ++i) {
             const int d = T.combs[i];
-            // feedback tap: read BEFORE this sample's write (every comb
-            // delay d >= 898 in this model, never 0, so "before write" is
-            // unambiguously y[n-d])
-            const double fbDelayed = combBuf_[i][size_t((combW_[i] - d + kMaxCombBuf) % kMaxCombBuf)];
-            double lp;
-            const double a = poles_[i];
-            if (a > 0.0) {
-                combLp_[i] = (1.0 - a) * fbDelayed + a * combLp_[i];
-                lp = combLp_[i];
+            const size_t w = size_t(combW_[i]);
+            const double y0 = comb(0, i, d, src0);
+            if (stereoIn_) {
+                comb(1, i, d, src1);
             } else {
-                lp = fbDelayed;   // High Damp 0: LP is the identity -- skipped, not run with a=0
+                combBuf_[1][i][w] = y0;          // mirror
+                combLp_[1][i] = combLp_[0][i];
             }
-            const double y = src + gains_[i] * lp;
-            combBuf_[i][size_t(combW_[i])] = y;
             // output taps: read AFTER this sample's write, so an offset of
             // 0 (several of ROOM's/PLATE's own reads) yields y[n] itself,
             // not a stale value from a full buffer period ago
-            tapL[i] = combBuf_[i][size_t((combW_[i] - T.reads[i][0] + kMaxCombBuf) % kMaxCombBuf)];
-            tapR[i] = combBuf_[i][size_t((combW_[i] - T.reads[i][1] + kMaxCombBuf) % kMaxCombBuf)];
+            tapL[i] = combBuf_[0][i][size_t((combW_[i] - T.reads[i][0] + kMaxCombBuf) % kMaxCombBuf)];
+            tapR[i] = combBuf_[rb][i][size_t((combW_[i] - T.reads[i][1] + kMaxCombBuf) % kMaxCombBuf)];
             combW_[i] = (combW_[i] + 1) % kMaxCombBuf;
         }
         double rawL = 0.0, rawR = 0.0;
@@ -192,8 +209,8 @@ public:
 
         const double wetL = kRevWetPolarity * T.inputGain * vL;
         const double wetR = kRevWetPolarity * T.inputGain * vR;
-        double outL = dry_ * mono + wet_ * wetL;
-        double outR = dry_ * mono + wet_ * wetR;
+        double outL = dry_ * l + wet_ * wetL;
+        double outR = dry_ * r + wet_ * wetR;
 
         // engine/render.py::render_spec's own `y = _converter(y, bits)` --
         // see the file header ("converters" above) for why this belongs
@@ -205,6 +222,26 @@ public:
     }
 
 private:
+    // One comb of instance b: y[n] = src[n] + g*LP(y[n-d]), written at this
+    // comb's write position (shared by both instances). Returns y[n].
+    inline double comb(int b, int i, int d, double src) {
+        // feedback tap: read BEFORE this sample's write (every comb
+        // delay d >= 898 in this model, never 0, so "before write" is
+        // unambiguously y[n-d])
+        const double fbDelayed = combBuf_[b][i][size_t((combW_[i] - d + kMaxCombBuf) % kMaxCombBuf)];
+        double lp;
+        const double a = poles_[i];
+        if (a > 0.0) {
+            combLp_[b][i] = (1.0 - a) * fbDelayed + a * combLp_[b][i];
+            lp = combLp_[b][i];
+        } else {
+            lp = fbDelayed;   // High Damp 0: LP is the identity -- skipped, not run with a=0
+        }
+        const double y = src + gains_[i] * lp;
+        combBuf_[b][i][size_t(combW_[i])] = y;
+        return y;
+    }
+
     // A plain (non-recirculating) delay of D samples, write-then-read so D=0
     // is a valid passthrough (needed for ROOM/PLATE's zero input_delay).
     static inline double delayChan(std::vector<double>& buf, int& w, double x, int D) {
@@ -266,8 +303,8 @@ private:
     }
 
     void clearLines() {
-        for (auto& c : combBuf_) std::fill(c.begin(), c.end(), 0.0);
-        for (int i = 0; i < kRevNumCombs; ++i) { combW_[i] = 0; combLp_[i] = 0.0; }
+        for (auto& bank : combBuf_) for (auto& c : bank) std::fill(c.begin(), c.end(), 0.0);
+        for (int i = 0; i < kRevNumCombs; ++i) { combW_[i] = 0; combLp_[0][i] = combLp_[1][i] = 0.0; }
         for (auto& b : inDelayBuf_) std::fill(b.begin(), b.end(), 0.0);
         inDelayW_[0] = inDelayW_[1] = 0;
         for (int ch = 0; ch < 2; ++ch)
@@ -292,13 +329,14 @@ private:
     RevParams p_{};
     bool firstSet_ = true;
 
-    std::vector<double> preBuf_;
+    bool stereoIn_ = false;
+    std::vector<double> preBuf_[2];   // per instance ([1] mirrors [0] unless Stereo In)
     int preW_ = 0;
     int preSamples_ = 41;
 
-    std::vector<double> combBuf_[kRevNumCombs];
-    int combW_[kRevNumCombs] = {0, 0, 0, 0};
-    double combLp_[kRevNumCombs] = {0.0, 0.0, 0.0, 0.0};
+    std::vector<double> combBuf_[2][kRevNumCombs];   // [instance][comb]
+    int combW_[kRevNumCombs] = {0, 0, 0, 0};          // shared by both instances
+    double combLp_[2][kRevNumCombs] = {{0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}};
     double gains_[kRevNumCombs] = {0.0, 0.0, 0.0, 0.0};
 
     std::vector<double> inDelayBuf_[2];

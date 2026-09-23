@@ -1,8 +1,10 @@
 // ChoBlock: wraps ax30g::Chorus (dsp/ax30g_cho.h) as a Block (dsp/block.h)
 // for use in a Chain (dsp/chain.h). Parameter order: Speed, Depth --
 // exactly the unit's Mod1/Chorus edit page, no delay-time or mix control
-// (both are device facts, not panel parameters -- see dsp/ax30g_cho.h).
-// Defaults: 100, 25 -- matching models/ax30g-cho.json's "params" and
+// (both are device facts, not panel parameters -- see dsp/ax30g_cho.h) --
+// plus "Stereo In" (0..1, default 0), a what-if the unit never had
+// (2026-09-23): one line per channel, one shared LFO.
+// Defaults: 100, 25, 0 -- matching models/ax30g-cho.json's "params" and
 // ax30g::ChoParams's own defaults.
 //
 // ParamRegistry naming (dsp/chain.h): "Speed" (2..950) and "Depth" (0..50)
@@ -27,10 +29,10 @@ public:
 
     const BlockInfo& info() const override {
         static const BlockInfo i = {
-            "Chorus", 2,
-            {"Speed", "Depth", nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
+            "Chorus", 3,
+            {"Speed", "Depth", "Stereo In", nullptr, nullptr, nullptr, nullptr, nullptr},
             {2, 0, 0, 0, 0, 0, 0, 0},
-            {950, 50, 0, 0, 0, 0, 0, 0},
+            {950, 50, 1, 0, 0, 0, 0, 0},
             {100, 25, 0, 0, 0, 0, 0, 0},
         };
         return i;
@@ -43,6 +45,7 @@ public:
         switch (i) {
             case 0: p_.speedHundredths = v; break;
             case 1: p_.depth = v; break;
+            case 2: core_.setStereoIn(v != 0); return;
             default: return;
         }
         core_.setParams(p_);

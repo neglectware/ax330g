@@ -6,6 +6,8 @@ The 3-Band EQ changes the level of the low, middle and high frequencies. It has 
 
 The 3-Band EQ has a mono input and a mono output. Both output channels get the same signal. On the unit, it is in Block 1, and it is always the last effect in that block.
 
+A **Stereo In** parameter can run it on each channel separately; see Parameters below.
+
 ## Parameters
 
 | Name in the plugin | Name on the unit | Range | Step | Unit | Default |
@@ -15,12 +17,16 @@ The 3-Band EQ has a mono input and a mono output. Both output channels get the s
 | **Mid Gain** | Mid Gain | −16 to +16 | 0.5 | dB | 0 |
 | **Treble** | Treble | −16 to +16 | 0.5 | dB | 0 |
 | **Trim Gain** | Trim Gain | −18 to +6 | 0.5 | dB | 0 |
+| **Stereo In** | — | Mono, Stereo | — | — | Mono |
 
 - **Bass** sets the level of the low frequencies.
 - **Mid Freq** sets the center frequency of the Mid band.
 - **Mid Gain** sets the level of the frequencies near Mid Freq.
 - **Treble** sets the level of the high frequencies.
 - **Trim Gain** sets the level of the block. Use it to prevent overload when you boost a band.
+- **Stereo In** selects Mono or Stereo processing. In Stereo, the block runs the same EQ on each channel separately.
+
+**Stereo In** is a list of two items: Mono and Stereo. The box below the knob shows the name of the item. Mono is the default, and it matches the unit.
 
 ### The Mid Freq steps
 
@@ -28,25 +34,7 @@ The unit has 13 Mid Freq values. They are the standard one-third-octave frequenc
 
 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150 and 4000 Hz.
 
-The Mid Freq knob in the plugin moves in steps of 1 Hz, and its box shows the knob value without a unit. The block uses the nearest of the 13 steps, on a logarithmic frequency scale:
-
-| Knob value (Hz) | Frequency that the block uses |
-|---|---|
-| 250 to 280 | 250 Hz |
-| 281 to 354 | 315 Hz |
-| 355 to 447 | 400 Hz |
-| 448 to 561 | 500 Hz |
-| 562 to 709 | 630 Hz |
-| 710 to 894 | 800 Hz |
-| 895 to 1118 | 1000 Hz |
-| 1119 to 1414 | 1250 Hz |
-| 1415 to 1788 | 1600 Hz |
-| 1789 to 2236 | 2000 Hz |
-| 2237 to 2806 | 2500 Hz |
-| 2807 to 3549 | 3150 Hz |
-| 3550 to 4000 | 4000 Hz |
-
-NOTE: To get an exact step, type the step value in the box below the knob.
+The Mid Freq control in the plugin is a list of these 13 steps, in the same order as on the unit. The box below the knob shows the name of the step, for example "1000 Hz". Turn the knob to move to the next or the previous step.
 
 ## How it works
 
@@ -106,6 +94,10 @@ The block operates on the signal with the pre-emphasis of the input stage still 
 
 CAUTION: A large boost on more than one band can make the block clip. Decrease Trim Gain to prevent the clip.
 
+### Stereo In
+
+In Stereo, the block runs the whole chain above, with the same settings, on the left and right channels separately. It does not mix them to mono first.
+
 ## Measured accuracy
 
 - On 39 of 46 captures, the model frequency response agrees with the unit to 0.043 dB rms from 30 Hz to 18 kHz. The maximum error is 0.177 dB. The phase agrees to 0.15 degrees rms.
@@ -113,8 +105,8 @@ CAUTION: A large boost on more than one band can make the block clip. Decrease T
 
 ## Limits
 
-- At Mid Freq 250 Hz and 500 Hz, the unit does not come back to 0 dB at low frequencies. The difference is up to about 0.8 dB below 150 Hz. The model does not have this difference.
-- There are no captures of the Mid steps 315, 400, 630, 800, 1250, 1600, 2500 and 3150 Hz.
-- It is not known if the unit clips inside each band or only after the three bands. The captures agree better with a clip after the bands.
+- **Not modeled yet: no law found.** At Mid Freq 250 Hz and 500 Hz, the unit does not come back to 0 dB at low frequencies. The difference is up to about 0.8 dB below 150 Hz. The probable cause is the unit's own coefficient rounding. The model does not have this difference.
+- **Not modeled yet: needs captures.** There are no captures of the Mid steps 315, 400, 630, 800, 1250, 1600, 2500 and 3150 Hz. The grid `3beq-4` captures these eight steps, and Mark O'Brien is recording it now.
+- **Not modeled yet: no law found.** It is not known if the unit clips inside each band or only after the three bands. The captures agree better with a clip after the bands, but this is not a direct measurement of where the clip sits.
 
 See also [chapter 6](../06-limitations.md).

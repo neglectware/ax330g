@@ -1,8 +1,11 @@
 // ModdBlock: wraps ax30g::ModDelay (dsp/ax30g_modd.h) as a Block (dsp/block.h)
 // for use in a Chain (dsp/chain.h). Parameter order: Dly Time, Feedback,
-// High Damp, Speed (integer hundredths of Hz), Depth, L Bal, R Bal.
-// Ranges: 1-500 ms for Dly Time, 2-950 for Speed, 0-50 for the rest.
-// Defaults: 200, 0, 0, 100, 25, 50, 50 -- matching
+// High Damp, Speed (integer hundredths of Hz), Depth, L Bal, R Bal,
+// Stereo In (0 = mono as the unit, 1 = one line per channel -- a what-if
+// the unit never had, 2026-09-23; see dsp/ax30g_modd.h).
+// Ranges: 1-500 ms for Dly Time, 2-950 for Speed, 0..1 for Stereo In,
+// 0-50 for the rest.
+// Defaults: 200, 0, 0, 100, 25, 50, 50, 0 -- matching
 // models/ax30g-modd.json's "params" and ax30g::ModdParams's own defaults.
 #pragma once
 #include "block.h"
@@ -26,10 +29,10 @@ public:
 
     const BlockInfo& info() const override {
         static const BlockInfo i = {
-            "Mod Delay", 7,
-            {"Dly Time", "Feedback", "High Damp", "Speed", "Depth", "L Bal", "R Bal", nullptr},
+            "Mod Delay", 8,
+            {"Dly Time", "Feedback", "High Damp", "Speed", "Depth", "L Bal", "R Bal", "Stereo In"},
             {1, 0, 0, 2, 0, 0, 0, 0},
-            {500, 50, 50, 950, 50, 50, 50, 0},
+            {500, 50, 50, 950, 50, 50, 50, 1},
             {200, 0, 0, 100, 25, 50, 50, 0},
         };
         return i;
@@ -47,6 +50,7 @@ public:
             case 4: p_.depth = v; break;
             case 5: p_.bal[0] = v; break;
             case 6: p_.bal[1] = v; break;
+            case 7: core_.setStereoIn(v != 0); return;
             default: return;
         }
         core_.setParams(p_);

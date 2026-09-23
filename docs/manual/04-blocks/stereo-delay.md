@@ -73,7 +73,7 @@ The detector has three stages:
 2. A fast peak detector. It follows a new peak in 0.02 ms and falls with a time constant of 1.68 ms.
 3. A slow smoother with a time constant of 52 ms, the same for rise and fall.
 
-The peak stage makes the detector react more to broadband material than to a sine wave. Relative to an average detector, the unit decreases the delay level 1.62 times more on white noise and 1.34 times more on a guitar signal.
+The peak stage makes the detector react more to broadband material than to a sine wave. Relative to an average detector, the unit decreases the delay level 1.62 times more on white noise. On a guitar signal, the decrease is 1.34 times more.
 
 When the input stops, the delay level comes back to its full value with the 52 ms time constant. The delay repeats that are still in the delay line then continue at their full level. A single short click does not decrease the delay level.
 
@@ -83,9 +83,8 @@ Claude compared the model with captures of the unit at 20 ms, 300 ms and 500 ms 
 
 ## Limits
 
-- The captures use only the Ducking values 0, 10, 25, 40 and 50. The linear law gives the other values.
-- All Ducking captures used High Damp 0 and Input at LIN.
-- The feedback value at Feedback 50 comes from a fit with High Damp at 50. There is no measurement of Feedback 46 to 50 on this block without High Damp.
-- The unit has one mono input. In the plugin, the two delay lines get the left and right host channels. With a mono source, both lines get the same signal, as on the unit.
+- **Not modeled yet: needs captures.** The captures use only the Ducking values 0, 10, 25, 40 and 50. The linear law gives the other values. The grid `sdly-ducking-2.json` adds Ducking 5, 20, 30 and 45.
+- **Not modeled yet: needs captures.** All Ducking captures used High Damp 0 and Input at LIN. The same grid, `sdly-ducking-2.json`, has rows with High Damp and Input engaged, to test whether Ducking interacts with either one.
+- **Not modeled yet: needs captures.** The feedback value at Feedback 50 comes from a fit with High Damp at 50. There is no measurement of Feedback 46 to 50 on this block without High Damp. The grid `sdly-tail.json` is a long feedback tail at High Damp 0 that would give this value directly.
 
 See also [chapter 6](../06-limitations.md).

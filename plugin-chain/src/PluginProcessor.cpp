@@ -100,7 +100,11 @@ static constexpr int kMidFreqSteps[13] = {250, 315, 400, 500, 630, 800, 1000, 12
 // value the host stores is the item index; blockFromHost/hostFromBlock
 // convert. Reverb Type and Stereo Chorus Mode were AudioParameterInts over
 // the same 0..n-1 range, so a saved session means the same item.
-static bool isChoiceParam(const String& name) { return name == "Mid Freq" || name == "Type" || name == "Mode"; }
+// "Stereo In" (2026-09-23) is the what-if per-block stereo-input option on
+// 3-Band EQ, Chorus, Stereo Chorus, Mod Delay, Reverb and Compressor.
+static bool isChoiceParam(const String& name) {
+    return name == "Mid Freq" || name == "Type" || name == "Mode" || name == "Stereo In";
+}
 
 // Host parameter value (real units, or a list index) -> the block's integer.
 static int blockFromHost(const String& name, double raw) {
@@ -187,6 +191,8 @@ static AudioProcessorValueTreeState::ParameterLayout makeLayout() {
                 l.add(std::make_unique<AudioParameterChoice>(ParameterID{id, 1}, name, StringArray{"ROOM", "HALL", "PLATE"}, np.pdef));
             } else if (np.name == "Mode") {   // Stereo Chorus Mode (docs/scho-cpp-2026-09-16.md)
                 l.add(std::make_unique<AudioParameterChoice>(ParameterID{id, 1}, name, StringArray{"Inverted LFO", "Split"}, np.pdef));
+            } else if (np.name == "Stereo In") {   // what-if, the unit never had it (2026-09-23)
+                l.add(std::make_unique<AudioParameterChoice>(ParameterID{id, 1}, name, StringArray{"Mono", "Stereo"}, np.pdef));
             } else if (np.name == "Rev Time") {
                 // ax30g::Reverb's BlockInfo carries this in TENTHS of a
                 // second (1..100 -- docs/rev-cpp-spec.md Sec 2); expose the

@@ -4,7 +4,9 @@
 // 2026-09-16, Mark's request) is an indexed 0..1 choice, 0 "Inverted LFO"
 // (default; two modulated reads, left +lfo / right -lfo) or 1 "Split"
 // (CE-1 style; left dry only, right the single CHO tap wet only) -- see
-// dsp/ax30g_scho.h for the full design. Defaults: 100, 25, 0 -- matching
+// dsp/ax30g_scho.h for the full design. "Stereo In" (0..1, default 0,
+// 2026-09-23): per-channel lines, +LFO tap from l, -LFO tap from r.
+// Defaults: 100, 25, 0, 0 -- matching
 // models/ax30g-scho.json's "params" and ax30g::SchoParams's own defaults.
 //
 // ParamRegistry naming (dsp/chain.h): reuses the existing "Speed" (2..950)
@@ -35,10 +37,10 @@ public:
 
     const BlockInfo& info() const override {
         static const BlockInfo i = {
-            "Stereo Chorus", 3,
-            {"Speed", "Depth", "Mode", nullptr, nullptr, nullptr, nullptr, nullptr},
+            "Stereo Chorus", 4,
+            {"Speed", "Depth", "Mode", "Stereo In", nullptr, nullptr, nullptr, nullptr},
             {2, 0, 0, 0, 0, 0, 0, 0},
-            {950, 50, 1, 0, 0, 0, 0, 0},
+            {950, 50, 1, 1, 0, 0, 0, 0},
             {100, 25, 0, 0, 0, 0, 0, 0},
         };
         return i;
@@ -52,6 +54,7 @@ public:
             case 0: p_.speedHundredths = v; break;
             case 1: p_.depth = v; break;
             case 2: p_.mode = v; break;
+            case 3: core_.setStereoIn(v != 0); return;
             default: return;
         }
         core_.setParams(p_);

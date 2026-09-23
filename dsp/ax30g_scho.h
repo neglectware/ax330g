@@ -69,6 +69,7 @@ public:
         // (models/ax30g-scho.json blocks.delay_line.max_ms is 60, same as CHO).
         n_ = int(maxMs * fs_ / 1000.0) + 64;
         buf_.assign(size_t(n_), 0.0);
+        bufR_.assign(size_t(n_), 0.0);
         setParams(p_);
     }
 
@@ -84,9 +85,17 @@ public:
 
     void reset() {
         std::fill(buf_.begin(), buf_.end(), 0.0);
+        std::fill(bufR_.begin(), bufR_.end(), 0.0);
         count_ = 0;
         phase_ = 0.0;   // matches a freshly-constructed engine.blocks.LFO(phase=0.0)
     }
+
+    // "Stereo In" (a what-if on a what-if, 2026-09-23): true = one delay
+    // line per channel -- the +LFO tap reads the line fed by l, the -LFO tap
+    // the line fed by r, and each channel's dry is its own channel. In Split
+    // mode, Stereo In gives L = dry l only and R = the single +LFO tap of
+    // the r line, wet only. With l == r both modes are bit-identical.
+    void setStereoIn(bool on) { stereoIn_ = on; }
 
     // one device-rate sample per channel, in place. Input/output in [-1, 1).
     inline void process(double& l, double& r) {
@@ -96,34 +105,47 @@ public:
         const double lfo = lfoTableLookup(phase_);   // value at the CURRENT phase, then advance (shared by both sides)
         phase_ += lfoInc_;
         if (phase_ >= 1.0) phase_ -= 1.0;
-        double w = xi;                       // NO feedback: the write is the dry input, clipped
-        if (w > 0.999969) w = 0.999969; else if (w < -1.0) w = -1.0;
+        // Stereo In: the L line is fed l, the R line r; mono: both are fed
+        // the mono sum (the R line is then a mirror of the L line, kept so
+        // a switch to Stereo is seamless).
+        const double xL = stereoIn_ ? l : xi;
+        const double xR = stereoIn_ ? r : xi;
+        const size_t wi = size_t(count_ % n_);
         double outL, outR;
         if (p_.mode == 1) {
             // Split (CE-1 style): the SAME +lfo tap Chorus uses -- no side_sign.
             const double mod = base_ + depth_ * lfo;
-            const double rd = readFrac(mod);        // read from the SAME shared buffer, before the write below
-            buf_[size_t(count_ % n_)] = quantize(w, kStoreBits, true);   // 16-bit store
+            const double rd = readFrac(bufR_, mod);   // read before the writes below (the R line == the L line in mono)
+            store(buf_, wi, xL);
+            store(bufR_, wi, xR);
             ++count_;
-            outL = kDry * xi;      // dry only
-            outR = kWet * rd;      // wet only -- outL + outR == mono ax30g::Chorus output at the same Speed/Depth
+            outL = kDry * xL;      // dry only
+            outR = kWet * rd;      // wet only -- in mono, outL + outR == mono ax30g::Chorus output at the same Speed/Depth
         } else {
             static constexpr double kSign[2] = {1.0, -1.0};   // blocks.lfo.side_sign [1, -1]: L=+lfo, R=-lfo
             const double modL = base_ + depth_ * (kSign[0] * lfo);
             const double modR = base_ + depth_ * (kSign[1] * lfo);
-            const double rL = readFrac(modL);   // two reads from the SAME shared buffer, before the write below
-            const double rR = readFrac(modR);
-            buf_[size_t(count_ % n_)] = quantize(w, kStoreBits, true);   // 16-bit store
+            const double rL = readFrac(buf_, modL);    // reads before the writes below
+            const double rR = readFrac(bufR_, modR);
+            store(buf_, wi, xL);
+            store(bufR_, wi, xR);
             ++count_;
-            outL = kDry * xi + kWet * rL;
-            outR = kDry * xi + kWet * rR;
+            outL = kDry * xL + kWet * rL;
+            outR = kDry * xR + kWet * rR;
         }
         l = quantize(outL, kConverterBits, true);   // DAC L
         r = quantize(outR, kConverterBits, true);   // DAC R
     }
 
 private:
-    inline double readFrac(double delaySamples) const {
+    // NO feedback: the write is the line's dry input, clipped, 16-bit store.
+    static inline void store(std::vector<double>& buf, size_t wi, double x) {
+        double w = x;
+        if (w > 0.999969) w = 0.999969; else if (w < -1.0) w = -1.0;
+        buf[wi] = quantize(w, kStoreBits, true);
+    }
+
+    inline double readFrac(const std::vector<double>& buf, double delaySamples) const {
         const double pos = double(count_) - delaySamples;
         const long long i = (long long) std::floor(pos);
         const double frac = pos - double(i);
@@ -131,7 +153,7 @@ private:
         auto at = [&](long long idx) {
             long long m = idx % n;
             if (m < 0) m += n;
-            return buf_[size_t(m)];
+            return buf[size_t(m)];
         };
         const double a = at(i);
         const double b = at(i + 1);
@@ -150,7 +172,8 @@ private:
     double lfoInc_ = 0.0, phase_ = 0.0;
     long long count_ = 0;
     int n_ = 0;
-    std::vector<double> buf_;
+    bool stereoIn_ = false;
+    std::vector<double> buf_, bufR_;   // buf_: the L (+LFO) line; bufR_: the R (-LFO) line -- identical content unless Stereo In
 };
 
 } // namespace ax30g

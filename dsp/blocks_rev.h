@@ -29,8 +29,11 @@
 // -- PluginProcessor.h's ax30gParamIdFor() special-cases "Type" to a
 // different id suffix to avoid that collision; see docs/rev-cpp-2026-09-18.md.
 //
-// Mono in (the core sums to mono at its own input, xi = (l+r)*0.5,
-// dsp/ax30g_rev.h), STEREO out -- L and R are genuinely different signals
+// "Stereo In" (sixth parameter, 0..1, default 0, 2026-09-23) is a what-if
+// the unit never had: two network instances, L out from l, R out from r.
+//
+// Mono effect in (the core sums to mono at its own input, xi = (l+r)*0.5,
+// dsp/ax30g_rev.h; each channel's dry is its own channel), STEREO out -- L and R are genuinely different signals
 // (measured; the one respect in which the manual's routing (c) diagram, as
 // drawn, doesn't match this model).
 #pragma once
@@ -50,10 +53,10 @@ public:
 
     const BlockInfo& info() const override {
         static const BlockInfo i = {
-            "Reverb", 5,
-            {"Type", "Pre Dly", "Rev Time", "High Damp", "Balance", nullptr, nullptr, nullptr},
+            "Reverb", 6,
+            {"Type", "Pre Dly", "Rev Time", "High Damp", "Balance", "Stereo In", nullptr, nullptr},
             {0, 1, 1, 0, 0, 0, 0, 0},
-            {2, 100, 100, 50, 50, 0, 0, 0},
+            {2, 100, 100, 50, 50, 1, 0, 0},
             {1, 1, 20, 0, 25, 0, 0, 0},
         };
         return i;
@@ -69,6 +72,7 @@ public:
             case 2: p_.revTimeTenths = v; break;
             case 3: p_.highDamp = v; break;
             case 4: p_.balance = v; break;
+            case 5: core_.setStereoIn(v != 0); return;
             default: return;
         }
         core_.setParams(p_);

@@ -6,17 +6,23 @@ The Chorus adds one copy of the signal, with a short delay that an LFO moves. Th
 
 The Chorus has a mono input and a mono output. Both output channels get the same signal. On the unit, the Chorus is the first member of the Mod1 group.
 
+A **Stereo In** parameter can give it two delay lines, one for each channel; see Parameters below.
+
 ## Parameters
 
 | Name in the plugin | Name on the unit | Range | Step | Unit | Default |
 |---|---|---|---|---|---|
-| **Speed** | Speed | 0.02 to 9.50 | 0.01 | Hz | 1.00 |
+| **Speed** | Speed | 0.02 to 9.50 | see [4.7](README.md#47-the-lfo-and-the-speed-parameter) | Hz | 1.00 |
 | **Depth** | Depth | 0 to 50 | 1 | — | 25 |
+| **Stereo In** | — | Mono, Stereo | — | — | Mono |
 
 - **Speed** sets the rate of the LFO.
 - **Depth** sets how far the LFO moves the delay. At Depth 0, the delay does not move, and the copy has no pitch change.
+- **Stereo In** selects Mono or Stereo processing. In Stereo, each channel gets its own delay line.
 
 The Chorus has no delay time, feedback or mix parameter. The unit fixes these values.
+
+**Stereo In** is a list of two items: Mono and Stereo. The box below the knob shows the name of the item. Mono is the default, and it matches the unit.
 
 ## How it works
 
@@ -48,6 +54,10 @@ The Chorus uses the same LFO as the Mod Delay: the same Speed table, the same sh
 
 See [4.7](README.md#47-the-lfo-and-the-speed-parameter) for the LFO laws.
 
+### Stereo In
+
+In Stereo, the block uses one delay line for each channel, instead of one line fed by the mono sum. One shared LFO moves both lines by the same amount. Each channel keeps its own dry and wet signal.
+
 ## Measured accuracy
 
 - At Depth 0, the model nulls at −31.4 dB overall against the unit. On the steady 1 kHz tone, it nulls at −59.0 dB.
@@ -55,6 +65,6 @@ See [4.7](README.md#47-the-lfo-and-the-speed-parameter) for the LFO laws.
 
 ## Limits
 
-- There is no measurement of the LFO rate at Speed 0.2 on the Chorus. The Mod Delay table gives this value.
+- **Not modeled yet: needs captures.** There is no measurement of the LFO rate at Speed 0.2 on the Chorus. The Mod Delay table gives this value. A Chorus capture at Speed 0.2 would confirm it.
 
 See also [chapter 6](../06-limitations.md).

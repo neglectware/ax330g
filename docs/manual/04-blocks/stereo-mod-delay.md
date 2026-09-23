@@ -2,7 +2,7 @@
 
 ## What it does
 
-The Stereo Mod Delay has two delay lines, one for the left output and one for the right output. Each line has its own delay time, feedback and balance. One LFO moves both delay times, in opposite directions. This gives a wide stereo sound with a slow change in pitch.
+The Stereo Mod Delay has two delay lines, one for the left channel and one for the right channel. Each line reads its own channel's input, and feeds its own channel's output. Each line has its own delay time, feedback and balance. One LFO moves both delay times, in opposite directions. This gives a wide stereo sound with a slow change in pitch.
 
 On the unit, the Stereo Mod Delay is a member of the Mod2 group.
 
@@ -10,7 +10,7 @@ On the unit, the Stereo Mod Delay is a member of the Mod2 group.
 
 | Name in the plugin | Name on the unit | Range | Step | Unit | Default |
 |---|---|---|---|---|---|
-| **Speed** | Speed | 0.02 to 9.50 | 0.01 | Hz | 1.00 |
+| **Speed** | Speed | 0.02 to 9.50 | see [4.7](README.md#47-the-lfo-and-the-speed-parameter) | Hz | 1.00 |
 | **Depth** | Depth | 0 to 50 | 1 | — | 25 |
 | **L Dly Time** | L Dly Time | 1 to 250 | 1 | ms | 100 |
 | **R Dly Time** | R Dly Time | 1 to 250 | 1 | ms | 100 |
@@ -29,13 +29,17 @@ The Stereo Mod Delay has no High Damp parameter, on the unit or in the plugin.
 
 ## How it works
 
-1. The block adds the left and right inputs together and divides by 2. Both delay lines get this mono signal.
+1. The left input feeds the left delay line. The right input feeds the right delay line.
 2. Each delay line has its own feedback loop.
 3. One LFO sets the read position of both lines. The left line gets the LFO value, and the right line gets the inverse of the LFO value.
 4. The LFO is inside each feedback loop, as in the Mod Delay.
-5. Each output mixes the mono dry signal with the output of its own delay line.
+5. Each output mixes its own channel's dry signal with the output of its own delay line.
 
 Claude measured the opposite movement in the captures. The right-channel delay movement is the left-channel movement with its sign changed, with no time offset between them.
+
+### Routing
+
+On the unit, each channel of the Stereo Mod Delay is a fully independent effect. The left input reaches only the left output; the right input reaches only the right output. The plugin follows this routing, as of version 0.8.6. Before the fix, both delay lines read the mono sum of the two inputs.
 
 The block uses three shared laws from the [block overview](README.md). These are the delay time law (4.3), the balance table (4.6), and the LFO laws (4.7).
 
@@ -66,8 +70,8 @@ Claude tested the model with Depth 0, delay times of 250 ms, Feedback 46 and Bal
 
 ## Limits
 
-- The delay law comes from the Stereo Delay. Claude confirmed it on this block only at 250 ms.
-- With the LFO on and high Feedback, Claude did not get a usable null against the unit. Small errors in the LFO rate, depth and shape add up over many repeats. Thus, no null test validates the long modulated tails.
-- At Speed 0.6, one measurement gave a real LFO rate of 0.5990 Hz. The model uses 0.5961 Hz. This difference is not confirmed.
+- **Not modeled yet: needs captures.** The delay law comes from the Stereo Delay. Claude confirmed it on this block only at 250 ms.
+- **Not modeled yet: no law found.** With the LFO on and high Feedback, Claude did not get a usable null against the unit. Small errors in the LFO rate, depth and shape add up over many repeats. Thus, no null test validates the long modulated tails.
+- **Not modeled yet: no law found.** At Speed 0.6, one measurement gave a real LFO rate of 0.5990 Hz. The model uses 0.5961 Hz. This difference is not confirmed.
 
 See also [chapter 6](../06-limitations.md).

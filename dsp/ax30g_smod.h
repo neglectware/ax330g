@@ -3,9 +3,11 @@
 // models/ax30g-smod.json "notes" and the "SMOD model" paragraph of
 // docs/findings.md (2026-09-14 18:00 entry).
 //   routing    : two INDEPENDENT delay lines (own Dly / Feedback / Balance
-//                each), one LFO SHARED between them. Input is the mono sum
-//                like Mod Delay -- the unit has one guitar input:
-//                xi = (l+r)*0.5, exactly render_smod's xin.
+//                each), one LFO SHARED between them. Routing (e): each
+//                line's input and dry are its OWN channel (L line <- l, R
+//                line <- r; 2026-09-23 -- before, both took the mono sum
+//                xi = (l+r)*0.5, render_smod's xin; identical for a mono
+//                source such as the unit's one guitar input).
 //   delay      : round(ms * 39) + 2 device samples (SdlyMaps.samplesPerMs
 //                and SdlyMaps.delayOffsetSamples, same "samples_per_ms" map
 //                as Stereo Delay and Mod Delay -- the "Adopted 2026-09-16"
@@ -138,7 +140,12 @@ public:
     inline void process(double& l, double& r) {
         l = quantize(l, maps_.converterBits, true);   // ADC L
         r = quantize(r, maps_.converterBits, true);   // ADC R
-        const double xi = (l + r) * 0.5;               // mono mix, render_smod's xin
+        // Routing (e) (docs/chain-rules-2026-09-17.md Sec 1.4, fixed
+        // 2026-09-23): each side is an independent effect -- the L line's
+        // input and dry are l, the R line's are r. (Before, both lines and
+        // both dry paths took the mono sum (l+r)*0.5; identical for a mono
+        // source, since (x+x)*0.5 == x exactly.)
+        const double xin[2] = {l, r};
         const double lfo = lfoTableLookup(phase_);      // value at the CURRENT phase, then advance (shared by both sides)
         phase_ += lfoInc_;
         if (phase_ >= 1.0) phase_ -= 1.0;
@@ -151,11 +158,11 @@ public:
             const double rd = readFrac(c, mod);                     // linear-interpolated fractional read (blocks.delay_line.interp "linear", 2026-09-14 18:40)
             double v = c.g * rd;
             v = quantize(v, maps_.fbBits, false);                   // feedback multiply, truncating
-            double wv = xi + v;
+            double wv = xin[i] + v;
             if (wv > 0.999969) wv = 0.999969; else if (wv < -1.0) wv = -1.0;
             c.buf[size_t(c.w)] = quantize(wv, maps_.storeBits, true);   // 16-bit store, no damp filter (SMOD has none)
             c.w = (c.w + 1) % c.n;
-            const double outv = c.dry * xi + c.wet * rd;
+            const double outv = c.dry * xin[i] + c.wet * rd;
             if (i == 0) outL = outv; else outR = outv;
         }
         l = quantize(outL, maps_.converterBits, true);   // DAC L

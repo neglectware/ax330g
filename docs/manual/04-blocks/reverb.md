@@ -6,29 +6,29 @@ The Reverb adds a simulated room sound to the signal. It has three types: ROOM, 
 
 The Reverb has a mono input and a stereo output. The left and right outputs are different signals. On the unit, the Reverb is a member of the Ambience group.
 
+A **Stereo In** parameter can give it two independent reverb networks, one for each channel; see Parameters below.
+
 ## Parameters
 
 | Name in the plugin | Name on the unit | Range | Step | Unit | Default |
 |---|---|---|---|---|---|
-| **Type** | Type | 0 to 2 | 1 | — | 1 (HALL) |
+| **Type** | Type | ROOM, HALL, PLATE | — | — | HALL |
 | **Pre Dly** | Pre Dly | 1 to 100 | 1 | ms | 1 |
 | **Rev Time** | Rev Time | 0.1 to 10.0 | 0.1 | s | 2.0 |
 | **High Damp** | High Damp | 0 to 50 | 1 | — | 0 |
 | **Balance** | Balance | 0 to 50 | 1 | — | 25 |
+| **Stereo In** | — | Mono, Stereo | — | — | Mono |
 
-The Type knob shows a number:
-
-| Type value | Reverb type |
-|---|---|
-| 0 | ROOM |
-| 1 | HALL |
-| 2 | PLATE |
+The Type control is a list of three items: ROOM, HALL and PLATE. The box below the knob shows the name of the item, as on the unit.
 
 - **Type** selects the reverb type.
 - **Pre Dly** sets the time before the reverb starts.
 - **Rev Time** sets the decay time of the reverb.
 - **High Damp** sets how fast the high frequencies decay, relative to the low frequencies.
 - **Balance** sets the mix of dry signal and reverb signal. At 0 you hear only the dry signal. At 50 you hear only the reverb.
+- **Stereo In** selects Mono or Stereo processing. In Stereo, the block runs two reverb networks.
+
+**Stereo In** is a list of two items: Mono and Stereo. The box below the knob shows the name of the item. Mono is the default, and it matches the unit.
 
 In the host, the Type parameter has the name "Reverb Type".
 
@@ -44,7 +44,7 @@ The Reverb of the unit is a Schroeder reverberator. Claude found its structure f
 4. The left output reads each comb filter at one position. The right output reads each comb filter at a different position. Each output adds its four reads with a weight of 0.5 each.
 5. In HALL only, each output has an extra fixed delay.
 6. Each output goes through three allpass filters in series. The left and right outputs have different allpass filters.
-7. The block inverts the reverb signal and mixes it with the dry signal with the Balance tables.
+7. The block inverts the reverb signal and mixes it with each channel's own dry signal, using the Balance tables.
 
 The two outputs read the same four comb filters at different positions. Thus, the left and right reverb tails are different, but they decay in the same way.
 
@@ -115,6 +115,16 @@ The Reverb has its own Balance tables. They are not the same as the delay tables
 
 The block interpolates in a straight line between the points.
 
+### Routing
+
+The unit's own routing keeps each channel's dry signal separate; only the wet signal is a mono sum. The plugin follows this routing, as of version 0.8.6.
+
+Claude measured the fix. With a left-only input, and Balance set fully dry, the left output gets 1.00 of the left input, and the right output gets 0.00. Before the fix, each output got 0.50.
+
+### Stereo In
+
+In Stereo, the block runs two copies of the network above. The left input feeds one network, and the right input feeds the other. The left output uses the left network's own left response. The right output uses the right network's own right response.
+
 ## Measured accuracy
 
 - At High Damp 0, the reverb tail of the model nulls against the unit at −41.6 dB median and −45.2 dB at best. The captures cover all three types, Rev Time 0.1 to 10, and all the Pre Dly and Balance values in the captures.
@@ -122,9 +132,10 @@ The block interpolates in a straight line between the points.
 
 ## Limits
 
-- A long, loud signal makes the reverb path of the unit compress. Claude measured up to 9 dB of compression in ROOM and PLATE with a −6 dBFS sweep. The model does not compress.
-- The captures use High Damp only at 0, 25 and 50. The model is linear between these values.
-- ROOM gives the weakest null of the three types, mostly at short Rev Time values.
-- There are no captures at Balance 30 and 40. The model interpolates these values.
+- **Not modeled yet: no law found.** A long, loud signal makes the reverb path of the unit compress. Claude measured up to 9 dB of compression in ROOM and PLATE with a −6 dBFS sweep. The likely cause is the wet path reaching a ceiling after its per-type gain stage. This is measured at one signal level only, so no full curve has been fitted. The model does not compress.
+- **Not modeled yet: needs captures.** The captures use High Damp only at 0, 25 and 50. The model is linear between these values.
+- **Not modeled yet: no law found.** At High Damp 50, the decay at 1 kHz on the unit is about 4 % slower than the model's own decay. Making one comb's per-pass loss smaller would remove the drift, but it would also make other captures worse.
+- **Not modeled yet: no law found.** ROOM gives the weakest null of the three types, mostly at short Rev Time values. ROOM's comb filters are the shortest of the three types, so the sound recirculates about 40 times a second. Any small error compounds fastest there.
+- **Not modeled yet: needs captures.** There are no captures at Balance 30 and 40. The model interpolates these values.
 
 See also [chapter 6](../06-limitations.md).

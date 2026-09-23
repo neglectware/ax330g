@@ -78,6 +78,7 @@ public:
         // (models/ax30g-cho.json blocks.delay_line.max_ms is 60).
         n_ = int(maxMs * fs_ / 1000.0) + 64;
         buf_.assign(size_t(n_), 0.0);
+        bufR_.assign(size_t(n_), 0.0);
         setParams(p_);
     }
 
@@ -93,31 +94,55 @@ public:
 
     void reset() {
         std::fill(buf_.begin(), buf_.end(), 0.0);
+        std::fill(bufR_.begin(), bufR_.end(), 0.0);
         count_ = 0;
         phase_ = 0.0;   // matches a freshly-constructed engine.blocks.LFO(phase=0.0)
     }
+
+    // "Stereo In" (a what-if -- the unit's Mod1 is mono in/mono out,
+    // 2026-09-23): true = one delay line per channel, both read by the ONE
+    // shared LFO, each channel's output from its own line and its own dry.
+    // With l == r both modes are bit-identical.
+    void setStereoIn(bool on) { stereoIn_ = on; }
 
     // one device-rate sample per channel, in place. Input/output in [-1, 1).
     inline void process(double& l, double& r) {
         l = quantize(l, kConverterBits, true);   // ADC L
         r = quantize(r, kConverterBits, true);   // ADC R
-        const double xi = (l + r) * 0.5;          // mono mix, render_cho's xin
         const double lfo = lfoTableLookup(phase_);   // value at the CURRENT phase, then advance
         phase_ += lfoInc_;
         if (phase_ >= 1.0) phase_ -= 1.0;
         const double mod = base_ + depth_ * lfo;      // unipolar above nominal: range [D, D+2*depth]
-        const double rd = readFrac(mod);
-        double w = xi;                                // NO feedback: the write is the dry input, clipped
-        if (w > 0.999969) w = 0.999969; else if (w < -1.0) w = -1.0;
-        buf_[size_t(count_ % n_)] = quantize(w, kStoreBits, true);   // 16-bit store
-        ++count_;
-        const double outv = kDry * xi + kWet * rd;
-        l = quantize(outv, kConverterBits, true);   // DAC L
-        r = quantize(outv, kConverterBits, true);   // DAC R (identical to L -- Mod1 is mono)
+        const size_t wi = size_t(count_ % n_);
+        if (!stereoIn_) {
+            const double xi = (l + r) * 0.5;          // mono mix, render_cho's xin
+            const double rd = line(buf_, wi, xi, mod);
+            bufR_[wi] = buf_[wi];                     // keep the R line mirrored so a switch to Stereo is seamless
+            ++count_;
+            const double outv = kDry * xi + kWet * rd;
+            l = quantize(outv, kConverterBits, true);   // DAC L
+            r = quantize(outv, kConverterBits, true);   // DAC R (identical to L -- Mod1 is mono)
+        } else {
+            const double rdL = line(buf_, wi, l, mod);
+            const double rdR = line(bufR_, wi, r, mod);
+            ++count_;
+            l = quantize(kDry * l + kWet * rdL, kConverterBits, true);   // DAC L
+            r = quantize(kDry * r + kWet * rdR, kConverterBits, true);   // DAC R
+        }
     }
 
 private:
-    inline double readFrac(double delaySamples) const {
+    // One line's step: the modulated read (before this sample's write), then
+    // the write -- NO feedback, the write is the dry input, clipped.
+    inline double line(std::vector<double>& buf, size_t wi, double x, double mod) {
+        const double rd = readFrac(buf, mod);
+        double w = x;
+        if (w > 0.999969) w = 0.999969; else if (w < -1.0) w = -1.0;
+        buf[wi] = quantize(w, kStoreBits, true);   // 16-bit store
+        return rd;
+    }
+
+    inline double readFrac(const std::vector<double>& buf, double delaySamples) const {
         const double pos = double(count_) - delaySamples;
         const long long i = (long long) std::floor(pos);
         const double frac = pos - double(i);
@@ -125,7 +150,7 @@ private:
         auto at = [&](long long idx) {
             long long m = idx % n;
             if (m < 0) m += n;
-            return buf_[size_t(m)];
+            return buf[size_t(m)];
         };
         const double a = at(i);
         const double b = at(i + 1);
@@ -144,7 +169,8 @@ private:
     double lfoInc_ = 0.0, phase_ = 0.0;
     long long count_ = 0;
     int n_ = 0;
-    std::vector<double> buf_;
+    bool stereoIn_ = false;
+    std::vector<double> buf_, bufR_;   // buf_: the (mono / L) line; bufR_: the R line in Stereo In, a mirror otherwise
 };
 
 } // namespace ax30g
