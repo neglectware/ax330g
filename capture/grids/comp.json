@@ -1,0 +1,37 @@
+[
+ {"effect": "COMP", "input": "LIN",
+  "_note": "COMP grid, 11 rows, normal signal set (run `make signals-normal` first). THE INPUT CONTROL IS LIN FOR EVERY ROW. Block 1 only: 3BEQ off, WAH off, DST off, every Block 2 slot off. Output Level at the campaign's fixed ~55% mark. The reference every row is divided by is captures/AX30G_BYPASS_IN-LIN.wav (the measured converter chain + input stage), so the chain cancels and what is left is the compressor alone.",
+  "_note_segments": "Which segment answers which question, as analysis/comp_curve.py uses them:\n  ramp (1 kHz, -40 -> 0 dBFS over 5 s)  -> the STATIC input/output curve. Output envelope vs input envelope in dB gives threshold, ratio and knee width. The ramp is slow (8 dB/s), so at any sensible attack/release the detector is in steady state and the curve is the static law. This is the only segment that sees the whole level range, and it is the primary fit.\n  bursts (four 60 ms 1 kHz bursts at -20 dBFS, irregular spacing) -> ATTACK from the gain-reduction trajectory inside each burst; RELEASE from the recovery afterwards, read on the device's own noise floor in the gap (there is no signal to measure gain on once the burst stops) and cross-checked against whether burst 2/3/4 start at a lower gain than burst 1 (which only resolves a release of the order of the 2.0/2.3/2.7 s spacings).\n  sine20 / sine40 (1 kHz at -20 and -40 dBFS, steady) -> STEADY-STATE GAIN at two levels, well clear of any attack/release transient: two clean points on the static curve that the ramp fit must pass through, and the pair that separates makeup gain (moves both equally) from compression (moves only the louder one).\n  clicks -> peak-vs-rms detector: a -16 dBFS single-sample click has almost no rms energy; whether it pulls gain down at all says which the detector follows.\n  sweep / noise -> whether the detector or the gain path is frequency-weighted (compare the compressed sweep curve with the flat reference: a sidechain filter shows as a tilt that changes with level).\n  di -> listening and hold-out validation; never fitted.",
+  "_note_duplicates": "Three of the axes below share their center point (Sensitivity 40 / Level 25 / Attack 25) rather than capturing it three times -- the file name would be identical and the second capture would overwrite the first. Row 4 IS the Attack sweep's 25 point and the Level sweep's 25 point.",
+  "params": {"Sensitivity": 0, "Level": 25, "Attack": 25}},
+
+ {"effect": "COMP", "input": "LIN",
+  "_note": "Sensitivity axis, five points at Level 25 / Attack 25. Sensitivity is expected to be threshold (and possibly ratio with it); the ramp curve of these five rows is what separates the two.",
+  "params": {"Sensitivity": 10, "Level": 25, "Attack": 25}},
+ {"effect": "COMP", "input": "LIN",
+  "params": {"Sensitivity": 25, "Level": 25, "Attack": 25}},
+ {"effect": "COMP", "input": "LIN",
+  "_note": "Center row of the whole grid: also the Attack-25 point of the Attack axis and the Level-25 point of the Level axis.",
+  "params": {"Sensitivity": 40, "Level": 25, "Attack": 25}},
+ {"effect": "COMP", "input": "LIN",
+  "params": {"Sensitivity": 50, "Level": 25, "Attack": 25}},
+
+ {"effect": "COMP", "input": "LIN",
+  "_note": "Attack axis at Sensitivity 40 / Level 25 (Attack 25 is row 4). Read from the bursts: the gain-reduction time constant inside the 60 ms burst. If Attack 0 shows no measurable trajectory at all the burst is too long to resolve it and the click segment is the fallback.",
+  "params": {"Sensitivity": 40, "Level": 25, "Attack": 0}},
+ {"effect": "COMP", "input": "LIN",
+  "params": {"Sensitivity": 40, "Level": 25, "Attack": 50}},
+
+ {"effect": "COMP", "input": "LIN",
+  "_note": "Level axis at Sensitivity 40 / Attack 25 (Level 25 is row 4). Level is expected to be makeup gain: read it as the gain at -40 dBFS (sine40, below threshold) across these three rows.",
+  "params": {"Sensitivity": 40, "Level": 0, "Attack": 25}},
+ {"effect": "COMP", "input": "LIN",
+  "params": {"Sensitivity": 40, "Level": 50, "Attack": 25}},
+
+ {"effect": "COMP", "input": "LIN",
+  "_note": "Everything at zero: the block's own floor. If this is not flat and unity against the bypass capture, the COMP block colours the signal even when it is doing nothing, and that offset has to come out of every other row.",
+  "params": {"Sensitivity": 0, "Level": 0, "Attack": 0}},
+ {"effect": "COMP", "input": "LIN",
+  "_note": "Corner case: maximum sensitivity, fastest attack, maximum makeup. The most likely row to show internal overflow (the manual warns clipping can occur without the Peak LED lighting) and the loudest the block can be.",
+  "params": {"Sensitivity": 50, "Level": 50, "Attack": 0}}
+]

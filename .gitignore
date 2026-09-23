@@ -1,0 +1,16 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+# Builds
+plugin-chain/build*/
+app/AX30GBench
+app/AX30G Bench.app/
+tools/render/ax30g-render
+tools/pluginrender/pluginrender
+dist/
+# Recordings and generated data (large; regenerate or record your own)
+captures/
+out/
+capture/*.wav
+.DS_Store

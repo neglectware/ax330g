@@ -1,0 +1,513 @@
+{
+ "name": "AX30G Modulation Delay, measured 2026-09-13",
+ "effect": "MODD",
+ "sample_rate": 39063.829787,
+ "params": {
+  "Dly Time": 200,
+  "Feedback": 0,
+  "High Damp": 0,
+  "Speed": 1,
+  "Depth": 25,
+  "L Bal": 50,
+  "R Bal": 50
+ },
+ "maps": {
+  "delay": {
+   "type": "samples_per_ms",
+   "k": 39,
+   "offset_samples": 2
+  },
+  "feedback": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     0.0
+    ],
+    [
+     10,
+     0.2
+    ],
+    [
+     25,
+     0.5
+    ],
+    [
+     40,
+     0.8
+    ],
+    [
+     50,
+     0.993
+    ]
+   ]
+  },
+  "high_damp": {
+   "type": "pole_linear",
+   "k": 0.0195,
+   "max_pole": 0.975
+  },
+  "speed": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     0.0
+    ],
+    [
+     0.02,
+     0.01863
+    ],
+    [
+     0.1,
+     0.09779
+    ],
+    [
+     0.18,
+     0.17696
+    ],
+    [
+     0.2,
+     0.197881
+    ],
+    [
+     0.5,
+     0.495995
+    ],
+    [
+     1,
+     0.9965
+    ],
+    [
+     2,
+     1.993121
+    ],
+    [
+     3,
+     2.991968
+    ],
+    [
+     5,
+     4.989728
+    ],
+    [
+     7,
+     6.985249
+    ],
+    [
+     9.5,
+     9.481214
+    ]
+   ]
+  },
+  "depth": {
+   "type": "linear",
+   "in_max": 50,
+   "out_max": 6.5247
+  },
+  "balance": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     0.0
+    ],
+    [
+     5,
+     0.092
+    ],
+    [
+     10,
+     0.184
+    ],
+    [
+     15,
+     0.275
+    ],
+    [
+     20,
+     0.476
+    ],
+    [
+     25,
+     0.705
+    ],
+    [
+     30,
+     0.792
+    ],
+    [
+     35,
+     0.844
+    ],
+    [
+     40,
+     0.896
+    ],
+    [
+     45,
+     0.948
+    ],
+    [
+     50,
+     1.0
+    ]
+   ]
+  },
+  "dry": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     1.0
+    ],
+    [
+     5,
+     0.963
+    ],
+    [
+     10,
+     0.925
+    ],
+    [
+     15,
+     0.888
+    ],
+    [
+     20,
+     0.828
+    ],
+    [
+     25,
+     0.763
+    ],
+    [
+     30,
+     0.625
+    ],
+    [
+     35,
+     0.469
+    ],
+    [
+     40,
+     0.312
+    ],
+    [
+     45,
+     0.157
+    ],
+    [
+     50,
+     0.0
+    ]
+   ]
+  }
+ },
+ "blocks": {
+  "delay_line": {
+   "max_ms": 700,
+   "storage": {
+    "bits": 16,
+    "compand": "linear",
+    "rate_div": 1
+   },
+   "interp": "linear"
+  },
+  "damp": {
+   "position": "input"
+  },
+  "feedback_gain": {
+   "wordlength": 16,
+   "rounding": "truncate",
+   "overflow": "saturate"
+  },
+  "lfo": {
+   "shape": "table",
+   "update_every": 1,
+   "in_loop": true,
+   "phase": 0.0,
+   "table": [
+    0.0,
+    0.002258,
+    0.006451,
+    0.011124,
+    0.015909,
+    0.020867,
+    0.026041,
+    0.031426,
+    0.037026,
+    0.042835,
+    0.04884,
+    0.055032,
+    0.061405,
+    0.067957,
+    0.074685,
+    0.081582,
+    0.088643,
+    0.095863,
+    0.103237,
+    0.11076,
+    0.118426,
+    0.126232,
+    0.134171,
+    0.14224,
+    0.150434,
+    0.158748,
+    0.167177,
+    0.175717,
+    0.184356,
+    0.193106,
+    0.201952,
+    0.21089,
+    0.219917,
+    0.229028,
+    0.238219,
+    0.247486,
+    0.256825,
+    0.266147,
+    0.275394,
+    0.284916,
+    0.2945,
+    0.304134,
+    0.313816,
+    0.323541,
+    0.333306,
+    0.343106,
+    0.352938,
+    0.362798,
+    0.372683,
+    0.382589,
+    0.392512,
+    0.40245,
+    0.412397,
+    0.422352,
+    0.432311,
+    0.442269,
+    0.452225,
+    0.462175,
+    0.472115,
+    0.482042,
+    0.491954,
+    0.501846,
+    0.511717,
+    0.521562,
+    0.53138,
+    0.541168,
+    0.550922,
+    0.560639,
+    0.570318,
+    0.579954,
+    0.589546,
+    0.599091,
+    0.608586,
+    0.618029,
+    0.627418,
+    0.63675,
+    0.646022,
+    0.655232,
+    0.664378,
+    0.673458,
+    0.682468,
+    0.691408,
+    0.700275,
+    0.709066,
+    0.717781,
+    0.726416,
+    0.73497,
+    0.743441,
+    0.751828,
+    0.760127,
+    0.768338,
+    0.776459,
+    0.784488,
+    0.792424,
+    0.800266,
+    0.80801,
+    0.815656,
+    0.823203,
+    0.830649,
+    0.837992,
+    0.845231,
+    0.852365,
+    0.859393,
+    0.866314,
+    0.873126,
+    0.879829,
+    0.886421,
+    0.892901,
+    0.899269,
+    0.905523,
+    0.911663,
+    0.917687,
+    0.923595,
+    0.929388,
+    0.935062,
+    0.940618,
+    0.946054,
+    0.95137,
+    0.956568,
+    0.96165,
+    0.966613,
+    0.971448,
+    0.976152,
+    0.980728,
+    0.985181,
+    0.989555,
+    0.993929,
+    0.998005,
+    1.0,
+    0.997787,
+    0.993738,
+    0.989378,
+    0.985053,
+    0.980586,
+    0.97596,
+    0.971251,
+    0.966428,
+    0.961463,
+    0.956378,
+    0.951182,
+    0.945863,
+    0.940422,
+    0.934865,
+    0.92919,
+    0.923396,
+    0.917485,
+    0.91146,
+    0.905318,
+    0.899062,
+    0.892693,
+    0.88621,
+    0.879617,
+    0.872912,
+    0.866098,
+    0.859175,
+    0.852145,
+    0.845009,
+    0.837768,
+    0.830423,
+    0.822976,
+    0.815428,
+    0.807781,
+    0.800036,
+    0.792195,
+    0.784258,
+    0.776228,
+    0.768106,
+    0.759895,
+    0.751594,
+    0.743207,
+    0.734736,
+    0.726181,
+    0.717546,
+    0.708831,
+    0.70004,
+    0.691173,
+    0.682233,
+    0.673223,
+    0.664144,
+    0.654999,
+    0.64579,
+    0.636519,
+    0.627189,
+    0.617801,
+    0.608359,
+    0.598866,
+    0.589322,
+    0.579732,
+    0.570097,
+    0.56042,
+    0.550705,
+    0.540953,
+    0.531167,
+    0.521352,
+    0.511509,
+    0.501641,
+    0.491752,
+    0.481843,
+    0.471919,
+    0.461983,
+    0.452037,
+    0.442085,
+    0.432131,
+    0.422176,
+    0.412226,
+    0.402282,
+    0.39235,
+    0.382431,
+    0.37253,
+    0.36265,
+    0.352795,
+    0.342968,
+    0.333173,
+    0.323414,
+    0.313695,
+    0.304019,
+    0.29439,
+    0.284812,
+    0.27529,
+    0.265827,
+    0.256427,
+    0.247095,
+    0.237834,
+    0.228649,
+    0.219544,
+    0.210524,
+    0.201592,
+    0.192753,
+    0.184011,
+    0.175372,
+    0.166838,
+    0.158416,
+    0.150108,
+    0.141919,
+    0.133863,
+    0.12593,
+    0.118132,
+    0.110473,
+    0.102958,
+    0.095592,
+    0.08838,
+    0.081327,
+    0.074438,
+    0.067719,
+    0.061173,
+    0.054805,
+    0.048627,
+    0.042635,
+    0.03683,
+    0.031245,
+    0.025871,
+    0.020665,
+    0.015695,
+    0.010992,
+    0.006375,
+    0.002088
+   ]
+  }
+ },
+ "notes": [
+  "delay/feedback/high_damp/balance/dry maps carried over unchanged from models/ax30g-sdly.json (measured 2026-09-13); not independently re-derived for MODD in this pass, per the SDLY captures sharing the same delay/feedback/damp/balance hardware blocks.",
+  "modulation centring: unipolar ABOVE the nominal Dly Time, i.e. delay(t) = D + depth + depth*lfo(t) with lfo in [-1,1] (engine's existing render_modd default) -- delay never goes below the displayed Dly Time. Evidence: 20 per-click instantaneous-delay readings across all 5 Feedback-0 captures, minimum observed 200.06 ms against a 200 ms nominal, zero readings below 200 ms; if modulation were bipolar around 200 ms roughly half of 20 independent phase samples would fall below 200 ms (p ~ 1e-6 under that hypothesis). Mean elevation above 200 ms tracks the measured depth amplitude (ratio to depth_ms: 1.02, 0.55, 1.06, 0.78 for the four Speed>=1 captures respectively; noisy with only 4 clicks/capture but consistently positive, never negative).",
+  "depth map: linear through the origin, k = 0.133 ms/step (least-squares fit through 0 on (10,1.3365),(25,3.3365 @ Speed 1),(25,3.3233 @ Speed 5),(50,6.6482); the Speed-0.2 depth-25 reading (2.467 ms) excluded as unreliable per docs/findings.md -- the 4 s sine20 segment is too short for a ~5 s LFO period).",
+  "speed map: identity (Speed n = n Hz), confirmed again here (n=1 -> 0.997/0.996 Hz across 3 captures, n=5 -> 4.99 Hz); n=0.2 unreliable (reads 0.314 Hz, tone too short).",
+  "lfo shape: sin (crest 0.73-0.80 on the derivative track across the 4 reliable Feedback-0 captures, well under the 0.85 tri threshold); update_every 1 (audio-rate, not stepped: step_ratio 0.02-0.05 << 0.3 threshold in all 4).",
+  "in_loop: true. burst_pitch verdict on the Feedback-25/Bal-50/50 capture is in_loop (compounding_ratio 1.60 > 1.4 threshold); the Bal-25/25 capture's click-timing loop_position verdict is NOT used for this (README: click timing cannot separate in-loop from after-loop) and its LFO reading (11.96 Hz) is dry leakage into the pitch track, not a real LFO rate.",
+  "feedback at Feedback 25: measured 0.437 (Bal 25/25) and 0.462 (Bal 50/50) by click peaks, both a bit below the SDLY table's 0.5 -- attributed to modulation smearing the repeat's cross-correlation peak (chorus-like broadening lowers the apparent peak amplitude versus a stationary click); the SDLY table value (0.5) is kept as the model's law rather than a MODD-specific refit, since the peaks-based numbers here are a known underestimate.",
+  "read interpolation: set by null-testing the Depth-50/Speed-1/Feedback-0 capture, see docs/modd-model-2026-09-13.md.",
+  "High Damp is 0 in every available capture, so damp.position and the pole_linear map's carried-over constants are UNTESTED for MODD (see open questions).",
+  "sample_rate 39057.3 is the same measured device clock as the SDLY model, used only for nulling against these captures; the plugin runs at 39062.5. SUPERSEDED 2026-09-16, see the dated note below.",
+  "2026-09-16: sample_rate -> 39063.829787 (effective 153/188 of 48 kHz), maps.delay gained offset_samples: 2, matching the SDLY model's adopted clock/delay-length law (docs/sdly-clock-2026-09-16.md, 'Adopted 2026-09-16'). MODD trajectory (tests/modd_trajectory.py, which absorbs a static delay offset through its per-capture phase fit and so cannot itself discriminate the law) confirmed not worse at the new rate/offset: Speed 1/Depth 25 rms 0.2175 -> 0.2178, Speed 5/Depth 50 rms 0.0781 -> 0.0782 device-samples, both at offset 0 and offset 2 identically (as expected -- the trajectory test cannot see a constant offset). No MODD capture nulls the delay length directly, so this change rides on the SDLY law rather than an independent MODD fit.",
+  "2026-09-13 16:15, long-tone captures (capture/signalset-lfo.wav, layout-lfo.json): LFO rate = 0.9984 n - 0.0018 Hz (0.20/1.00/5.00/9.50 -> 0.1979/0.9965/4.9897/9.4812 measured at the 39057.3 clock); waveform sine within 4 % of swing, no control-rate lines; sweep 10 samples p-p per Depth step (6.4 ms amplitude at 50); balance tables from the 11-point SDLY series; High Damp on the line input as measured on SDLY",
+  "2026-09-13 evening, LFO waveform replaced with the unit's own measured shape (docs/modd-lfo-table-2026-09-13.md): 256-point table extracted by synchronous averaging of the bandpass(700-1300 Hz)+Hilbert instantaneous-frequency delay trajectory on the Speed-1/Depth-25 long-tone capture (best-fit rate 0.996634 Hz), cross-checked on Speed-5/Depth-50 (best-fit rate 4.989680 Hz; normalised shapes agree to 0.00127 rms over [0,1]); stored table is the average of the two normalised, phase-rolled (min at index 0) cycles. 3rd/5th harmonic -24.9/-34.4 dB relative to the fundamental on both captures; rms deviation from a best-fit sine 5.69 device-samples (Depth 25) / 11.40 device-samples (Depth 50), i.e. about 2.2% rms / 6.6% peak of the p-p swing -- consistent with the ~4% figure that was already flagged as enough to explain a near-0 dB null of an ideal-sine model. maps.depth.out_max updated 6.4 -> 6.5247 ms from the measured p-p (254.95 device-samples at Depth 25 = 10.198 samples/Depth-unit, 509.45 at Depth 50 = 10.189 samples/Depth-unit, average 10.1935 vs the prior spec's 10.0).",
+  "2026-09-14 14:05, LFO set at Speeds 0.5/2/3/7 (captures ..._Speed-{0.5,2,3,7}_Depth-25_..._SET-lfo): measured rates 0.495995 / 1.993121 / 2.991968 / 6.985249 Hz at the 39057.3 clock (tests/modd_trajectory.py period fit), added to maps.speed; the table is now 9 points 0..9.5. The 'Speed 0.02' capture of the same session runs at 0.198015 Hz, the same as the Speed-0.2 capture, so it is not a new point (either the unit's minimum is 0.2 or the setting was 0.20; unresolved).",
+  "2026-09-14 15:10, slow speeds on a 120 s tone (captures ..._Speed-{0.02,0.1,0.18}_..._SET-lfo, capture/signalset-lfo120.wav): rates from corner-to-corner periods 0.01863 / 0.09779 / 0.17696 Hz (53.686 / 10.226 / 5.651 s, identical from minima and maxima). Every measured rate is an integer multiple of 39062.5/2^24 = 0.0023283 Hz to within 0.2 (k = 8, 42, 76, 85, 213, 428, 856, 1285, 2143, 3000, 4072 for the 11 display values), i.e. a 24-bit phase accumulator at the device rate; k is about 428.6 n above 1 Hz and falls short at the slow end (400 n at 0.02), so the table, not a formula, remains the law. The earlier 30 s-tone '0.02' capture (0.198 Hz) had been dialled to 0.2.",
+  "2026-09-14 17:30: chain models/ax30g-chain.json and resampler.half_mult 100 adopted (as SDLY). LFO table unchanged: a corner-accurate 2048-point table cut from the 0.1 Hz capture nulls WORSE by delay trajectory at 0.5/1/5/9.5 Hz (0.42/0.42/0.72/0.38 vs 0.22/0.22/0.08/0.14 samples rms), although its corner is the truer one at slow speeds; the two tables differ by at most 0.0028 of the swing. A one-pole smoothing after the shaper does not explain the difference (fitted time constants scatter 0.02-2 ms across speeds). See docs/findings.md 2026-09-14 17:30.",
+  "2026-09-14 17:50: sample_rate 39057.3 -> 39057.15 (effective 2520/3097 of 48 kHz = 39057.152), from a null scan of the SDLY Bal-25/Fb-0 capture: the dry/wet relative timing is the only thing a mixed-balance capture can pin down, and the optimum is a plateau 39057.14-39057.16 (sine20 null -47 dB against -36 at 39057.3, sweep -37.3 against -33.4). Null-test value only; the plugin runs at 39062.5."
+ ],
+ "resampler": {
+  "half_mult": 100
+ },
+ "chain": "ax30g-chain.json"
+}

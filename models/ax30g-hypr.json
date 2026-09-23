@@ -1,0 +1,308 @@
+{
+ "name": "AX30G Hyper Resonator (HYPR), measured 2026-09-18",
+ "effect": "HYPR",
+ "sample_rate": 39062.5,
+ "params": {
+  "Type": 1,
+  "Harmonics": 0,
+  "Sensitivity": 25,
+  "Polarity": "UP",
+  "Depth": 0,
+  "Decay": 25,
+  "Resonance": 0,
+  "Direct Level": 0,
+  "Effect Level": 50
+ },
+ "param_ranges": {
+  "Type": [
+   1,
+   2,
+   1,
+   "1 = fuzz-type, 2 = more overtones (displayed as 1/2)"
+  ],
+  "Harmonics": [
+   0,
+   50,
+   1,
+   "integer"
+  ],
+  "Sensitivity": [
+   0,
+   50,
+   1,
+   "integer"
+  ],
+  "Polarity": [
+   "UP",
+   "DOWN",
+   null,
+   "sweep direction"
+  ],
+  "Depth": [
+   0,
+   50,
+   1,
+   "integer"
+  ],
+  "Decay": [
+   0,
+   50,
+   1,
+   "integer"
+  ],
+  "Resonance": [
+   0,
+   50,
+   1,
+   "integer"
+  ],
+  "Direct Level": [
+   0,
+   50,
+   1,
+   "integer"
+  ],
+  "Effect Level": [
+   0,
+   50,
+   1,
+   "integer"
+  ]
+ },
+ "maps": {
+  "level": {
+   "type": "linear",
+   "in_max": 50.0,
+   "out_max": 1.0
+  },
+  "q": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     4.28
+    ],
+    [
+     25,
+     8.2
+    ],
+    [
+     50,
+     64.0
+    ]
+   ]
+  },
+  "sens": {
+   "points": [
+    [
+     0,
+     0.0
+    ],
+    [
+     10,
+     0.35
+    ],
+    [
+     25,
+     0.69
+    ],
+    [
+     50,
+     1.0
+    ]
+   ]
+  },
+  "depth": {
+   "points": [
+    [
+     0,
+     0.0
+    ],
+    [
+     25,
+     0.5
+    ],
+    [
+     50,
+     1.0
+    ]
+   ]
+  },
+  "attack_tau_ms": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     1.2
+    ],
+    [
+     25,
+     1.2
+    ],
+    [
+     50,
+     1.2
+    ]
+   ]
+  },
+  "release_tau_ms": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     60.0
+    ],
+    [
+     25,
+     200.0
+    ],
+    [
+     50,
+     1500.0
+    ]
+   ]
+  }
+ },
+ "blocks": {
+  "driver": {
+   "clip_level": 1.0,
+   "rect_hpf_hz": 5.0,
+   "table": {
+    "1": {
+     "gain_db": [
+      [
+       0,
+       0.07
+      ],
+      [
+       25,
+       27.24
+      ],
+      [
+       50,
+       48.41
+      ]
+     ],
+     "w_odd": [
+      [
+       0,
+       0.0728
+      ],
+      [
+       25,
+       0.3748
+      ],
+      [
+       50,
+       0.0185
+      ]
+     ],
+     "w_even": [
+      [
+       0,
+       0.0282
+      ],
+      [
+       25,
+       0.0253
+      ],
+      [
+       50,
+       0.844
+      ]
+     ]
+    },
+    "2": {
+     "gain_db": [
+      [
+       0,
+       24.72
+      ],
+      [
+       25,
+       27.16
+      ],
+      [
+       50,
+       33.02
+      ]
+     ],
+     "w_odd": [
+      [
+       0,
+       0.3568
+      ],
+      [
+       25,
+       0.7222
+      ],
+      [
+       50,
+       0.2647
+      ]
+     ],
+     "w_even": [
+      [
+       0,
+       0.003
+      ],
+      [
+       25,
+       0.0252
+      ],
+      [
+       50,
+       0.1337
+      ]
+     ]
+    }
+   }
+  },
+  "detector": {
+   "source": "input",
+   "attack_tau_ms": 1.2,
+   "release_tau_ms": 200.0
+  },
+  "sweep": {
+   "rest_hz": 389.0,
+   "threshold_dbfs": -36.0,
+   "octaves_per_db": 0.8,
+   "max_octaves": 4.6,
+   "min_hz": 40.0,
+   "max_hz": 12000.0
+  },
+  "resonator": {
+   "fixed_lp_hz": 5706.0,
+   "fixed_lp_q": 1.92,
+   "control_block": 1,
+   "gain_db": -30.96
+  },
+  "output_de_emphasis": "none"
+ },
+ "input_stage": {
+  "file": "ax30g-input-stage.json",
+  "de_emphasis": "after_effect"
+ },
+ "chain": "ax30g-chain.json",
+ "resampler": {
+  "half_mult": 100
+ },
+ "notes": [
+  "Derivation, every candidate with its residual, and what is under-determined: docs/hypr-model-2026-09-18.md. C++ port spec: docs/hypr-cpp-spec.md. Measured from the 21 captures of capture/grids/hypr.json (2026-09-18, 20 IN-LIN + 1 IN-MAX_take2, Block 1 only).",
+  "Block diagram: out = Direct*x + Effect*RES(DRIVER(x), f(E)). DRIVER = gain g(Type,Harmonics) -> mix of a symmetric hard clip (odd) and a DC-blocked full-wave rectifier (even). RES = 2-pole resonant low-pass at f(E), Q(Resonance), cascaded with a fixed 2-pole low-pass at 5706 Hz.",
+  "The resonator's rest frequency is 389 Hz. Measured three ways that agree to 0.2 %: the Resonance-25/Resonance-0 noise-TF ratio peaks at 388.5 Hz, the Resonance-50/Resonance-0 ratio at 388.1 Hz, and a free filter fit to the near-linear Type-1/Harmonics-0 response puts the resonant pole at 388-396 Hz.",
+  "Resonance changes ONLY the height of that narrow peak and nothing else: the R25/R0 and R50/R0 noise-TF ratios are flat to +-0.5 dB everywhere from 40 Hz to 6 kHz except within about a third of an octave of 389 Hz, where they read +5.6 dB and +23.5 dB. maps.q converts those peak heights into Q via peak ~= Q; Q(50) = 64 is a LOWER BOUND because the +23.5 dB was read on 1/17-octave bands and the true peak is narrower than one band.",
+  "The block runs in the PRE-EMPHASISED domain and its output is NOT de-emphasised. Measured on the Direct-only capture (Direct 50 / Effect 0) against the LIN Bypass capture: +0.5 dB at 1.1 kHz, +1.4 at 1.7 k, +3.0 at 2.8 k, +5.1 at 4.4 k, +7.1 at 7.0 k, +8.5 at 11.1 k, +9.2 at 17.6 k, on the noise, sweep and DI segments independently and identically, against the input stage's own pre-emphasis shelf at +0.1/+1.0/+2.5/+4.6/+6.7/+8.4/+9.5. So input_stage.de_emphasis = 'after_effect' (render.py defers the filter) and blocks.output_de_emphasis = 'none' (engine/hypr.py re-applies the pre-emphasis at its output so the deferred filter cancels exactly). No other measured block behaves this way -- the 3BEQ's flat row divided by Bypass is flat to 0.35 dB.",
+  "Direct Level is linear in the displayed value: Direct 25 against Direct 50 measures -5.9 dB on the ramp where 20*log10(25/50) = -6.02. Effect Level is ASSUMED to follow the same law -- the grid has no pair that isolates it.",
+  "The Direct path is otherwise a clean copy: its ramp tracks the Bypass capture's within 0.4 dB over the whole -40..0 dBFS range, and its noise/sweep/DI transfer functions are flat to 0.3 dB below 700 Hz.",
+  "The driver table is FITTED, not derived. g, w_odd and w_even per (Type, Harmonics) were fitted by rendering a 1 kHz -20 dBFS sine through the input stage, the driver and the resonator and matching the measured steady-state H1..H7 of the six R0 captures: 6.25 dB rms over 42 harmonic levels spanning 60 dB, with one shared output gain (blocks.resonator.gain_db). It reproduces the three qualitative facts the captures establish -- Type 1 / Harmonics 0 is nearly linear and 50 dB down (H1 -77.4 dBFS, every harmonic below -104), Type 1 / Harmonics 50 is almost purely EVEN (H2 -67.8 with H1 -87.2 and H3 -88.3, i.e. a frequency doubler), and Type 2 is clip-dominated at every Harmonics (Type 2 / Harmonics 0 is pure odd: H1 -47.0, H3 -76.8, H5 -90.3, H7 -98.3) -- but it misses Type 1 / Harmonics 50's fundamental by 21 dB and Type 1 / Harmonics 25's by 11 dB.",
+  "The driver ends in a HARD CLIP. The Type-2 / Harmonics-0 ramp is the cleanest evidence in the campaign: the 1 kHz output rises exactly 1:1 from -69.4 dBFS at -39 dBFS in to -54.2 at -23.6, then is FLAT at -53.5 +- 0.1 dB for the remaining 22 dB of input. The third harmonic is flat at -82.9 over the same span, i.e. H3/H1 = -29.4 dB where an analytic hard clip driven far past threshold gives -9.5 dB and a 2-pole low-pass at 389 Hz takes off another 19 dB at 3 kHz. H5/H1 and H7/H1 follow the same accounting to 1.4 and 0.6 dB. That is what fixes the resonator's slope at 12 dB/oct through 1-7 kHz.",
+  "The sweep: the corner does not move at all below about -34 dBFS of input peak envelope, then rises steeply. Measured on the DI clip of the all-up row (Type 2, Harmonics 50, Sensitivity 50, Depth 50, Resonance 50) by binning the output spectrogram's peak frequency against the input's peak envelope: 375 Hz flat from -60 to -33 dBFS, 750 Hz at -33..-30, 3656 Hz at -30..-27, 4641 Hz at -27..-24. Row 21 (Sensitivity 25, otherwise similar) gives 516 / 1547 / 3984 Hz in the same bins. blocks.sweep.octaves_per_db 0.80 is the Sensitivity-50 slope; maps.sens carries 25 -> 0.69 from row 21 and 10 -> 0.35 as a GUESS.",
+  "maps.depth is a straight line and is NOT measured: Depth 25 and Depth 50 put the ramp's 1 kHz crossing at -19.4 and -19.1 dBFS, 0.3 dB apart, which does not constrain a law. Worse, Sensitivity 10 / 25 / 50 put it at -19.1 / -19.1 / -18.9 dBFS -- no Sensitivity dependence at all on those rows, which contradicts the DI measurement above. The reason is almost certainly that all seven sweep rows sit at Type 1 / Harmonics 0, where the driver output is 50 dB down and there is nothing for the resonator to resonate on; capture/grids/hypr-2.json moves the sweep axis onto Type 2 / Harmonics 50.",
+  "maps.release_tau_ms (the Decay control) is three points chosen to reproduce a coarse observation and is the weakest law in the model: on the ramp, Decay 0 and Decay 25 put the 1 kHz crossing 98 ms apart (2.513 s and 2.611 s after the ramp starts) and Decay 50 has no crossing at all -- its output is already elevated 8 dB at the bottom of the ramp, 1.5 s after the previous segment ended, which is what a release of order a second looks like. Attack was not measured at all (the burst onsets are at the noise floor on every sweep row) and is carried at the compressor's measured 1.2 ms.",
+  "Polarity DOWN inverts the sign of the octave excursion about the same 389 Hz rest. Evidence: the DOWN capture's DI-segment spectrogram peak sits at 188-234 Hz where the UP capture's sits at 375 Hz and above, and its ramp output rises smoothly with no 1 kHz crossing (the corner is moving away from 1 kHz, not through it). Whether DOWN has the same range as UP is NOT established.",
+  "The IN-MAX row: use AX30G_HYPR_..._IN-MAX_take2.wav. The take-1 MAX file is byte-for-byte equivalent in level to the LIN row (its segment levels match the LIN capture to 0.1 dB on every segment) -- it was captured before the input knob was moved, and must be ignored.",
+  "NOT modelled, and the largest single discrepancy: a steady 1 kHz tone and a 1 kHz tone ramping through the same level give different harmonic structure by up to 25 dB, on rows where Depth is 0 and the corner should not be moving. Type 1 / Harmonics 50 reads H1 -87.2 / H2 -67.8 on the steady -20 dBFS sine and H1 -63.1 / H2 -87.6 as the ramp passes -20.5 dBFS -- the two harmonics swap places. The output settles to its steady value about 0.6 s after a tone starts, so there is a slow state in the block that this model does not have.",
+  "blocks.resonator.gain_db is the effect path's own output scaling and is ARBITRARY: the fit that produced the driver table wanted -18.96 dB, which puts the all-up row's peak 4.4 dB over full scale in the renderer, so it ships 12 dB lower (-30.96) to keep the 18-bit converter out of the way. Relative levels between rows are unchanged, and tests/hypr_null.py fits one broadband gain per row anyway."
+ ]
+}

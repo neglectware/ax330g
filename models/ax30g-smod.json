@@ -1,0 +1,509 @@
+{
+ "name": "AX30G Stereo Mod Delay, first model 2026-09-14 (maps borrowed: delay/feedback/balance from SDLY, speed/depth/LFO from MODD)",
+ "effect": "SMOD",
+ "sample_rate": 39063.829787,
+ "params": {
+  "Speed": 1.0,
+  "Depth": 25,
+  "L Dly": 100,
+  "R Dly": 100,
+  "L Fb": 0,
+  "R Fb": 0,
+  "L Bal": 50,
+  "R Bal": 50
+ },
+ "maps": {
+  "delay": {
+   "type": "samples_per_ms",
+   "k": 39,
+   "offset_samples": 2
+  },
+  "feedback": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     0.0
+    ],
+    [
+     10,
+     0.2
+    ],
+    [
+     25,
+     0.5
+    ],
+    [
+     40,
+     0.8
+    ],
+    [
+     46,
+     0.9194
+    ],
+    [
+     50,
+     0.9994
+    ]
+   ]
+  },
+  "balance": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     0.0
+    ],
+    [
+     5,
+     0.092
+    ],
+    [
+     10,
+     0.184
+    ],
+    [
+     15,
+     0.275
+    ],
+    [
+     20,
+     0.476
+    ],
+    [
+     25,
+     0.705
+    ],
+    [
+     30,
+     0.792
+    ],
+    [
+     35,
+     0.844
+    ],
+    [
+     40,
+     0.896
+    ],
+    [
+     45,
+     0.948
+    ],
+    [
+     50,
+     1.0
+    ]
+   ]
+  },
+  "dry": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     1.0
+    ],
+    [
+     5,
+     0.963
+    ],
+    [
+     10,
+     0.925
+    ],
+    [
+     15,
+     0.888
+    ],
+    [
+     20,
+     0.828
+    ],
+    [
+     25,
+     0.763
+    ],
+    [
+     30,
+     0.625
+    ],
+    [
+     35,
+     0.469
+    ],
+    [
+     40,
+     0.312
+    ],
+    [
+     45,
+     0.157
+    ],
+    [
+     50,
+     0.0
+    ]
+   ]
+  },
+  "speed": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     0.0
+    ],
+    [
+     0.02,
+     0.01863
+    ],
+    [
+     0.1,
+     0.09779
+    ],
+    [
+     0.18,
+     0.17696
+    ],
+    [
+     0.2,
+     0.197881
+    ],
+    [
+     0.5,
+     0.495995
+    ],
+    [
+     1,
+     0.9965
+    ],
+    [
+     2,
+     1.993121
+    ],
+    [
+     3,
+     2.991968
+    ],
+    [
+     5,
+     4.989728
+    ],
+    [
+     7,
+     6.985249
+    ],
+    [
+     9.5,
+     9.481214
+    ]
+   ]
+  },
+  "depth": {
+   "type": "linear",
+   "in_max": 50,
+   "out_max": 6.5247
+  }
+ },
+ "blocks": {
+  "delay_line": {
+   "max_ms": 1000,
+   "storage": {
+    "bits": 16,
+    "compand": "linear",
+    "rate_div": 1
+   },
+   "wet_offset_samples": 0,
+   "input_hpf_hz": null,
+   "offset_samples": 0,
+   "interp": "linear"
+  },
+  "feedback_gain": {
+   "wordlength": 16,
+   "rounding": "truncate",
+   "overflow": "saturate"
+  },
+  "lfo": {
+   "shape": "table",
+   "update_every": 1,
+   "in_loop": true,
+   "phase": 0.0,
+   "table": [
+    0.0,
+    0.002258,
+    0.006451,
+    0.011124,
+    0.015909,
+    0.020867,
+    0.026041,
+    0.031426,
+    0.037026,
+    0.042835,
+    0.04884,
+    0.055032,
+    0.061405,
+    0.067957,
+    0.074685,
+    0.081582,
+    0.088643,
+    0.095863,
+    0.103237,
+    0.11076,
+    0.118426,
+    0.126232,
+    0.134171,
+    0.14224,
+    0.150434,
+    0.158748,
+    0.167177,
+    0.175717,
+    0.184356,
+    0.193106,
+    0.201952,
+    0.21089,
+    0.219917,
+    0.229028,
+    0.238219,
+    0.247486,
+    0.256825,
+    0.266147,
+    0.275394,
+    0.284916,
+    0.2945,
+    0.304134,
+    0.313816,
+    0.323541,
+    0.333306,
+    0.343106,
+    0.352938,
+    0.362798,
+    0.372683,
+    0.382589,
+    0.392512,
+    0.40245,
+    0.412397,
+    0.422352,
+    0.432311,
+    0.442269,
+    0.452225,
+    0.462175,
+    0.472115,
+    0.482042,
+    0.491954,
+    0.501846,
+    0.511717,
+    0.521562,
+    0.53138,
+    0.541168,
+    0.550922,
+    0.560639,
+    0.570318,
+    0.579954,
+    0.589546,
+    0.599091,
+    0.608586,
+    0.618029,
+    0.627418,
+    0.63675,
+    0.646022,
+    0.655232,
+    0.664378,
+    0.673458,
+    0.682468,
+    0.691408,
+    0.700275,
+    0.709066,
+    0.717781,
+    0.726416,
+    0.73497,
+    0.743441,
+    0.751828,
+    0.760127,
+    0.768338,
+    0.776459,
+    0.784488,
+    0.792424,
+    0.800266,
+    0.80801,
+    0.815656,
+    0.823203,
+    0.830649,
+    0.837992,
+    0.845231,
+    0.852365,
+    0.859393,
+    0.866314,
+    0.873126,
+    0.879829,
+    0.886421,
+    0.892901,
+    0.899269,
+    0.905523,
+    0.911663,
+    0.917687,
+    0.923595,
+    0.929388,
+    0.935062,
+    0.940618,
+    0.946054,
+    0.95137,
+    0.956568,
+    0.96165,
+    0.966613,
+    0.971448,
+    0.976152,
+    0.980728,
+    0.985181,
+    0.989555,
+    0.993929,
+    0.998005,
+    1.0,
+    0.997787,
+    0.993738,
+    0.989378,
+    0.985053,
+    0.980586,
+    0.97596,
+    0.971251,
+    0.966428,
+    0.961463,
+    0.956378,
+    0.951182,
+    0.945863,
+    0.940422,
+    0.934865,
+    0.92919,
+    0.923396,
+    0.917485,
+    0.91146,
+    0.905318,
+    0.899062,
+    0.892693,
+    0.88621,
+    0.879617,
+    0.872912,
+    0.866098,
+    0.859175,
+    0.852145,
+    0.845009,
+    0.837768,
+    0.830423,
+    0.822976,
+    0.815428,
+    0.807781,
+    0.800036,
+    0.792195,
+    0.784258,
+    0.776228,
+    0.768106,
+    0.759895,
+    0.751594,
+    0.743207,
+    0.734736,
+    0.726181,
+    0.717546,
+    0.708831,
+    0.70004,
+    0.691173,
+    0.682233,
+    0.673223,
+    0.664144,
+    0.654999,
+    0.64579,
+    0.636519,
+    0.627189,
+    0.617801,
+    0.608359,
+    0.598866,
+    0.589322,
+    0.579732,
+    0.570097,
+    0.56042,
+    0.550705,
+    0.540953,
+    0.531167,
+    0.521352,
+    0.511509,
+    0.501641,
+    0.491752,
+    0.481843,
+    0.471919,
+    0.461983,
+    0.452037,
+    0.442085,
+    0.432131,
+    0.422176,
+    0.412226,
+    0.402282,
+    0.39235,
+    0.382431,
+    0.37253,
+    0.36265,
+    0.352795,
+    0.342968,
+    0.333173,
+    0.323414,
+    0.313695,
+    0.304019,
+    0.29439,
+    0.284812,
+    0.27529,
+    0.265827,
+    0.256427,
+    0.247095,
+    0.237834,
+    0.228649,
+    0.219544,
+    0.210524,
+    0.201592,
+    0.192753,
+    0.184011,
+    0.175372,
+    0.166838,
+    0.158416,
+    0.150108,
+    0.141919,
+    0.133863,
+    0.12593,
+    0.118132,
+    0.110473,
+    0.102958,
+    0.095592,
+    0.08838,
+    0.081327,
+    0.074438,
+    0.067719,
+    0.061173,
+    0.054805,
+    0.048627,
+    0.042635,
+    0.03683,
+    0.031245,
+    0.025871,
+    0.020665,
+    0.015695,
+    0.010992,
+    0.006375,
+    0.002088
+   ],
+   "side_sign": [
+    1.0,
+    -1.0
+   ]
+  },
+  "damp_hz": null
+ },
+ "resampler": {
+  "half_mult": 100
+ },
+ "chain": "ax30g-chain.json",
+ "notes": [
+  "2026-09-14: eight captures (capture/grids/smod-m1.json), channel-swapped in place after a cable swap. R LFO = -L (rms 0.28 ms of 13.16 ms, best shift 0.00 ms). Delay: 39 samples per displayed ms with NO offset -- the bench app's 100.15 ms for the Depth-0 capture is measured from the reference click (no dry click at Bal 50) and includes the unit's 0.255 ms latency: 99.9 ms = 3901 samples. (offset_samples 12 had been assumed from that reading; a Bal-50 null cannot tell, its lag fit absorbs any constant.) Speed/depth as MODD (app reads 0.996 Hz, 3.30/6.66 ms at Depth 25/50; trajectory at Speed 5 Depth 25: 0.059 samples rms over the 2.9 s tone). No High Damp on the unit.",
+  "2026-09-14 17:50: sample_rate 39057.3 -> 39057.15 (effective 2520/3097 of 48 kHz = 39057.152), from a null scan of the SDLY Bal-25/Fb-0 capture: the dry/wet relative timing is the only thing a mixed-balance capture can pin down, and the optimum is a plateau 39057.14-39057.16 (sine20 null -47 dB against -36 at 39057.3, sweep -37.3 against -33.4). Null-test value only; the plugin runs at 39062.5.",
+  "2026-09-14 18:40: blocks.delay_line.interp 'linear' (as MODD) -- trajectory at Speed 5 / Depth 25: 0.039 samples rms against 0.059 with the rounded read. dsp/ax30g_smod.h switched to the interpolated read in the same change (readFrac, like ModDelay).",
+  "2026-09-16: high-feedback tail captures (Etherbunny range). Feedback map: Fb 46 -> 0.9194 and Fb 50 -> 0.9994. Fb 46 is the Depth-0 static capture fitted only where the tail is more than 50 dB above the noise floor (L 0.91944 +- 0.00001, R 0.91928; loosening the gate to 20 dB walks the answer up to 0.9199 because unsubtracted floor flattens the late decay -- gate the SNR, do not trust a long fit); an independent null scan of the whole tail peaks at 0.91944. Fb 50 is 0.99936 +- 0.0002, from the Depth-13 capture with the Depth-13 modulation loss (M = 0.9978 per pass, measured at Fb 46 on the same segment and range) divided out. The old map interpolated 40->0.8, 50->0.993 and gave 0.9158 at 46 -- 2.2 dB per 60 repeats too fast. NOTE the law: fb = Fb x 0.019987 fits BOTH new points to 0.00005 (0.919402 and 0.99936), i.e. the map is linear in Fb as always but tops out at 0.9994, not 1.0. The 10/25/40 points are left at 0.2/0.5/0.8 because that law puts them at 0.19987/0.49968/0.79949, differences of 0.0005 that their own 2026-09-14 captures could not resolve.",
+  "2026-09-16: NO fixed high damp in the loop. On the Depth-0 static capture the per-pass magnitude is flat from 500 Hz to 19 kHz within 0.03 dB (8k -0.701, 10k -0.703, 12k -0.696, 14k -0.702, 16k -0.699, 18k -0.696 dB/pass against -0.719 at 1 kHz); a one-pole at the app's quick-readout 12,895 Hz would cost -2.15 dB/pass at 18 kHz. blocks.damp_hz is explicitly null: do not add one. The HF loss the app fitted is the MODULATION (Depth 13 shows -1.54 dB/pass at 8 kHz at the same Fb 46 where Depth 0 shows -0.70), i.e. the interpolated read, which the engine's linear interp already produces.",
+  "2026-09-16: no level dependence and no saturation. Per-pass gain 0.9194-0.9209 over a 58 dB span of loop level (-26 to -84 dBFS at the output) with fit residuals of 0.001-0.02 dB/repeat; the loudest sample in any of the three captures is -12.84 dBFS, so the render_smod clip at +-1 never engages, and the 1 kHz tail at Fb 50 carries H2 -71.6 dBc / H3 -69.3 dBc at its loudest. The loop adds no measurable noise: after the Fb-46 tail dies the capture reads -90.9 dBFS against -90.7 dBFS in its own silence. That bounds the store at >= 14 bits; it cannot tell 16 from 18, so storage.bits stays 16.",
+  "2026-09-16: sample_rate 39057.15 -> 39055.79 (SUPERSEDED minutes later, see below). The Depth-0 Fb-46 tail capture measures the loop period at Dly 250 directly -- 249.642854 ms, repeat 1 against repeats 6/11/21/31, spread 4 ns, both channels -- and 9750/39055.79 is exactly that. The old rate was 0.31 device samples per repeat short, which over 112 repeats drifts 0.9 ms and holds the whole-tail null at -9.6 dB against -42.7 at the measured period. Like the 39057.15 it replaces this is a NULL-TEST constant, not a device clock: the unit is scope-confirmed at 39062.5 Hz and the plugin runs there. Only the product D/sample_rate is constrained by this capture -- 39063.81 with D=round(ms*39)+2 nulls at -40.6 dB, within 2 dB. See docs/smod-feedback-2026-09-16.md section 5a for the cross-evidence that the device law is D = round(ms*39)+2 at 39062.5 with the capture interface running 33.4 ppm slow.",
+  "2026-09-16 (reconciliation, same evening): sample_rate 39055.79 -> 39063.829787 (effective 153/188 of 48 kHz), maps.delay gained offset_samples: 2, adopting the SDLY/MODD/CHO clock (docs/sdly-clock-2026-09-16.md, 'Adopted 2026-09-16') in place of this file's own 9750-sample/no-offset fit. The two are the same law at two different measured rates: this capture's 249.642854 ms loop period is 9750 samples at 39055.79 Hz with NO offset, or 9752 samples (= round(250*39)+2) at 39063.83 Hz -- a 33 ppm rate difference the note above already flagged (39063.81 nulled the tail at -40.6 dB, 2 dB off the fitted rate's -42.7). Re-verified on the tail capture at the shared rate (tests/null_test.py, --signal capture/signalset-tail.wav --layout capture/layout-tail.json --eq out/null/chain-loop.npy --align-segment sine20): overall null -41.3/-41.2 dB L/R -- 1.4-1.5 dB short of the fitted-rate figure above (-42.7) and closer to the flagged 39063.81 test point (-40.6) than to the fitted 39055.79's own number, consistent with this rate being a shared-clock compromise across four models rather than this capture's own optimum. Not a regression from where this file stood minutes earlier (39055.79/no-offset was not independently re-verified here before being superseded) but recorded as the honest number rather than the assumed -43.8. SMOD Depth-0 normal-set capture unaffected (-32.9/-32.9 dB overall, identical to before this edit, insensitive to delay length by design -- see docs/sdly-clock-2026-09-16.md 'Other checks'). The 2026-09-16 feedback map (Fb 46/50 points) and the no-fixed-high-damp finding above are UNCHANGED by this edit."
+ ]
+}

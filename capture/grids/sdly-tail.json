@@ -1,0 +1,4 @@
+[
+ {"effect": "SDLY", "input": "LIN", "_note": "run on the tail set (make signals-tail): high-feedback SDLY, matched to smod-etherbunny.json's Fb steps", "params": {"L Dly": 250, "R Dly": 250, "L Fb": 46, "R Fb": 46, "High Damp": 0, "L Bal": 25, "R Bal": 25}},
+ {"effect": "SDLY", "input": "LIN", "params": {"L Dly": 250, "R Dly": 250, "L Fb": 50, "R Fb": 50, "High Damp": 0, "L Bal": 25, "R Bal": 25}}
+]

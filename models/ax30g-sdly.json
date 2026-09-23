@@ -1,0 +1,186 @@
+{
+ "name": "AX30G Stereo Delay, measured 2026-09-13; converter chain 2026-09-14",
+ "effect": "SDLY",
+ "sample_rate": 39063.829787,
+ "params": {
+  "L Dly": 300,
+  "R Dly": 300,
+  "L Fb": 25,
+  "R Fb": 25,
+  "High Damp": 0,
+  "L Bal": 25,
+  "R Bal": 25
+ },
+ "maps": {
+  "delay": {
+   "type": "samples_per_ms",
+   "k": 39,
+   "offset_samples": 2
+  },
+  "feedback": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     0.0
+    ],
+    [
+     10,
+     0.2
+    ],
+    [
+     25,
+     0.5
+    ],
+    [
+     40,
+     0.8
+    ],
+    [
+     50,
+     0.993
+    ]
+   ]
+  },
+  "high_damp": {
+   "type": "pole_linear",
+   "k": 0.0195,
+   "max_pole": 0.975
+  },
+  "balance": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     0.0
+    ],
+    [
+     5,
+     0.092
+    ],
+    [
+     10,
+     0.184
+    ],
+    [
+     15,
+     0.275
+    ],
+    [
+     20,
+     0.476
+    ],
+    [
+     25,
+     0.705
+    ],
+    [
+     30,
+     0.792
+    ],
+    [
+     35,
+     0.844
+    ],
+    [
+     40,
+     0.896
+    ],
+    [
+     45,
+     0.948
+    ],
+    [
+     50,
+     1.0
+    ]
+   ]
+  },
+  "dry": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     1.0
+    ],
+    [
+     5,
+     0.963
+    ],
+    [
+     10,
+     0.925
+    ],
+    [
+     15,
+     0.888
+    ],
+    [
+     20,
+     0.828
+    ],
+    [
+     25,
+     0.763
+    ],
+    [
+     30,
+     0.625
+    ],
+    [
+     35,
+     0.469
+    ],
+    [
+     40,
+     0.312
+    ],
+    [
+     45,
+     0.157
+    ],
+    [
+     50,
+     0.0
+    ]
+   ]
+  }
+ },
+ "blocks": {
+  "delay_line": {
+   "max_ms": 1000,
+   "storage": {
+    "bits": 16,
+    "compand": "linear",
+    "rate_div": 1
+   },
+   "wet_offset_samples": 0,
+   "input_hpf_hz": null
+  },
+  "damp": {
+   "position": "input"
+  },
+  "feedback_gain": {
+   "wordlength": 16,
+   "rounding": "truncate",
+   "overflow": "saturate"
+  }
+ },
+ "notes": [
+  "delay: exactly 39 samples per displayed ms, dry-to-repeat (the earlier +12-sample offset was the unit's 0.27 ms latency, misread)",
+  "feedback: n/50, 50 ~ 0.993 (tail decays over minutes)",
+  "high damp: one-pole on the line input, pole ~ 0.0195 n (10: 0.193, 25: 0.496, 40: 0.782, 50: ~0.96)",
+  "storage: full-rate linear, no measurable noise",
+  "sample_rate 39057.3 = the device clock as seen by the Scarlett (11700 samples span 299.56 ms in the captures; 134 ppm below nominal, either crystal's). Use 39062.5 in the plugin; this value is for null tests against these captures.",
+  "balance: measured 11-point tables (one-session series 2026-09-13 13:10-13:33), wet and dry, at 0/5/10/15/20/25/30/35/40/45/50",
+  "chain: models/ax30g-chain.json (unit converters: 3x 5.49 Hz HPF + measured HF response as a 7 ms FIR at the I/O rate), applied after the output resampler. resampler.half_mult 100 keeps the model's own resampling flat to 19 kHz so the measured chain is not counted twice. Null tests now take --eq out/null/chain-loop.npy (the Scarlett loopback only). See docs/chain-fit-2026-09-14.md.",
+  "2026-09-14 17:50: sample_rate 39057.3 -> 39057.15 (effective 2520/3097 of 48 kHz = 39057.152), from a null scan of the SDLY Bal-25/Fb-0 capture: the dry/wet relative timing is the only thing a mixed-balance capture can pin down, and the optimum is a plateau 39057.14-39057.16 (sine20 null -47 dB against -36 at 39057.3, sweep -37.3 against -33.4). Null-test value only; the plugin runs at 39062.5.",
+  "2026-09-16: sample_rate 39057.15 -> 39063.829787 (effective 153/188 of 48 kHz = 39063.8298), maps.delay gained offset_samples: 2. Fine sample-rate scan (39063.5-39065.5 Hz, then 39063.65-39064.15 in 0.05 Hz steps) at the round(ms*39)+2 delay law against all four SDLY captures used in the 09-16 clock note (20/300/300-Fb25/500 ms, Bal 25) found a shared bowl-shaped peak at the effective rate 39063.8298 Hz -- every capture within ~1 dB of its own individual best there. Confirmed against every SDLY capture the 2026-09-14 scan checked (Bal 0/10/25/50, Fb 25, 20 ms, 500 ms) all >= previous-best within 1 dB (20 ms -7.9->-31.9, 300 Fb0 -32.9->-32.3, 300 Fb25 -31.9->-32.0, 500 ms -10.7->-35.1 dB overall). Offset re-confirmed at this rate: 1 and 3 both collapse to about -11/-13 dB on the 20 and 500 ms captures against +2's -31.9/-35.1. CHO (939-sample constant delay, unaffected by the samples_per_ms law) and MODD trajectory (Speed 1/Depth 25, Speed 5/Depth 50) checked not worse at the new rate -- see docs/sdly-clock-2026-09-16.md, 'Adopted 2026-09-16' section, for the full table. Supersedes the 09-14 39057.15 entry above.",
+  "2026-09-18: ducking = models/ax30g-ducking.json, the measured Ducking parameter (docs/ducking-model-2026-09-18.md). It is a gain on the WET OUTPUT driven by the input envelope and is applied by engine/ducking.py via render_spec's dispatch. params has no 'Ducking' key, so it defaults to 0, and at 0 the render is bit-identical to what it was before this line existed (verified over the whole signal set, max abs difference 0.0); a capture's own value comes from its file name."
+ ],
+ "resampler": {
+  "half_mult": 100
+ },
+ "chain": "ax30g-chain.json",
+ "ducking": "ax30g-ducking.json"
+}

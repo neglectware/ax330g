@@ -1,0 +1,4 @@
+[
+  {"effect": "CHO", "input": "LIN", "params": {"Speed": 1.0, "Depth": 25}},
+  {"effect": "CHO", "input": "LIN", "params": {"Speed": 5.0, "Depth": 50}}
+]

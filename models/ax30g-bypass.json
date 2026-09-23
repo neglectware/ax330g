@@ -1,0 +1,176 @@
+{
+ "name": "AX30G bypass (converters only): SDLY with everything at 0",
+ "effect": "SDLY",
+ "sample_rate": 39057.15,
+ "params": {
+  "L Dly": 300,
+  "R Dly": 300,
+  "L Fb": 0,
+  "R Fb": 0,
+  "High Damp": 0,
+  "L Bal": 0,
+  "R Bal": 0
+ },
+ "maps": {
+  "delay": {
+   "type": "samples_per_ms",
+   "k": 39
+  },
+  "feedback": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     0.0
+    ],
+    [
+     10,
+     0.2
+    ],
+    [
+     25,
+     0.5
+    ],
+    [
+     40,
+     0.8
+    ],
+    [
+     50,
+     0.993
+    ]
+   ]
+  },
+  "high_damp": {
+   "type": "pole_linear",
+   "k": 0.0195,
+   "max_pole": 0.975
+  },
+  "balance": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     0.0
+    ],
+    [
+     5,
+     0.092
+    ],
+    [
+     10,
+     0.184
+    ],
+    [
+     15,
+     0.275
+    ],
+    [
+     20,
+     0.476
+    ],
+    [
+     25,
+     0.705
+    ],
+    [
+     30,
+     0.792
+    ],
+    [
+     35,
+     0.844
+    ],
+    [
+     40,
+     0.896
+    ],
+    [
+     45,
+     0.948
+    ],
+    [
+     50,
+     1.0
+    ]
+   ]
+  },
+  "dry": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     1.0
+    ],
+    [
+     5,
+     0.963
+    ],
+    [
+     10,
+     0.925
+    ],
+    [
+     15,
+     0.888
+    ],
+    [
+     20,
+     0.828
+    ],
+    [
+     25,
+     0.763
+    ],
+    [
+     30,
+     0.625
+    ],
+    [
+     35,
+     0.469
+    ],
+    [
+     40,
+     0.312
+    ],
+    [
+     45,
+     0.157
+    ],
+    [
+     50,
+     0.0
+    ]
+   ]
+  }
+ },
+ "blocks": {
+  "delay_line": {
+   "max_ms": 1000,
+   "storage": {
+    "bits": 16,
+    "compand": "linear",
+    "rate_div": 1
+   },
+   "wet_offset_samples": 0,
+   "input_hpf_hz": null
+  },
+  "damp": {
+   "position": "input"
+  },
+  "feedback_gain": {
+   "wordlength": 16,
+   "rounding": "truncate",
+   "overflow": "saturate"
+  }
+ },
+ "notes": [
+  "For null tests of the BYPASS captures through tests/null_test.py: the SDLY renderer with Bal 0 / Fb 0 is a pass-through, so only the resampler and the chain act.",
+  "2026-09-14 17:50: sample_rate 39057.3 -> 39057.15 (effective 2520/3097 of 48 kHz = 39057.152), from a null scan of the SDLY Bal-25/Fb-0 capture: the dry/wet relative timing is the only thing a mixed-balance capture can pin down, and the optimum is a plateau 39057.14-39057.16 (sine20 null -47 dB against -36 at 39057.3, sweep -37.3 against -33.4). Null-test value only; the plugin runs at 39062.5."
+ ],
+ "resampler": {
+  "half_mult": 100
+ },
+ "chain": "ax30g-chain.json"
+}

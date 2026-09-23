@@ -1,0 +1,56 @@
+{
+ "fs": 48000,
+ "duration": 125.0,
+ "segments": [
+  {
+   "name": "silence",
+   "start": 0.0,
+   "end": 2.0
+  },
+  {
+   "name": "clicks",
+   "start": 2.0,
+   "end": 30.0,
+   "click_times": [
+    2.0
+   ],
+   "click_amp": 0.158,
+   "tail_s": 28.0
+  },
+  {
+   "name": "bursts",
+   "start": 31.5,
+   "end": 59.5,
+   "burst_times": [
+    31.5
+   ],
+   "hz": 1000,
+   "dbfs": -20,
+   "len_s": 0.06,
+   "tail_s": 28.0
+  },
+  {
+   "name": "burst_hot",
+   "start": 61.0,
+   "end": 89.0,
+   "burst_times": [
+    61.0
+   ],
+   "hz": 1000,
+   "dbfs": -6,
+   "len_s": 0.06,
+   "tail_s": 28.0,
+   "note": "same level/shape as bursts but -6 dBFS, to exercise 16-bit truncation and any in-loop saturation"
+  },
+  {
+   "name": "sine20",
+   "start": 90.5,
+   "end": 122.5,
+   "hz": 1000,
+   "dbfs": -20,
+   "tone_s": 4.0,
+   "tail_s": 28.0
+  }
+ ],
+ "variant": "tail"
+}

@@ -1,0 +1,106 @@
+[
+ {
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 0,
+   "R Fb": 0,
+   "High Damp": 0,
+   "L Bal": 0,
+   "R Bal": 0
+  }
+ },
+ {
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 0,
+   "R Fb": 0,
+   "High Damp": 0,
+   "L Bal": 5,
+   "R Bal": 5
+  }
+ },
+ {
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 0,
+   "R Fb": 0,
+   "High Damp": 0,
+   "L Bal": 10,
+   "R Bal": 10
+  }
+ },
+ {
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 0,
+   "R Fb": 0,
+   "High Damp": 0,
+   "L Bal": 15,
+   "R Bal": 15
+  }
+ },
+ {
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 0,
+   "R Fb": 0,
+   "High Damp": 0,
+   "L Bal": 25,
+   "R Bal": 25
+  }
+ },
+ {
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 0,
+   "R Fb": 0,
+   "High Damp": 0,
+   "L Bal": 35,
+   "R Bal": 35
+  }
+ },
+ {
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 0,
+   "R Fb": 0,
+   "High Damp": 0,
+   "L Bal": 40,
+   "R Bal": 40
+  }
+ },
+ {
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 0,
+   "R Fb": 0,
+   "High Damp": 0,
+   "L Bal": 50,
+   "R Bal": 50
+  }
+ }
+]

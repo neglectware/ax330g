@@ -1,0 +1,234 @@
+[
+ {
+  "_note": "3BEQ grid 4 (2026-09-23). (1) The eight Mid Freq steps never captured at a real gain -- 315, 400, 630, 800, 1250, 1600, 2500, 3150 Hz -- at Mid Gain +12 and -12: the model's centre-frequency/Q law was fitted on 250/500/1000/2000/4000 only, and the low steps carry an unexplained LF droop (docs/3beq-model-2026-09-17.md section 6), so 315 and 400 matter most. (2) Where the unit clips: Bass +16 with Mid 250 -16 at Input MAX overloads the bass band while the mid cut pulls the output back (section 5.4); Bass +16 alone at MAX is its comparison. Normal signal set, all other blocks off. Flat LIN first and after the LIN rows (drift check; the repeat saves as _take2). MAX rows LAST: calibrate once, then turn the input pot fully up.",
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 315,
+   "Mid Gain": 12,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 315,
+   "Mid Gain": -12,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 400,
+   "Mid Gain": 12,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 400,
+   "Mid Gain": -12,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 630,
+   "Mid Gain": 12,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 630,
+   "Mid Gain": -12,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 800,
+   "Mid Gain": 12,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 800,
+   "Mid Gain": -12,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1250,
+   "Mid Gain": 12,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1250,
+   "Mid Gain": -12,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1600,
+   "Mid Gain": 12,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1600,
+   "Mid Gain": -12,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 2500,
+   "Mid Gain": 12,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 2500,
+   "Mid Gain": -12,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 3150,
+   "Mid Gain": 12,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 3150,
+   "Mid Gain": -12,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "MAX",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "MAX",
+  "params": {
+   "Bass": 16,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "MAX",
+  "params": {
+   "Bass": 16,
+   "Mid Freq": 250,
+   "Mid Gain": -16,
+   "Treble": 0,
+   "Trim": 0
+  }
+ }
+]

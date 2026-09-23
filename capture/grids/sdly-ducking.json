@@ -1,0 +1,102 @@
+[
+ {
+  "_note": "SDLY Ducking, differential grid (handoff 'Delays' section): the base model is SDLY 300/300 ms, Fb 25/25, High Damp 0, Bal 25/25 at Ducking 0 (sdly-m1.json row 4; recapture it here first so the pair is from one session). Normal signal set, LIN. Analysis: wet level under the 4 s sine20 vs the Ducking-0 capture -> depth at -20 dBFS; wet under sine40 -> threshold/sensitivity law (does -40 dBFS duck at all?); wet drop at the sine onset while repeats from the preceding clicks are still in flight -> attack; wet recovery in the tail after the sine stops -> release; the ramp -> depth vs input level curve. Ducking applies to SDLY/XDLY/TDLY/HDLY only (chain-rules doc s4).",
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 25,
+   "R Fb": 25,
+   "High Damp": 0,
+   "L Bal": 25,
+   "R Bal": 25,
+   "Ducking": 0
+  }
+ },
+ {
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 25,
+   "R Fb": 25,
+   "High Damp": 0,
+   "L Bal": 25,
+   "R Bal": 25,
+   "Ducking": 10
+  }
+ },
+ {
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 25,
+   "R Fb": 25,
+   "High Damp": 0,
+   "L Bal": 25,
+   "R Bal": 25,
+   "Ducking": 25
+  }
+ },
+ {
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 25,
+   "R Fb": 25,
+   "High Damp": 0,
+   "L Bal": 25,
+   "R Bal": 25,
+   "Ducking": 40
+  }
+ },
+ {
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 25,
+   "R Fb": 25,
+   "High Damp": 0,
+   "L Bal": 25,
+   "R Bal": 25,
+   "Ducking": 50
+  }
+ },
+ {
+  "_note": "Ducking 50 with feedback high enough that the tail outlasts the 4 s tone: does the ducker act on the wet output (whole tail dips) or on the write into the loop (only new repeats are quieter)?",
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 40,
+   "R Fb": 40,
+   "High Damp": 0,
+   "L Bal": 25,
+   "R Bal": 25,
+   "Ducking": 50
+  }
+ },
+ {
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 40,
+   "R Fb": 40,
+   "High Damp": 0,
+   "L Bal": 25,
+   "R Bal": 25,
+   "Ducking": 0
+  }
+ }
+]

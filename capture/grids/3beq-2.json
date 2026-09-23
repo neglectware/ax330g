@@ -1,0 +1,314 @@
+[
+ {
+  "_note": "3BEQ follow-up grid (after the 2026-09-17 first pass, docs/3beq-response-2026-09-17.md). Normal signal set, LIN, all other blocks off. Recapture the flat reference first. Purpose: (1) the gain laws -- the first pass showed the shelf corner and the mid Q both move with gain (Bass +-16 -> 200 Hz Q 0.45, +-8 -> 127 Hz Q 0.49; Mid +16 -> Q 0.38, +8 -> Q 0.62, -16 -> Q 1.1), so each band needs the intermediate gains to pin the law; (2) the headroom -- Treble +16 clipped the -20 dBFS sweep above ~8 kHz (sweep flat at +13.3 dB while the -30 dBFS noise reached +16), and the all-boost row clipped everywhere. The Trim rows here place Trim before or after the bands: if Treble +16 / Trim -9 is linear again, Trim is pre-EQ.",
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": -12,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": -4,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": -2,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 2,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 4,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 12,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": -12,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": -4,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": -2,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": 2,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": 4,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": 12,
+   "Trim": 0
+  }
+ },
+ {
+  "_note": "Mid gain law at 1 kHz, both signs, intermediate gains (+-16 and +8 exist).",
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": -12,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": -8,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": -4,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": -2,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": 2,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": 4,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": 12,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "_note": "Is the mid law frequency-independent: +8 and -8 at 500 and 2000 Hz (compare Q with the 1 kHz values).",
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 500,
+   "Mid Gain": -8,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 500,
+   "Mid Gain": 8,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 2000,
+   "Mid Gain": -8,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 2000,
+   "Mid Gain": 8,
+   "Treble": 0,
+   "Trim": 0
+  }
+ },
+ {
+  "_note": "Headroom / Trim placement. Treble +16 with Trim -9 and -18: linear again -> Trim is pre-EQ and the clip is in the band stage; still clipped -> Trim is post-EQ. Treble +12 alone: where the clip starts at -20 dBFS. All-boost with Trim -18: the same question for the whole block.",
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": 16,
+   "Trim": -9
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": 16,
+   "Trim": -18
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 0,
+   "Mid Freq": 1000,
+   "Mid Gain": 0,
+   "Treble": 12,
+   "Trim": 0
+  }
+ },
+ {
+  "effect": "3BEQ",
+  "input": "LIN",
+  "params": {
+   "Bass": 16,
+   "Mid Freq": 1000,
+   "Mid Gain": 16,
+   "Treble": 16,
+   "Trim": -18
+  }
+ }
+]

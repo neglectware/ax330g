@@ -1,0 +1,9 @@
+[
+  {"effect": "SDLY", "input": "LIN", "params": {"L Dly": 300, "R Dly": 300, "L Fb": 10, "R Fb": 10, "High Damp": 0, "L Bal": 25, "R Bal": 25}},
+  {"effect": "SDLY", "input": "LIN", "params": {"L Dly": 300, "R Dly": 300, "L Fb": 40, "R Fb": 40, "High Damp": 0, "L Bal": 25, "R Bal": 25}},
+  {"effect": "SDLY", "input": "LIN", "params": {"L Dly": 300, "R Dly": 300, "L Fb": 25, "R Fb": 25, "High Damp": 10, "L Bal": 25, "R Bal": 25}},
+  {"effect": "SDLY", "input": "LIN", "params": {"L Dly": 300, "R Dly": 300, "L Fb": 25, "R Fb": 25, "High Damp": 40, "L Bal": 25, "R Bal": 25}},
+  {"effect": "SDLY", "input": "LIN", "params": {"L Dly": 300, "R Dly": 300, "L Fb": 25, "R Fb": 25, "High Damp": 50, "L Bal": 25, "R Bal": 25}},
+  {"effect": "SDLY", "input": "LIN", "params": {"L Dly": 300, "R Dly": 300, "L Fb": 0,  "R Fb": 0,  "High Damp": 0, "L Bal": 50, "R Bal": 50}},
+  {"effect": "SDLY", "input": "LIN", "params": {"L Dly": 300, "R Dly": 300, "L Fb": 0,  "R Fb": 0,  "High Damp": 0, "L Bal": 10, "R Bal": 10}}
+]

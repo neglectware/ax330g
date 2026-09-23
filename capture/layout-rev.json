@@ -1,0 +1,44 @@
+{
+ "fs": 48000,
+ "duration": 95.5,
+ "segments": [
+  {
+   "name": "silence",
+   "start": 0.0,
+   "end": 2.0
+  },
+  {
+   "name": "clicks",
+   "start": 2.0,
+   "end": 30.0,
+   "click_times": [
+    2.0
+   ],
+   "click_amp": 0.5011872336272722,
+   "tail_s": 28.0
+  },
+  {
+   "name": "sweep",
+   "start": 31.5,
+   "end": 64.5,
+   "f0": 20,
+   "f1": 19000,
+   "dbfs": -6,
+   "sweep_s": 5.0,
+   "tail_s": 28.0
+  },
+  {
+   "name": "burst_hot",
+   "start": 66.0,
+   "end": 94.0,
+   "burst_times": [
+    66.0
+   ],
+   "hz": 1000,
+   "dbfs": -6,
+   "len_s": 0.06,
+   "tail_s": 28.0
+  }
+ ],
+ "variant": "rev"
+}

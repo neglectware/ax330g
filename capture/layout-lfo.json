@@ -1,0 +1,45 @@
+{
+ "fs": 48000,
+ "duration": 52.7,
+ "segments": [
+  {
+   "name": "silence",
+   "start": 0.0,
+   "end": 2.0
+  },
+  {
+   "name": "clicks",
+   "start": 2.0,
+   "end": 10.6,
+   "click_times": [
+    2.0,
+    4.0,
+    6.3,
+    9.0
+   ],
+   "click_amp": 0.158
+  },
+  {
+   "name": "sine20",
+   "start": 11.6,
+   "end": 41.6,
+   "hz": 1000,
+   "dbfs": -20
+  },
+  {
+   "name": "bursts",
+   "start": 43.1,
+   "end": 51.7,
+   "burst_times": [
+    43.1,
+    45.1,
+    47.4,
+    50.1
+   ],
+   "hz": 1000,
+   "dbfs": -20,
+   "len_s": 0.06
+  }
+ ],
+ "variant": "lfo"
+}

@@ -1,0 +1,175 @@
+{
+ "name": "AX30G delay Ducking, measured 2026-09-18 from capture/grids/sdly-ducking.json",
+ "applies_to": [
+  "SDLY",
+  "XDLY",
+  "TDLY",
+  "HDLY"
+ ],
+ "position": "wet_output",
+ "detector": {
+  "input": "effect_input_mono",
+  "rectifier": "abs",
+  "attack_ms": 52.0,
+  "release_ms": 52.0,
+  "prefilter": {
+   "comment": "detector frequency weighting, unity at 1 kHz. This is the sweep-derived curve DIVIDED BY the intrinsic frequency response of the peak+smoother follower (which by itself spans 2.4 dB); two cascaded first-order shelves fit the remainder to 0.09 dB rms, 0.30 dB max, 40 Hz - 12 kHz.",
+   "rate": 39063.829787,
+   "b": [
+    1.0749859816,
+    -2.0328469525,
+    0.9589679413
+   ],
+   "a": [
+    1.0,
+    -1.855669117,
+    0.858168122
+   ],
+   "zeros": [
+    0.901499,
+    0.989546
+   ],
+   "poles": [
+    0.875788,
+    0.979881
+   ],
+   "measured_db": [
+    [
+     40,
+     -8.51
+    ],
+    [
+     50,
+     -7.77
+    ],
+    [
+     62,
+     -6.93
+    ],
+    [
+     78,
+     -6.07
+    ],
+    [
+     97,
+     -5.41
+    ],
+    [
+     121,
+     -4.58
+    ],
+    [
+     152,
+     -3.85
+    ],
+    [
+     189,
+     -3.24
+    ],
+    [
+     237,
+     -2.57
+    ],
+    [
+     295,
+     -2.05
+    ],
+    [
+     369,
+     -1.6
+    ],
+    [
+     461,
+     -1.19
+    ],
+    [
+     575,
+     -0.78
+    ],
+    [
+     718,
+     -0.42
+    ],
+    [
+     897,
+     -0.13
+    ],
+    [
+     1002,
+     0.0
+    ],
+    [
+     1252,
+     0.25
+    ],
+    [
+     1563,
+     0.46
+    ],
+    [
+     1952,
+     0.64
+    ],
+    [
+     2438,
+     0.8
+    ],
+    [
+     3044,
+     0.92
+    ],
+    [
+     3801,
+     0.97
+    ],
+    [
+     4747,
+     0.97
+    ],
+    [
+     5927,
+     0.9
+    ],
+    [
+     7402,
+     0.84
+    ],
+    [
+     9243,
+     0.76
+    ],
+    [
+     11543,
+     0.68
+    ]
+   ]
+  },
+  "peak": {
+   "attack_ms": 0.02,
+   "release_ms": 1.68
+  }
+ },
+ "maps": {
+  "ducking": {
+   "type": "identity"
+  }
+ },
+ "gain": {
+  "type": "linear_subtract",
+  "k": 0.25184,
+  "min_gain": 0.0,
+  "max_gain": 1.0
+ },
+ "notes": [
+  "position: a gain on the WET OUTPUT only -- after the delay-line read and the Balance wet gain, outside the feedback loop. The line, its feedback and the dry path are untouched. Evidence in docs/ducking-model-2026-09-18.md sections 3-4.",
+  "detector: the effect's own input (mono; the unit has one Guitar In), through the prefilter below, full-wave rectified, then a fast peak follower and a slow one-pole smoother (see the 'peak stage' note). Driven by the INPUT, not the output: the release trajectory measured at Feedback 25 and Feedback 40 is the same curve to 1 %, although the wet path carries far more signal for far longer at Feedback 40.",
+  "law: g = clip(1 - k * Ducking * env, 0, 1). No threshold, no knee: (1-g)/Ducking is one curve for Ducking 10/25/40/50 over the ramp's -36 to -8 dBFS, constant to 0.3 %.",
+  "k is per unit of the panel's Ducking value per unit of envelope, with the envelope in the same full-scale units the engine's device-rate signal uses (input stage off, host 0 dBFS = device 0 dBFS). 0.25184 is the constant implied by the 1 kHz steady-tone measurement ((1-g)/Ducking = 0.023766 at a peak amplitude of 0.0994, model env/A = 0.94938). Scanning k by null prefers 0.2563, worth 0.05 dB of mean overall null, but that makes the 1 kHz segment erratic; the measured constant is what is carried.",
+  "min_gain 0.0: the windowed fit over the sweep gives g = 0.0000 +- 0.0002 at Ducking 50 from 440 Hz upward, so the floor is a hard zero. The 46-52 dB of wet left under the 1 kHz tone at Ducking 50 is the dry-subtraction error of the demodulation method, not the unit.",
+  "attack_ms / release_ms are the SLOW stage. The release is a clean single exponential, tau 52.1 ms +- 0.9 (nine independent 20 ms windows over two decades of the Feedback-40 tail); the null test picks 52 ms sharply (48/50/52/54/56 -> -26.1/-28.8/-31.3/-30.8/-28.2 dB mean). The slow attack is 45-55 ms: the ramp's lag gives 47 ms, the null is flat from 44 to 52 and falls away above 60, and the 60 ms burst's charge would want 83 ms but that reading is a 245 ms back-extrapolation that a 5 % change in the release constant reconciles. Equal attack and release is the simplest law consistent with all of it.",
+  "Ducking 0 is exactly no ducking (bit-identical to the plain SDLY render).",
+  "detector prefilter: the depth is set by the INPUT's frequency, not the wet's -- proved by a window at the start of the sweep where the input is a 25 Hz sweep tone and the wet still carries the 1 kHz tail of the preceding ramp: that 1 kHz wet is ducked by the 25 Hz amount (0.37 of the 1 kHz depth), not the 1 kHz amount. The whole measured weighting is -8.51 dB at 40 Hz, -5.41 at 97, -1.39 at 412, 0 at 1002, +0.97 at 3801 and +0.68 at 11543 Hz; 2.2 dB of that is the peak stage's own doing and the rest is this biquad, two cascaded first-order shelves (corners 65/126 Hz and 645/825 Hz) fitted to 0.092 dB rms / 0.303 dB max over 40 Hz - 12 kHz. What produces that shape in the unit is NOT established. Coefficients fitted at 39063.83 Hz; at 39062.5 the corners move by 34 ppm.",
+  "peak stage: a fast peak follower (attack 0.02 ms, release 1.68 ms) ahead of the 52 ms smoother. Needed because one rectifier-and-pole cannot fit everything at once: the ramp wants a slow attack, the -30 dBFS white noise a fast one and the guitar DI something between. Against a plain mean-absolute detector the real ducker is 1.62x deeper on the noise and 1.34x deeper on the DI while sines and the sweep are 1.00x. With the peak stage in front, |x| and x^2 fit the measured gain within 0.003, so the rectifier itself is under-determined and the model carries the simpler |x|. Release 1.68 ms by null, 1.5 ms by the gain-trace fit; the attack is not resolved below one device sample.",
+  "null test (tests/ducking_null.py, docs/ducking-model-2026-09-18.md section 7): overall -31.7 / -31.1 / -31.1 / -31.8 dB at Ducking 10/25/40/50 with Feedback 25, and -30.9 dB at Feedback 40 Ducking 50, against a Ducking-0 baseline of -31.4 dB for the same SDLY model. Without the ducker the same captures null at -10.9 / -7.0 / -4.6 / -4.1 / -4.7 dB."
+ ]
+}

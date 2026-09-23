@@ -1,0 +1,20 @@
+{
+ "device": "korg-ax30g-sim",
+ "note": "Synthetic: the handoff's leading hypothesis for a 32 KB delay memory: 8-bit mu-law, written at half rate, hold on read, 16-bit truncating feedback multiply.",
+ "sample_rate": 39062.5,
+ "converters": {"bits": 18},
+ "effect": "SDLY",
+ "routing": "e",
+ "params": {"L Dly": 300, "R Dly": 300, "L Fb": 25, "R Fb": 25, "High Damp": 25, "L Bal": 25, "R Bal": 25},
+ "maps": {
+  "delay": {"type": "ms_to_samples", "quantize_ms": 1},
+  "feedback": {"type": "linear", "in_max": 50, "out_max": 0.9},
+  "high_damp": {"type": "log_hz", "in_max": 50, "hz_at_max": 1500},
+  "balance": {"type": "linear", "in_max": 50, "out_max": 1.0}
+ },
+ "blocks": {
+  "delay_line": {"max_ms": 500, "storage": {"bits": 8, "compand": "mu", "rate_div": 2, "prefilter": "none", "upsample": "hold"}, "interp": "none"},
+  "feedback_gain": {"wordlength": 16, "rounding": "truncate", "overflow": "saturate"},
+  "damp": {"type": "onepole_lp"}
+ }
+}

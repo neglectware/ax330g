@@ -1,0 +1,5 @@
+[
+ {"effect": "SMOD", "input": "LIN", "_note": "run on the tail set (make signals-tail): owner's Etherbunny reference patch, Fb 46 -> ~0.92/repeat, 20+ s decay", "params": {"Speed": 0.6, "Depth": 13, "L Dly": 250, "R Dly": 250, "L Fb": 46, "R Fb": 46, "L Bal": 25, "R Bal": 25}},
+ {"effect": "SMOD", "input": "LIN", "params": {"Speed": 0.6, "Depth": 13, "L Dly": 250, "R Dly": 250, "L Fb": 50, "R Fb": 50, "L Bal": 25, "R Bal": 25}},
+ {"effect": "SMOD", "input": "LIN", "params": {"Speed": 0.6, "Depth": 0,  "L Dly": 250, "R Dly": 250, "L Fb": 46, "R Fb": 46, "L Bal": 25, "R Bal": 25}}
+]

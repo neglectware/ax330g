@@ -1,0 +1,191 @@
+[
+ {
+  "_note": "Ducking follow-up (docs/ducking-model-2026-09-18.md, 'What is still open'). Normal signal set, LIN, Ambience slot only, one session. Row 1 is the all-wet reference the whole grid leans on: Balance 50 means there is NO dry path to subtract, so the wet gain g(t) is the capture divided by the Ducking-0 capture, with no model in the loop at all -- the 2026-09-18 pass had to estimate the dry, which is the largest systematic in the detector's frequency curve. Capture this at Ducking 0 FIRST, then rows 2-4.",
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 0,
+   "R Fb": 0,
+   "High Damp": 0,
+   "L Bal": 50,
+   "R Bal": 50,
+   "Ducking": 0
+  }
+ },
+ {
+  "_note": "Rows 2-4: the same all-wet, Feedback-0 setting at three Ducking values. Feedback 0 means the wet at time t is exactly one delayed copy of the input at t-300 ms, so g(t) is a clean pointwise ratio and the sweep gives the detector's frequency weighting with no ramp tail underneath it (the 09-18 curve below 250 Hz sat on top of the ramp's tail and had to be band-limited around the first repeat to be usable). This is the row that decides whether the 'prefilter' (-6.2 dB at 40 Hz, +0.8 at 4 kHz, fitted as two shelves to 0.09 dB rms) is the real shape.",
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 0,
+   "R Fb": 0,
+   "High Damp": 0,
+   "L Bal": 50,
+   "R Bal": 50,
+   "Ducking": 10
+  }
+ },
+ {
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 0,
+   "R Fb": 0,
+   "High Damp": 0,
+   "L Bal": 50,
+   "R Bal": 50,
+   "Ducking": 25
+  }
+ },
+ {
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 0,
+   "R Fb": 0,
+   "High Damp": 0,
+   "L Bal": 50,
+   "R Bal": 50,
+   "Ducking": 50
+  },
+  "_note": "Row 4 doubles as the mute-floor test. At Ducking 50 under the -20 dBFS sine the wet measured 46-52 dB below the Ducking-0 wet, which is where the dry-subtraction error sits, and the sweep put it at 0.0000 +- 0.0002 -- the model carries min_gain 0.0. All wet with Feedback 0 removes the dry entirely: if a floor is real it will show as a steady wet 40-60 dB down under the 4 s tone carrying the delay's own 300 ms structure, and if the gain really reaches zero there will be nothing there at all."
+ },
+ {
+  "_note": "Rows 5-8: the Ducking scale between the four settings already measured. 2026-09-18 established that (1-g) is proportional to the panel value at 10/25/40/50 to 0.3 %, but 5 and 20 and 30 and 45 have never been seen, and the maps.ducking entry is an identity on that evidence alone. Feedback 0 / Balance 50 again so the reading is a plain ratio.",
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 0,
+   "R Fb": 0,
+   "High Damp": 0,
+   "L Bal": 50,
+   "R Bal": 50,
+   "Ducking": 5
+  }
+ },
+ {
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 0,
+   "R Fb": 0,
+   "High Damp": 0,
+   "L Bal": 50,
+   "R Bal": 50,
+   "Ducking": 20
+  }
+ },
+ {
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 0,
+   "R Fb": 0,
+   "High Damp": 0,
+   "L Bal": 50,
+   "R Bal": 50,
+   "Ducking": 30
+  }
+ },
+ {
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 0,
+   "R Fb": 0,
+   "High Damp": 0,
+   "L Bal": 50,
+   "R Bal": 50,
+   "Ducking": 45
+  }
+ },
+ {
+  "_note": "Row 9: does the ducker sit before or after High Damp? The model puts the gain on the wet READ, outside the loop and after the Balance wet gain, which makes it commute with everything; a Ducking-25 capture at High Damp 40 nulls against that model directly. Pair it with the High Damp 40 / Ducking 0 row that sdly-m1.json already has.",
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 25,
+   "R Fb": 25,
+   "High Damp": 40,
+   "L Bal": 25,
+   "R Bal": 25,
+   "Ducking": 25
+  }
+ },
+ {
+  "_note": "Row 11: MAX input at Ducking 25, against row 3's LIN. The model's detector runs on the post-converter signal with the analog input stage OFF, so it cannot say whether the detector sits ahead of or behind the +15 dB amplifier's pre-emphasis shelf and the converter's hard clip (docs/input-stage-2026-09-16.md). At MAX the shelf lifts everything above 2.5 kHz by up to 10.9 dB before the clip: if the detector is behind the shelf, the sweep's duck depth above 3 kHz will rise by that much relative to LIN; if it is ahead of it, the two sweeps will agree once the 14.05 dB level difference is taken out.",
+  "effect": "SDLY",
+  "input": "MAX",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 0,
+   "R Fb": 0,
+   "High Damp": 0,
+   "L Bal": 50,
+   "R Bal": 50,
+   "Ducking": 25
+  }
+ },
+ {
+  "_note": "Rows 12-13: Ducking on the other three Ambience delays. XDLY is the interesting one -- it is the only ducked effect whose two channels carry different signals (L feeds R feeds L), so it is the only capture that can say whether the detector is mono on the input (what the model assumes, since the unit has one Guitar In) or per channel on each line's own input. Same Ducking 25, same delay and feedback as the SDLY rows so the depth is directly comparable.",
+  "effect": "XDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 25,
+   "R Fb": 25,
+   "High Damp": 0,
+   "L Bal": 25,
+   "R Bal": 25,
+   "Ducking": 25
+  }
+ },
+ {
+  "_note": "Row 13: HDLY at the same Ducking, to confirm the law and the constant k carry across the family rather than being an SDLY-only fit.",
+  "effect": "HDLY",
+  "input": "LIN",
+  "params": {
+   "Dly Time": 300,
+   "Feedback": 25,
+   "High Damp": 0,
+   "L Bal": 25,
+   "R Bal": 25,
+   "Ducking": 25
+  }
+ },
+ {
+  "_note": "Row 13 (last): the attack, which is the weakest number in the model. Tail signal set (`make signals-tail`, relaunch Bench; `make signals-normal` after): its single isolated -20 dBFS 1 kHz burst and its 4 s tone each sit in front of 28 s of silence, so the release is measurable over its whole range in one segment instead of being cut off by the next one, and the burst's charge is read against a tail that is not contaminated. 2026-09-18 had to back-extrapolate the burst's envelope over 245 ms (4.7 time constants), which is why the burst said 83 ms and the ramp said 47 ms for the same slow attack.",
+  "effect": "SDLY",
+  "input": "LIN",
+  "params": {
+   "L Dly": 300,
+   "R Dly": 300,
+   "L Fb": 0,
+   "R Fb": 0,
+   "High Damp": 0,
+   "L Bal": 50,
+   "R Bal": 50,
+   "Ducking": 40
+  }
+ }
+]

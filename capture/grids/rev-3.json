@@ -1,0 +1,60 @@
+[
+ {
+  "_note": "REV follow-up (docs/rev-model-2026-09-18.md, unresolved list). REV signal set (`make signals-rev`, relaunch Bench; `make signals-normal` after). LIN, Ambience slot only. Row 1: Balance 20 \u2014 the crossfade table's missing point (wet is linear 0\u201315 then climbs fast; 20 says where the knee is).",
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 2,
+   "High Damp": 0,
+   "Balance": 20
+  }
+ },
+ {
+  "_note": "Rows 2\u20133: High Damp's filter form, all wet, long tail (HD 25/50 at RT 10 are the weakest nulls; only constrained at 1 kHz so far).",
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 10,
+   "High Damp": 25,
+   "Balance": 50
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 10,
+   "High Damp": 50,
+   "Balance": 50
+  }
+ },
+ {
+  "_note": "Rows 4\u20135: the same for ROOM and PLATE at HD 50 (their filter poles differ from HALL's in the fit).",
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "ROOM",
+   "Pre Dly": 1,
+   "Rev Time": 10,
+   "High Damp": 50,
+   "Balance": 50
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "PLATE",
+   "Pre Dly": 1,
+   "Rev Time": 10,
+   "High Damp": 50,
+   "Balance": 50
+  }
+ }
+]

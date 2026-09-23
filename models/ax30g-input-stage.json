@@ -1,0 +1,50 @@
+{
+ "name": "AX30G analog input stage: Input Level -> +15 dB amp with pre-emphasis -> ADC full scale -> de-emphasis",
+ "measured": "2026-09-16 from captures/AX30G_BYPASS_IN-LIN.wav and _IN-MAX.wav; docs/input-stage-2026-09-16.md",
+ "enabled": true,
+ "input_level_db": 0.0,
+ "input_level_notes": [
+  "dB relative to the LIN captures (the campaign's reference Input Level setting). MAX (fully clockwise) is +14.0509 dB, measured as the small-signal gain difference between the MAX and LIN Bypass captures: +14.0498 dB mean with 0.0055 dB spread over 86 sweep windows below 7 kHz.",
+  "At 0.0 (LIN) the stage is transparent for every segment of the signal set: the shelf and its exact inverse cancel and nothing reaches the ceiling (the model's LIN Bypass null is -30.6/-30.5 dB with the stage on or off).",
+  "This is a real gain, not a trim: on the unit the Input Level pot is ahead of the +15 dB amplifier, so MAX really is 14 dB louder out as well as 14 dB closer to the ceiling."
+ ],
+ "pre_emphasis": {
+  "type": "shelf1",
+  "tau_zero_us": 63.94,
+  "tau_pole_us": 18.17,
+  "f_zero_hz": 2489.1,
+  "f_pole_hz": 8759.2,
+  "shelf_db": 10.93,
+  "gain_at_1khz_db": 0.5834,
+  "discrete_39062_5": {
+   "b": [2.322379702368948, -1.5482677728662766],
+   "a": [1.0, -0.22588807049732856]
+  },
+  "notes": [
+   "H(s) = (1 + s*tau_zero)/(1 + s*tau_pole), unity at DC: +0.58 dB at 1 kHz, +2.8 at 3 k, +5.2 at 5 k, +7.3 at 8 k, +8.1 at 10 k, +9.2 at 15 k, +9.6 at 19 k relative to 1 kHz, asymptote +10.93 dB.",
+   "Fitted to 25 sweep points (7.7-17.6 kHz, from how much earlier each frequency reaches the ceiling at a fixed level) and 9 harmonic points (3-19 kHz, from how far the clipped ramp's harmonics sit below the analytic hard-clip harmonics): 0.23 dB weighted rms. tests/input_stage_test.py measure reproduces it.",
+   "Service manual p. 21/33: the inverting +15 dB stage's input leg is R125 in parallel with (R129 + C107), which gives (1 + s(R125+R129)C107)/(1 + s*R129*C107). R129*C107 = 3.9k * 4700 pF = 18.33 us against the 18.17 us fitted here (0.9 %); the zero's 63.94 us wants R125+R129 = 13.6k where the schematic reads 10.7k, so either R125 is not 6.8k or C107 is not exactly 4700 pF.",
+   "Discretise with engine.render.shelf1_coeffs: a first-order least-squares fit to the analog magnitude over 20 Hz - 0.999*Nyquist, 0.21 dB max and 0.030 dB rms error. NOT a plain bilinear - the two corners cannot both be prewarped in one bilinear, and prewarping either one leaves the digital filter 2.2 dB high at 17 kHz at the device rate. The de-emphasis is the same filter with b and a swapped, which is its exact inverse, so below the ceiling the pair is transparent to floating-point rounding."
+  ]
+ },
+ "ceiling": {
+  "type": "hard_clip",
+  "headroom_dbfs": 2.0605,
+  "offset_frac": 0.027,
+  "oversample": 1,
+  "notes": [
+   "The ceiling is the converter's own full scale (+-1.0 in the DSP domain, the same clip engine/render.py's 18-bit _converter applies). headroom_dbfs is how far the input file's 0 dBFS sits BELOW it with Input Level at LIN, so the stage's gain is 10^((input_level_db - headroom_dbfs)/20).",
+   "+2.0605 dB comes from the measured 1 kHz clip point: a 1 kHz sine at MAX starts compressing at -12.574 dBFS in the file, MAX is +14.0509 dB, and the shelf is +0.5834 dB at 1 kHz at the device rate. So at LIN a full-scale 1 kHz sine is still 1.48 dB short of the ADC ceiling, which is why every LIN capture in the campaign is clean. An independent scan of headroom_dbfs against the clipped part of the MAX ramp peaks at 2.07 dB.",
+   "Hard clip, not a soft curve and not a delta-sigma grit burst: the fundamental-compression law measured on the MAX ramp follows the analytic hard-clip law to 0.019 dB rms over 18 dB of drive, while a tanh of any threshold is 0.80 dB rms off. The only departure is at the knee, where the measurement is 0.06 dB softer than the ideal.",
+   "offset_frac: a DC offset at the clipper as a fraction of full scale, added before the clip and removed after (equivalently, thresholds +1-d and -1-d). It is the only source of even harmonics. 0.027 puts H2 on the capture at the ramp's top (-46.5 dBFS); it then leaves H4 4 dB and H6 5 dB low, because the capture's even series falls about 3 dB per order and a single offset falls about 6. The ramp null is within 0.16 dB anywhere from 0.010 to 0.030.",
+   "oversample: clip at N times the device rate and band-limit back, i.e. treat the clip as analog ahead of the decimation filter. Measured 2026-09-16: N=2/4/8 leave the ramp null unchanged (-26.6 dB) and put the fold-back of the harmonics above Nyquist 8-14 dB BELOW the capture, where N=1 puts it within 3 dB. The unit's decimator therefore passes 21 kHz well enough to fold it back, and clipping on the sample grid is the closer model. Keep 1."
+  ]
+ },
+ "peak_led": {
+  "margin_db": -1.0,
+  "notes": [
+   "The manual's 'peak input level, full scale -1 dB'; LED15 is the SAA7366T's OVLD flag, after the pre-emphasis. In the model: light it when the clipper's input peak reaches 10^(-1/20) = 0.8913.",
+   "Every bracket of the 2026-09-13 Peak-by-frequency table is reproduced by this shelf, this ceiling and the -1 dB rule: predicted Peak thresholds in file dBFS are MAX 100 Hz -13.0, 1 k -13.6, 4 k -17.6, 10 k -21.7, 16 k -23.0; LIN 100 Hz +1.1, 1 k +0.5, 4 k -3.6, 10 k -7.6, 16 k -9.0. The observed brackets were MAX -12/-12/-12/below -20/below -20 and LIN never/0/-3/-6/-6."
+  ]
+ }
+}

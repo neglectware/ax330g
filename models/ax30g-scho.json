@@ -1,0 +1,109 @@
+{
+ "name": "AX30G Stereo Chorus (SCHO) -- open-mode what-if, 2026-09-16",
+ "effect": "SCHO",
+ "sample_rate": 39062.5,
+ "params": {
+  "Speed": 1,
+  "Depth": 25,
+  "Mode": 0
+ },
+ "maps": {
+  "delay": {
+   "type": "constant",
+   "value": 939
+  },
+  "speed": {
+   "type": "interp",
+   "points": [
+    [0, 0.0],
+    [0.02, 0.01863],
+    [0.1, 0.09779],
+    [0.18, 0.17696],
+    [0.2, 0.197881],
+    [0.5, 0.495995],
+    [1, 0.9965],
+    [2, 1.993121],
+    [3, 2.991968],
+    [5, 4.989728],
+    [7, 6.985249],
+    [9.5, 9.481214]
+   ]
+  },
+  "depth": {
+   "type": "linear",
+   "in_max": 50,
+   "out_max": 6.5247
+  },
+  "dry": {
+   "type": "constant",
+   "value": 0.75
+  },
+  "wet": {
+   "type": "constant",
+   "value": 0.25
+  }
+ },
+ "blocks": {
+  "delay_line": {
+   "max_ms": 60,
+   "storage": {
+    "bits": 16,
+    "compand": "linear",
+    "rate_div": 1
+   },
+   "interp": "linear"
+  },
+  "lfo": {
+   "shape": "table",
+   "update_every": 1,
+   "phase": 0.0,
+   "in_loop": false,
+   "side_sign": [1.0, -1.0],
+   "table": [
+    0.0, 0.002258, 0.006451, 0.011124, 0.015909, 0.020867, 0.026041, 0.031426,
+    0.037026, 0.042835, 0.04884, 0.055032, 0.061405, 0.067957, 0.074685, 0.081582,
+    0.088643, 0.095863, 0.103237, 0.11076, 0.118426, 0.126232, 0.134171, 0.14224,
+    0.150434, 0.158748, 0.167177, 0.175717, 0.184356, 0.193106, 0.201952, 0.21089,
+    0.219917, 0.229028, 0.238219, 0.247486, 0.256825, 0.266147, 0.275394, 0.284916,
+    0.2945, 0.304134, 0.313816, 0.323541, 0.333306, 0.343106, 0.352938, 0.362798,
+    0.372683, 0.382589, 0.392512, 0.40245, 0.412397, 0.422352, 0.432311, 0.442269,
+    0.452225, 0.462175, 0.472115, 0.482042, 0.491954, 0.501846, 0.511717, 0.521562,
+    0.53138, 0.541168, 0.550922, 0.560639, 0.570318, 0.579954, 0.589546, 0.599091,
+    0.608586, 0.618029, 0.627418, 0.63675, 0.646022, 0.655232, 0.664378, 0.673458,
+    0.682468, 0.691408, 0.700275, 0.709066, 0.717781, 0.726416, 0.73497, 0.743441,
+    0.751828, 0.760127, 0.768338, 0.776459, 0.784488, 0.792424, 0.800266, 0.80801,
+    0.815656, 0.823203, 0.830649, 0.837992, 0.845231, 0.852365, 0.859393, 0.866314,
+    0.873126, 0.879829, 0.886421, 0.892901, 0.899269, 0.905523, 0.911663, 0.917687,
+    0.923595, 0.929388, 0.935062, 0.940618, 0.946054, 0.95137, 0.956568, 0.96165,
+    0.966613, 0.971448, 0.976152, 0.980728, 0.985181, 0.989555, 0.993929, 0.998005,
+    1.0, 0.997787, 0.993738, 0.989378, 0.985053, 0.980586, 0.97596, 0.971251,
+    0.966428, 0.961463, 0.956378, 0.951182, 0.945863, 0.940422, 0.934865, 0.92919,
+    0.923396, 0.917485, 0.91146, 0.905318, 0.899062, 0.892693, 0.88621, 0.879617,
+    0.872912, 0.866098, 0.859175, 0.852145, 0.845009, 0.837768, 0.830423, 0.822976,
+    0.815428, 0.807781, 0.800036, 0.792195, 0.784258, 0.776228, 0.768106, 0.759895,
+    0.751594, 0.743207, 0.734736, 0.726181, 0.717546, 0.708831, 0.70004, 0.691173,
+    0.682233, 0.673223, 0.664144, 0.654999, 0.64579, 0.636519, 0.627189, 0.617801,
+    0.608359, 0.598866, 0.589322, 0.579732, 0.570097, 0.56042, 0.550705, 0.540953,
+    0.531167, 0.521352, 0.511509, 0.501641, 0.491752, 0.481843, 0.471919, 0.461983,
+    0.452037, 0.442085, 0.432131, 0.422176, 0.412226, 0.402282, 0.39235, 0.382431,
+    0.37253, 0.36265, 0.352795, 0.342968, 0.333173, 0.323414, 0.313695, 0.304019,
+    0.29439, 0.284812, 0.27529, 0.265827, 0.256427, 0.247095, 0.237834, 0.228649,
+    0.219544, 0.210524, 0.201592, 0.192753, 0.184011, 0.175372, 0.166838, 0.158416,
+    0.150108, 0.141919, 0.133863, 0.12593, 0.118132, 0.110473, 0.102958, 0.095592,
+    0.08838, 0.081327, 0.074438, 0.067719, 0.061173, 0.054805, 0.048627, 0.042635,
+    0.03683, 0.031245, 0.025871, 0.020665, 0.015695, 0.010992, 0.006375, 0.002088
+   ]
+  }
+ },
+ "resampler": {
+  "half_mult": 100
+ },
+ "chain": "ax30g-chain.json",
+ "notes": [
+  "SCHO NEVER EXISTED ON THE HARDWARE. Open-mode only (AX30G_HANDOFF.md Sec 7b): the real AX30G's Mod1 slot is mono (measured CHO, docs/cho-model-2026-09-16.md) and 'as the unit' mode's fixed chain orders (Sec 1 'Effects chain') never offer a stereo Mod1 variant. This is a what-if block Mark asked for (2026-09-16), a stereo chorus in the unit's own idiom -- available only when stacking blocks freely.",
+  "design: identical to CHO (models/ax30g-cho.json) in every map -- fixed 939-device-sample delay (constant, no panel control), MODD's speed table and 256-point LFO shape (borrowed unchanged, confirmed byte-identical to MODD/CHO), MODD's linear depth map (out_max 6.5247 ms amplitude at Depth 50), fixed dry 0.75 / wet 0.25 mix, no feedback, no damping, 16-bit linear store, linear-interpolated read -- except the mono single tap becomes TWO taps read from the SAME shared mono delay line (one write per sample, still just the clipped dry input, since there is still no feedback): left modulated with +lfo, right with -lfo. This is SMOD's measured side_sign [1, -1] mechanism (one LFO, R fed the inverted LFO, best time shift 0.00 ms, docs/smod-model-2026-09-14.md) applied to CHO's single-tap topology rather than SMOD's two-independent-delay-line topology, since CHO/SCHO have no per-side delay time or feedback parameter to make independent lines meaningful.",
+  "Speed and Depth are the only modulation parameters, same ranges and defaults as CHO (2..950 hundredths of Hz; 0..50).",
+  "blocks.lfo.side_sign [1.0, -1.0]: index 0 (left) gets +lfo, index 1 (right) gets -lfo, mirroring models/ax30g-smod.json's own field. Used by Mode 0 only.",
+  "Mode (added 2026-09-16, Mark's request, param range 0..1, default 0): 0 = 'Inverted LFO' -- the design above, two independently modulated reads (left +lfo, right -lfo), each mixed 0.75 dry / 0.25 wet. 1 = 'Split' (CE-1 style) -- left is DRY ONLY (dry*xi, no wet component at all), right is the single CHO tap WET ONLY (wet*r, using the SAME +lfo tap the mono CHO block itself uses -- no side_sign applied), so L+R sums to exactly the mono CHO output at the same Speed/Depth (verified in docs/scho-cpp-2026-09-16.md). Deliberately absent: the inverted-polarity Juno-60/CE-2-style chorus (both channels wet and out of phase, no dry) -- not asked for; Mode 0 already gives a two-sided spread through CHO's own unipolar-above-nominal LFO law, and Mode 1 gives the classic dry/wet split, which together cover what Mark asked for."
+ ]
+}

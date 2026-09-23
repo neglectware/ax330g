@@ -1,0 +1,322 @@
+{
+ "name": "AX30G Reverb -- four parallel feedback combs (tapped twice, once per output) into a per-channel Schroeder allpass cascade; High Damp resolved 2026-09-18",
+ "notes": [
+  "Derivation: docs/rev-model-2026-09-18.md (structure, Rev Time, Balance, nulls) and docs/rev-highdamp-2026-09-18.md (the High Damp filter and Balance 20). This file supersedes models/ax30g-rev.json; the two differ ONLY in maps.high_damp + high_damp_scaling (per-comb poles), maps.balance_wet/balance_dry (the Balance 20 point and a re-measured dry column), and the removal of the per-Type high_damp_map tables.",
+  "Structure per Type: predelay -> a per-channel pure input delay -> FOUR parallel feedback combs (each a plain recirculating delay with a one-pole lowpass in its feedback when High Damp is up) -> each comb is read at ONE position per output channel, the four reads summed with equal weight -> a three-section series Schroeder allpass cascade, its own lengths per channel -> wet, inverted.",
+  "Every allpass is y[n] = u*v[n] + v[n-L] - u*y[n-L] (a Schroeder allpass with a NEGATIVE coefficient), the sign pattern the unit shows (+,+,-,+ along each element's own echo series). Sections whose LENGTH is shared between L and R also share u, to the measurement's 0.3 %.",
+  "comb read offsets are given in each channel's own frame, i.e. after input_delay[channel]; several exceed the comb's own length (PLATE), which a delay line longer than its feedback tap supplies.",
+  "Rev Time law: comb gain g_i = 10^(-3*rt_length_i/(RevTime*fs)) -- each comb's own RT60 IS the displayed Rev Time in seconds. rt_length equals the comb's delay for ROOM and HALL; for PLATE's two short combs it is twice the delay (measured: those two decay at exactly 2x the rate per sample that a common RT60 would give, and their High Damp poles scale with the same doubled length).",
+  "High Damp law (measured 2026-09-18, docs/rev-highdamp-2026-09-18.md): ONE first-order lowpass w[n] = (1-a)*y[n-d] + a*w[n-1] in each comb's feedback path, unity gain at DC, with a PER-COMB pole a_i = A(HighDamp) * rt_length_i / max_j(rt_length_j) and A(HighDamp) = 0.017373 * HighDamp (maps.high_damp is A, i.e. the pole of the comb with the longest rt_length). High Damp 0 is a = 0 exactly (measured flat to +-0.05 dB per pass from 125 Hz to 16 kHz). high_damp_scaling = 'rt_length' is what tells the renderer to scale.",
+  "Balance is a crossfade with two measured tables, nine points each (Balance 20 added 2026-09-18). The wet column is from pairwise nulls of the 1 kHz burst tail against the Balance 50 capture; the dry column is the rms of the burst's first 6.5 ms (dry only -- HALL's wet arrives at 10.4 ms) referred to the send channel.",
+  "resampler.half_mult 100 is set here; models/ax30g-rev.json is missing it (flagged by the REV C++ port, docs/rev-cpp-2026-09-18.md) and therefore ran at scipy's default 10. Measured 2026-09-18: it changes the burst and wet-tail nulls by 0.00 dB on every REV row tested and only improves the dry-click and sweep columns (-9.49 -> -11.27 dB and -22.86 -> -23.66 dB on the Balance 0 row), so every number in docs/rev-highdamp-2026-09-18.md stands; those two columns there were measured without the key."
+ ],
+ "effect": "REV",
+ "sample_rate": 39063.829787,
+ "chain": "ax30g-chain.json",
+ "input": "sum",
+ "wet_polarity": -1.0,
+ "params": {
+  "Type": "HALL",
+  "Pre Dly": 1,
+  "Rev Time": 2.0,
+  "High Damp": 0,
+  "Balance": 25
+ },
+ "maps": {
+  "pre_delay": {
+   "type": "samples_per_ms",
+   "k": 39,
+   "offset_samples": 2
+  },
+  "balance_wet": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     0.0
+    ],
+    [
+     5,
+     0.0919
+    ],
+    [
+     10,
+     0.1834
+    ],
+    [
+     15,
+     0.2749
+    ],
+    [
+     20,
+     0.4753
+    ],
+    [
+     25,
+     0.7031
+    ],
+    [
+     35,
+     0.8435
+    ],
+    [
+     45,
+     0.9478
+    ],
+    [
+     50,
+     1.0
+    ]
+   ]
+  },
+  "balance_dry": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     1.0
+    ],
+    [
+     5,
+     0.9626
+    ],
+    [
+     10,
+     0.9252
+    ],
+    [
+     15,
+     0.8877
+    ],
+    [
+     20,
+     0.8278
+    ],
+    [
+     25,
+     0.7629
+    ],
+    [
+     35,
+     0.468
+    ],
+    [
+     45,
+     0.1558
+    ],
+    [
+     50,
+     0.0
+    ]
+   ]
+  },
+  "high_damp": {
+   "type": "linear",
+   "in_max": 50.0,
+   "out_max": 0.86865
+  }
+ },
+ "comb_mix": 0.5,
+ "types": {
+  "ROOM": {
+   "input_delay": [
+    0,
+    0
+   ],
+   "combs": [
+    898,
+    1064,
+    1687,
+    1955
+   ],
+   "rt_length": [
+    898,
+    1064,
+    1687,
+    1955
+   ],
+   "reads": [
+    [
+     0,
+     814
+    ],
+    [
+     873,
+     0
+    ],
+    [
+     0,
+     1150
+    ],
+    [
+     631,
+     0
+    ]
+   ],
+   "input_gain": 0.5254,
+   "allpass_l": [
+    [
+     151,
+     0.7544
+    ],
+    [
+     226,
+     0.6506
+    ],
+    [
+     265,
+     0.6523
+    ]
+   ],
+   "allpass_r": [
+    [
+     130,
+     0.7126
+    ],
+    [
+     226,
+     0.6492
+    ],
+    [
+     265,
+     0.6569
+    ]
+   ]
+  },
+  "HALL": {
+   "input_delay": [
+    353,
+    470
+   ],
+   "combs": [
+    4298,
+    4689,
+    5002,
+    5744
+   ],
+   "rt_length": [
+    4298,
+    4689,
+    5002,
+    5744
+   ],
+   "reads": [
+    [
+     3945,
+     1641
+    ],
+    [
+     0,
+     4219
+    ],
+    [
+     4649,
+     0
+    ],
+    [
+     2149,
+     5274
+    ]
+   ],
+   "input_gain": 0.4541,
+   "allpass_l": [
+    [
+     809,
+     0.8007
+    ],
+    [
+     917,
+     0.6518
+    ],
+    [
+     1955,
+     0.6058
+    ]
+   ],
+   "allpass_r": [
+    [
+     809,
+     0.8024
+    ],
+    [
+     917,
+     0.6497
+    ],
+    [
+     1759,
+     0.5019
+    ]
+   ]
+  },
+  "PLATE": {
+   "input_delay": [
+    0,
+    0
+   ],
+   "combs": [
+    1955,
+    1994,
+    4298,
+    4439
+   ],
+   "rt_length": [
+    3910,
+    3988,
+    4298,
+    4439
+   ],
+   "reads": [
+    [
+     0,
+     3908
+    ],
+    [
+     3947,
+     0
+    ],
+    [
+     0,
+     2150
+    ],
+    [
+     2228,
+     0
+    ]
+   ],
+   "input_gain": 0.7988,
+   "allpass_l": [
+    [
+     923,
+     0.7777
+    ],
+    [
+     1017,
+     0.701
+    ],
+    [
+     1330,
+     0.6405
+    ]
+   ],
+   "allpass_r": [
+    [
+     1505,
+     0.7003
+    ],
+    [
+     1017,
+     0.7
+    ],
+    [
+     1330,
+     0.6405
+    ]
+   ]
+  }
+ },
+ "high_damp_scaling": "rt_length",
+ "high_damp_max_pole": 0.995,
+ "resampler": {
+  "half_mult": 100
+ }
+}

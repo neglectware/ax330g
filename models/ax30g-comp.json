@@ -1,0 +1,122 @@
+{
+ "name": "AX30G Compressor (COMP), measured 2026-09-18",
+ "effect": "COMP",
+ "sample_rate": 39062.5,
+ "params": {
+  "Sensitivity": 40,
+  "Level": 25,
+  "Attack": 25
+ },
+ "param_ranges": {
+  "Sensitivity": [
+   0,
+   50,
+   1,
+   "integer"
+  ],
+  "Level": [
+   0,
+   50,
+   1,
+   "integer, 0 = mute"
+  ],
+  "Attack": [
+   0,
+   50,
+   1,
+   "integer"
+  ]
+ },
+ "maps": {
+  "a": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     1.03514
+    ],
+    [
+     10,
+     0.92049
+    ],
+    [
+     25,
+     0.69295
+    ],
+    [
+     40,
+     0.35482
+    ],
+    [
+     50,
+     0.02177
+    ]
+   ]
+  },
+  "B": {
+   "type": "reciprocal_offset",
+   "c": 407.111,
+   "d": 2.66643,
+   "measured_points": [
+    [
+     25,
+     14.715
+    ],
+    [
+     50,
+     7.73
+    ]
+   ],
+   "mute_at": 0
+  },
+  "attack_tau_ms": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     1.5
+    ],
+    [
+     25,
+     1.75
+    ],
+    [
+     50,
+     11.8
+    ]
+   ]
+  }
+ },
+ "blocks": {
+  "pivot_amplitude": 0.131198,
+  "detector": {
+   "type": "peak_abs",
+   "attack_tau_ms": 1.2,
+   "release_tau_ms": 48.0,
+   "control_block": 1,
+   "gain_delay_samples": 0,
+   "envelope_floor": 0.008
+  }
+ },
+ "input_stage": {
+  "file": "ax30g-input-stage.json",
+  "de_emphasis": "after_effect"
+ },
+ "chain": "ax30g-chain.json",
+ "resampler": {
+  "half_mult": 100
+ },
+ "notes": [
+  "Derivation, every candidate law with its residual, and what is still under-determined: docs/comp-model-2026-09-18.md. C++ port spec: docs/comp-cpp-spec.md. Measured from the 11 captures of capture/grids/comp.json (2026-09-18, all IN-LIN, Block 1 only), each divided by captures/AX30G_BYPASS_IN-LIN.wav so the converter chain and the pre/de-emphasis pair cancel.",
+  "The law: y[n] = x[n] / (a + b*E[n]), E the peak envelope of |x|. The RECIPROCAL of the gain is affine in the envelope. There is no threshold, no knee and no ratio: the output tends to the constant 1/b (a limiter) and the gain tends to the constant 1/a (a sustainer). Regressing 1/G on the 1 kHz tone's linear amplitude over -39..-0.5 dBFS of the 5 s ramp leaves 0.08-0.25 % on the eight clean rows; fitting a and b by RENDERING against the ramp and the two steady sines leaves 0.006-0.038 dB rms, 0.15 dB max, on all nine non-mute rows.",
+  "b is not free: (a, b) lies on a straight line, b = B(Level) - a/Q with Q = 0.131198 (1/Q = 7.6221). Measured as (b - b0)/(a0 - a) over the five Sensitivity rows: 7.6275, 7.6276, 7.6204, 7.6120 -- one constant to 0.1 %. Geometrically the five Sensitivity curves all cross at one point, input amplitude Q (-17.64 dBFS), gain 1/(B*Q).",
+  "Sensitivity sets a (the maximum gain, 1/a) and nothing else; Level sets B (the ceiling) and nothing else. Level 25 -> 50 moved a by 0.23 dB and the ceiling by 5.68 dB, which is NOT what an output makeup gain does -- an output gain would move both by the same amount. Level 0 is a MUTE (both Level-0 captures sit at -104 dBFS on the -20 dBFS sine).",
+  "maps.a is a five-point table because that is what was captured. Its per-step slope grows from -0.0115 at Sensitivity 5 to -0.0334 at 45, roughly exponentially (rate 0.027/step), but a two-parameter exponential is 0.5-3 % out at 10 and 40, so the table is not replaced by a law. capture/grids/comp-2.json fills in 5/15/20/30/35/42/45/47.",
+  "maps.B is a two-point fit and has no support anywhere else; see _level_B in engine/comp.py.",
+  "The detector is a PEAK follower on |x| (rise coefficient from attack_tau_ms 1.2 ms, fall from release_tau_ms 48 ms), NOT an rms or mean detector: a steady 1 kHz sine of amplitude A reads E = A, while -30 dBFS white noise reads 4.19 sigma, which no smoothed rectifier can do. 48 ms is what makes the broadband gain on the noise segment right to 0.02 dB on every row; 30 ms and 260 ms are 1.0 dB out in opposite directions.",
+  "The Attack control is a one-pole SMOOTHER AFTER the detector, not the detector's own attack. It has to be: the detector's attack changes what a steady sine reads (0.93 A at 2.5 ms, 0.86 A at 9 ms), so if Attack were the detector's attack the static curve would move about 0.7 dB between Attack 25 and 50 -- and the captures put it at 0.05 dB. A smoother leaves the steady state exactly alone, which is what is measured.",
+  "The block runs in the PRE-EMPHASISED domain (input_stage.de_emphasis = 'after_effect'), like the 3BEQ. Evidence: the -20 dBFS sweep is compressed progressively harder with frequency -- at Sensitivity 40 the gain falls from -0.82 dB at 87 Hz to -10.65 dB at 12.3 kHz -- which is the detector seeing the pre-emphasis shelf. A detector in the de-emphasised domain predicts a flat sweep. The gain PATH is a plain broadband scalar: the noise segment's gain is flat to +-0.05 dB from 53 Hz to 12 kHz on every row.",
+  "Known miss: the model does not pull a single-sample -16 dBFS click's PEAK down as far as the unit does -- 0.8-2.4 dB short at Sensitivity 0-40 and 13.7 dB short at Sensitivity 50, where the law's own steepness multiplies the same small envelope error. Running the gain computer on blocks of 4-8 device samples (detector.control_block) fixes the click (+0.1 dB at Sensitivity 40) but costs 1.6-2.1 dB on the noise segment, so it is implemented and NOT enabled. A maximum-gain clamp is ruled out as the explanation: the -40 dBFS sine at Sensitivity 50 / Level 50 measures +22.86 dB of gain, so any clamp must sit above that, and a 24 dB clamp still leaves the click 12.2 dB out.",
+  "blocks.detector.envelope_floor = 0.008 is the model's ONE un-measured parameter. It is a floor under the detector, i.e. a refusal to extrapolate the law below about -42 dBFS at the device, which is exactly where the 5 s ramp stops. It is there because three independent readings say the two-parameter law's maximum gain at Sensitivity 50 (+33 dB) is too high -- the silence floor, the click peak and the burst onsets -- and it was chosen on the null test, not on a measurement: 0 / 0.004 / 0.008 / 0.012 / 0.016 give -12.3 / -14.6 / -16.0 / -15.2 / -13.0 dB overall on the Sensitivity 50 / Level 25 row while the seven rows below Sensitivity 50 move by 0.0-0.3 dB (and the -40 dBFS sine's null starts collapsing at 0.012, which is what bounds it above). capture/grids/comp-2.json's four SEND -30 dB rows replace it with a measurement."
+ ]
+}

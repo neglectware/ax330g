@@ -1,0 +1,125 @@
+{
+ "name": "AX30G 3-Band EQ (3BEQ), measured 2026-09-17",
+ "effect": "3BEQ",
+ "sample_rate": 39062.5,
+ "params": {
+  "Bass": 0,
+  "Mid Freq": 1000,
+  "Mid Gain": 0,
+  "Treble": 0,
+  "Trim Gain": 0
+ },
+ "param_ranges": {
+  "Bass": [
+   -16,
+   16,
+   1,
+   "dB"
+  ],
+  "Mid Freq": [
+   250,
+   4000,
+   "13 steps",
+   "Hz"
+  ],
+  "Mid Gain": [
+   -16,
+   16,
+   1,
+   "dB"
+  ],
+  "Treble": [
+   -16,
+   16,
+   1,
+   "dB"
+  ],
+  "Trim Gain": [
+   -18,
+   6,
+   1,
+   "dB"
+  ]
+ },
+ "mid_freq_steps_hz": [
+  250,
+  315,
+  400,
+  500,
+  630,
+  800,
+  1000,
+  1250,
+  1600,
+  2000,
+  2500,
+  3150,
+  4000
+ ],
+ "maps": {
+  "bass": {
+   "type": "shelf1_low",
+   "corner_hz": 79.856,
+   "gain_offset_boost_db": 0.0465,
+   "gain_offset_cut_db": -0.0038,
+   "allpass_flat": true
+  },
+  "mid": {
+   "type": "peak_bp",
+   "alpha_law": "w0",
+   "q_boost": 0.9858,
+   "q_cut": 2.9789,
+   "gain_offset_boost_db": -0.0168,
+   "gain_offset_cut_db": -0.0159,
+   "allpass_flat": false
+  },
+  "treble": {
+   "type": "shelf1_high",
+   "corner_hz": 7997.0,
+   "gain_offset_boost_db": 0.0008,
+   "gain_offset_cut_db": -0.0065,
+   "allpass_flat": true
+  },
+  "trim": {
+   "type": "identity",
+   "note": "Trim Gain is an exact plain gain in dB, ahead of the three bands."
+  }
+ },
+ "blocks": {
+  "clip": {
+   "position": "output",
+   "level": 0.93,
+   "note": "symmetric hard clip on the block's output, in the pre-emphasised domain, as a fraction of converter full scale. 0.93 = 0.63 dB below full scale, the peak of a scan of the Mid Freq 1000 / Mid Gain +16 ramp null (-29.6/-31.8/-34.0/-35.5/-34.9/-30.6 dB at 0.90/0.91/0.92/0.93/0.94/0.96); the Treble +16 sweep plateau fit independently puts it 0.43 dB below full scale. Both are inside the uncertainty of the input stage's own headroom calibration, so this is the converter's full scale measured two ways, not a separate internal ceiling. position 'output' beats 'per_band' on the all-boost Trim +6 row (sine20 null -37.6 vs -23.5 dB, ramp -18.1 vs -11.4)."
+  },
+  "path": {
+   "gain_db": -0.358,
+   "delay_samples": 1,
+   "allpass_hz": 0,
+   "note": "what is left of the block's fixed path once the Bass and Treble sections' own 0 dB allpasses are accounted for. Measured as (flat 3BEQ capture)/(BYPASS capture) over the noise segment, fitted as gain x delay x AP(79.4 Hz) x -AP(7995.8 Hz): -0.358 dB, 0.990 device samples, residual 0.0020 rms of unity over 10 Hz - 18 kHz (the same fit with only the 79 Hz allpass leaves 0.112). The two fitted allpass corners are the Bass and Treble bands' own fitted corners (79.856 and 7997.0 Hz) to 0.6 % and 0.02 %."
+  }
+ },
+ "input_stage": {
+  "file": "ax30g-input-stage.json",
+  "de_emphasis": "after_effect"
+ },
+ "chain": "ax30g-chain.json",
+ "resampler": {
+  "half_mult": 100
+ },
+ "notes": [
+  "Derivation, every candidate tried with its residual, and the evidence for the clip: docs/3beq-model-2026-09-17.md. Measured from 46 captures (grids capture/grids/3beq.json and 3beq-2.json, 2026-09-17, all IN-LIN, Block 1 only), each divided by the flat row so the converter chain and the pre/de-emphasis pair cancel: docs/3beq-response-2026-09-17.md, docs/3beq-response-2-2026-09-17.md, per-capture magnitude AND phase in docs/3beq-plots/. C++ port spec: docs/3beq-cpp-spec.md.",
+  "Order: Trim Gain (a plain scalar) -> Bass -> Mid -> Treble -> hard clip. The bands are linear and commute; the order is fixed so the clip sits after all three and so C++ and Python agree sample for sample.",
+  "Every band is ONE FIXED filter F mixed with the dry path by one scalar. Nothing about F moves with the gain setting. Bass: a bilinear one-pole low-pass, unity at DC, corner 79.856 Hz. Treble: a bilinear one-pole high-pass, unity at Nyquist, corner 7997 Hz. Mid: a constant-peak-gain band-pass on the displayed Mid Freq step. The shelf corner the response tables show moving with gain (89.6 Hz at 2 dB to 200 Hz at 16 dB) and the mid Q that moves with gain (0.89 to 0.38) are what a free RBJ fit reports about this shape, not the device moving a coefficient.",
+  "How the fixed filter was found: a general first-order section fitted per capture reaches the same residual as the RBJ shelf (0.001-0.005 dB rms), and reads the SAME fixed root at every gain -- Bass boost pole radius 0.987320 +- 1e-5 over five gains, Bass cut zero radius 0.987148, Treble 0.1428-0.1434 either way -- while the boost's moving root equals the cut's at the same |dB| to five decimals. The bilinear one-pole (the one with its own z = -1 / z = +1 zero) predicts that moving root to 5e-5 - 3e-4 at every gain; a matched-z one-pole misses by 2.4e-3 at Bass +-16, and an analog first-order shelf with a moving corner is 1.0 dB rms out.",
+  "Boost is NOT minimum phase. S = 1 - 2*g*F with g = (1 + G)/2, G = 10^(|dB|/20): the zero sits outside the unit circle and the band's own end of the spectrum is inverted. Decided on the measured COMPLEX ratio (magnitude and phase, one delay and one gain fitted out): this form fits Bass and Treble boosts to 0.00-0.12 deg rms where the minimum-phase 1 + k*F form is 7-57 deg out. Cuts, and the Mid in both directions, ARE minimum phase (0.01-0.33 deg).",
+  "At 0 dB the Bass and Treble sections are NOT bypassed: g = 1 makes S = 1 - 2F, exactly a first-order allpass at the band's corner. Confirmed independently from a different pair of captures -- the flat 3BEQ capture over the BYPASS capture fits gain x delay x AP(79.4 Hz) x -AP(7995.8 Hz) to 0.0020 rms of unity over 10 Hz - 18 kHz, where a single allpass leaves 0.112, and those two corners are the Bass and Treble bands' own fitted corners to 0.6 % and 0.02 %. The Mid section IS bypassed at Mid Gain 0.",
+  "The cut branch carries the same allpass so the two branches meet at 0 dB: S = A/(1 + k*F) with A = 1 - 2F and k = G - 1. The two denominators cancel exactly, so a cut stays the same order as a boost -- num = a - 2b, den = a + k*b.",
+  "Mid: 1 + k*BP for a boost, 1/(1 + k*BP) for a cut, with the constant-peak-gain band-pass (zeros at z = +-1). A general biquad fitted per capture puts the numerator's z^-1 coefficient on the denominator's to within +-1.7e-3 of random sign, which is that band-pass's signature and rules out a Chamberlin state-variable band-pass (whose numerator would move that coefficient by about 0.85 at Mid +16). The two directions are deliberately NOT reciprocal: Q0 is 0.9858 boost and 2.9789 cut.",
+  "alpha_law 'w0': the band-pass bandwidth coefficient is alpha = w0/(2Q), not RBJ's sin(w0)/(2Q). With RBJ's alpha the fitted Q droops 8-10 % at 4 kHz and needs a per-step table (0.992/0.969/0.986/0.975/0.901 boost and 2.962/2.920/2.990/2.947/2.780 cut at 250/500/1000/2000/4000 Hz); with w0 one constant per direction covers all five measured steps at 0.106 dB rms against sin's 0.146, so the eight Mid Freq steps that were never captured come from a law rather than an interpolation.",
+  "Mid centre frequency is the displayed step exactly: 250.0-250.3, 501.4, 999.0-1000.6, 1997-2005, 3996-4001 Hz measured.",
+  "Trim Gain is an exact plain gain: -18 -> -17.99, -9 -> -9.00, +6 -> +6.00 dB, fit residual <= 0.009 dB rms, no band content. It is BEFORE the bands: Treble +16 clips the -20 dBFS sweep at Trim 0 and is linear again at Trim -9 and -18 (0.003 and 0.007 dB rms), which a scalar after the bands could not do.",
+  "The block runs in the PRE-EMPHASISED domain (input_stage.de_emphasis = 'after_effect'; engine/render.py defers the de-emphasis filter until after the renderer). Evidence: at Treble +16 / Trim 0 the -20 dBFS sweep clips above ~9 kHz and its plateau FALLS with frequency (13.57 dB at 10 kHz, 13.07 at 18 kHz) by about the same amount the pre-emphasis shelf rises, where a flat internal ceiling predicts a RISING plateau. Fitting the ceiling both ways over 200 Hz - 19 kHz: 0.175 dB rms (0.380 above 8 kHz) with the pre-emphasis in the path, 0.790 (1.799) without.",
+  "Residual of this model against the measured complex response, 30 Hz - 18 kHz, one delay fitted out per capture: 0.043 dB rms, 0.173 dB max, 0.15 deg rms over 39 of the 46 curves. The seven left out are the two rows where the unit itself is clipping and the four Mid Freq 250/500 rows (below).",
+  "Unmodelled: at Mid Freq 250 and 500 the measured mid band does not return to 0 dB below about 150 Hz -- Mid 500 +8 reads -0.71 dB at 20 Hz where this model says +0.04, Mid 250 +16 reads -0.78 where the model says +0.98, and the cuts mirror it. Sweep, noise and clicks agree to 0.06 dB on those rows, so it is the unit, and it is antisymmetric in gain, so it is not a fixed path difference. It reads as the unit's own coefficient rounding: at 250 Hz at this rate the DC gain of that biquad is the ratio of two sums of order 1.6e-3, so 5e-4 of coefficient error is 0.7 dB there. It is the whole reason those four captures fit at 0.36-0.52 dB rms where every other one fits at 0.03-0.11."
+ ]
+}

@@ -1,0 +1,361 @@
+[
+ {
+  "_note": "REV identification grid, TAIL set (`make signals-tail`, relaunch Bench; `make signals-normal` afterwards). LIN, all other blocks off, Block 2 Ambience slot only. Each tail-set capture has one click, one -20 dBFS burst, one -6 dBFS burst and a 4 s tone, each followed by a 28 s silent tail, so Rev Time 10 s fits. Rev Time is displayed in seconds with one decimal; the values below are the display values. Balance 25 = half wet on this unit's convention (check: routing c). Order of importance: rows 1-6 (time-invariance + topology fingerprint) decide how hard the rest is; capture those first. ROWS 1-6: TIME-INVARIANCE. Each Type captured twice at the same setting; if the two tails differ beyond the noise floor the loops are modulated.",
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "ROOM",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "ROOM",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "PLATE",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "PLATE",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "_note": "ROWS 7-9: TOPOLOGY FINGERPRINT. Minimum Rev Time, no damping, minimum pre-delay: the click's first ~100 ms writes the comb/allpass delay lengths out as discrete echoes.",
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "ROOM",
+   "Pre Dly": 1,
+   "Rev Time": 0.1,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 0.1,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "PLATE",
+   "Pre Dly": 1,
+   "Rev Time": 0.1,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "_note": "REV TIME LAW per Type: decay slope -> feedback mapping; is the displayed time an RT60?",
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "ROOM",
+   "Pre Dly": 1,
+   "Rev Time": 0.3,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "ROOM",
+   "Pre Dly": 1,
+   "Rev Time": 1.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "ROOM",
+   "Pre Dly": 1,
+   "Rev Time": 3.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "ROOM",
+   "Pre Dly": 1,
+   "Rev Time": 10.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 0.3,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 1.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 3.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 10.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "PLATE",
+   "Pre Dly": 1,
+   "Rev Time": 0.3,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "PLATE",
+   "Pre Dly": 1,
+   "Rev Time": 1.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "PLATE",
+   "Pre Dly": 1,
+   "Rev Time": 3.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "PLATE",
+   "Pre Dly": 1,
+   "Rev Time": 10.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "_note": "HIGH DAMP LAW per Type at Rev Time 2.0 (HD 0 is rows 1/3/5): per-repeat spectral decay -> in-loop filter.",
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "ROOM",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 25,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "ROOM",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 50,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 25,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 50,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "PLATE",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 25,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "PLATE",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 50,
+   "Balance": 25
+  }
+ },
+ {
+  "_note": "PRE DLY: 50 and 100 ms against row 3 (1 ms). Plain delay outside the loop, or does it move the early pattern too?",
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 50,
+   "Rev Time": 2.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 100,
+   "Rev Time": 2.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "_note": "BALANCE: 10 and 50 against row 3 (25). Wet send (dry unchanged) or crossfade (dry drops)?",
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 0,
+   "Balance": 10
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 0,
+   "Balance": 50
+  }
+ },
+ {
+  "_note": "LONG TAIL + DAMP: Rev Time 10 with High Damp 50 -- loop word length / truncation noise floor and any in-loop saturation on the -6 dBFS burst.",
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 10.0,
+   "High Damp": 50,
+   "Balance": 25
+  }
+ }
+]

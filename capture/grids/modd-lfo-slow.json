@@ -1,0 +1,5 @@
+[
+  {"effect": "MODD", "input": "LIN", "params": {"Speed": 0.02, "Depth": 25, "Dly Time": 200, "Feedback": 0, "High Damp": 0, "L Bal": 50, "R Bal": 50}},
+  {"effect": "MODD", "input": "LIN", "params": {"Speed": 0.10, "Depth": 25, "Dly Time": 200, "Feedback": 0, "High Damp": 0, "L Bal": 50, "R Bal": 50}},
+  {"effect": "MODD", "input": "LIN", "params": {"Speed": 0.18, "Depth": 25, "Dly Time": 200, "Feedback": 0, "High Damp": 0, "L Bal": 50, "R Bal": 50}}
+]

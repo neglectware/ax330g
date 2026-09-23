@@ -1,0 +1,10 @@
+[
+  {"effect": "SMOD", "input": "LIN", "params": {"Speed": 1.0, "Depth": 25, "L Dly": 100, "R Dly": 100, "L Fb": 0,  "R Fb": 0,  "L Bal": 50, "R Bal": 50}},
+  {"effect": "SMOD", "input": "LIN", "params": {"Speed": 1.0, "Depth": 50, "L Dly": 100, "R Dly": 100, "L Fb": 0,  "R Fb": 0,  "L Bal": 50, "R Bal": 50}},
+  {"effect": "SMOD", "input": "LIN", "params": {"Speed": 5.0, "Depth": 25, "L Dly": 100, "R Dly": 100, "L Fb": 0,  "R Fb": 0,  "L Bal": 50, "R Bal": 50}},
+  {"effect": "SMOD", "input": "LIN", "params": {"Speed": 1.0, "Depth": 25, "L Dly": 100, "R Dly": 200, "L Fb": 0,  "R Fb": 0,  "L Bal": 50, "R Bal": 50}},
+  {"effect": "SMOD", "input": "LIN", "params": {"Speed": 1.0, "Depth": 25, "L Dly": 250, "R Dly": 1,   "L Fb": 0,  "R Fb": 0,  "L Bal": 50, "R Bal": 50}},
+  {"effect": "SMOD", "input": "LIN", "params": {"Speed": 1.0, "Depth": 25, "L Dly": 100, "R Dly": 100, "L Fb": 25, "R Fb": 25, "L Bal": 25, "R Bal": 25}},
+  {"effect": "SMOD", "input": "LIN", "params": {"Speed": 1.0, "Depth": 0,  "L Dly": 100, "R Dly": 100, "L Fb": 0,  "R Fb": 0,  "L Bal": 50, "R Bal": 50}},
+  {"effect": "SMOD", "input": "LIN", "params": {"Speed": 1.0, "Depth": 25, "L Dly": 100, "R Dly": 100, "L Fb": 0,  "R Fb": 0,  "L Bal": 50, "R Bal": 0}}
+]

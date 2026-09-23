@@ -1,0 +1,5 @@
+[
+  {"effect": "SDLY", "input": "LIN", "params": {"L Dly": 300, "R Dly": 300, "L Fb": 0, "R Fb": 0, "High Damp": 0, "L Bal": 20, "R Bal": 20}},
+  {"effect": "SDLY", "input": "LIN", "params": {"L Dly": 300, "R Dly": 300, "L Fb": 0, "R Fb": 0, "High Damp": 0, "L Bal": 30, "R Bal": 30}},
+  {"effect": "SDLY", "input": "LIN", "params": {"L Dly": 300, "R Dly": 300, "L Fb": 0, "R Fb": 0, "High Damp": 0, "L Bal": 45, "R Bal": 45}}
+]

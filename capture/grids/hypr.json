@@ -1,0 +1,329 @@
+[
+ {
+  "_note": "HYPR grid, normal set (`make signals-normal`), LIN, Block 1 = HYPR alone, all Block 2 off. Defaults for rows unless stated: Type 1, Harmonics 0, Sensitivity 25, Polarity UP, Depth 0, Decay 25, Resonance 0, Direct 0, Effect 50 -- i.e. effect path only, no sweep, no resonance, minimum drive: the quietest thing the block can do. ROWS 1-3: paths. Row 1 = that baseline; is the effect path clean at Harmonics 0 or already a fuzz?",
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  }
+ },
+ {
+  "_note": "Direct path alone: is Direct Level a clean copy of the input (compare with BYPASS)?",
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 50,
+   "Effect Level": 0
+  }
+ },
+ {
+  "_note": "Both at 25: are the two paths summed in phase, and is Direct pre- or post-driver?",
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 25,
+   "Effect Level": 25
+  }
+ },
+ {
+  "_note": "ROWS 4-9: THE DRIVER, static (Depth 0, Resonance 0). Harmonics 25/50 on Type 1, then Type 2 at 0/25/50. The ramp gives the transfer curve, the sweep the harmonic structure and aliasing, the sine20 the THD.",
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 25,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  }
+ },
+ {
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  }
+ },
+ {
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  }
+ },
+ {
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 25,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  }
+ },
+ {
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  }
+ },
+ {
+  "_note": "Driver with a hot input (MAX) at Harmonics 50, Type 1: where the driver's own ceiling sits relative to the input stage's.",
+  "effect": "HYPR",
+  "input": "MAX",
+  "params": {
+   "Type": 1,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  }
+ },
+ {
+  "_note": "ROWS 10-12: THE RESONATOR AT REST (Depth 0, so no sweep): Resonance 25 and 50, then 50 with Harmonics 0 on Type 2. The sweep/noise segments give the resting filter shape and its center frequency; the sine20 shows ringing.",
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  }
+ },
+ {
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 50,
+   "Direct Level": 0,
+   "Effect Level": 50
+  }
+ },
+ {
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 50,
+   "Direct Level": 0,
+   "Effect Level": 50
+  }
+ },
+ {
+  "_note": "ROWS 13-20: THE SWEEP. Depth 25 and 50 at Sensitivity 25, Resonance 25 (so the peak is visible in a spectrogram): the ramp maps cutoff vs input level, the bursts give the attack, the 4 s sine's stop gives the decay, the DI clip is the listening reference.",
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 25,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  }
+ },
+ {
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  }
+ },
+ {
+  "_note": "Sensitivity law: 10 and 50 at Depth 50.",
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 10,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  }
+ },
+ {
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 50,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  }
+ },
+ {
+  "_note": "Decay law: 0 and 50 at Depth 50 / Sens 25.",
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 0,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  }
+ },
+ {
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 50,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  }
+ },
+ {
+  "_note": "Polarity DOWN at Depth 50: the same sweep inverted, or a different range?",
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "DOWN",
+   "Depth": 50,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  }
+ },
+ {
+  "_note": "Everything up: Type 2, Harmonics 50, Sens 50, Depth 50, Decay 25, Resonance 50 -- the guitar-synth extreme, the listening test for the whole block.",
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 50,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 25,
+   "Resonance": 50,
+   "Direct Level": 0,
+   "Effect Level": 50
+  }
+ },
+ {
+  "_note": "ROW 21: Resonance 50 + Depth 50 + Harmonics 50 with Direct 25 / Effect 25: order of driver vs resonator (does the resonator ring on the distorted or the clean signal?) and the mix law.",
+  "effect": "HYPR",
+  "input": "LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 25,
+   "Resonance": 50,
+   "Direct Level": 25,
+   "Effect Level": 25
+  }
+ }
+]

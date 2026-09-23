@@ -1,0 +1,4 @@
+[
+  {"effect": "BYPASS", "input": "LIN", "params": {}},
+  {"effect": "BYPASS", "input": "MAX", "params": {}}
+]

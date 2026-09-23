@@ -1,0 +1,155 @@
+[
+ {
+  "_note": "HYPR-2, normal set (`make signals-normal`), LIN unless stated, Block 1 = HYPR alone, Block 2 off. Written 2026-09-18 after the first 21-row campaign (docs/hypr-model-2026-09-18.md). THE ONE THING THE FIRST GRID GOT WRONG: every sweep row sat at Type 1 / Harmonics 0, where the driver's output is 50 dB down and the resonator has nothing to resonate on, so Depth, Sensitivity, Decay and Polarity were all measured on a signal at the noise floor and Sensitivity 10/25/50 came out identical. THE SWEEP AXIS HERE RUNS AT TYPE 2 / HARMONICS 50, where the block is loud. ROWS 1-4: Effect Level law (the first campaign measured only Direct). Effect 0 is the control (silence from the effect path); 12/25/37 with Direct 0 give the law against the existing Effect 50 row.",
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 0}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 12}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 25}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 37}
+ },
+ {
+  "_note": "ROWS 5-10: THE DRIVER, filled in. Harmonics 5/10/37 on Type 1 and on Type 2, all at Depth 0 / Resonance 0, so the static waveshaper is sampled at six points per Type instead of three. Type 1 is the one that needs them: it goes from nearly linear at Harmonics 0 (H1 -77.4 dBFS, no harmonic above -104) to purely ODD at 25 (H1 -51.1, H3 -71.3, H2 -86.8) to purely EVEN at 50 (H2 -67.8, H1 -87.2), and three points cannot say whether that is a crossfade, a moving bias or a gain into a fixed asymmetric shaper.",
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 1, "Harmonics": 5, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 1, "Harmonics": 10, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 1, "Harmonics": 37, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 5, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 10, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 37, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "_note": "ROWS 11-13: THE RESONATOR'S Q, measured on a LOUD driver so the peak is far above the floor. Resonance 10/25/37 at Type 2 / Harmonics 50 / Depth 0. With the existing Resonance 0 and 50 rows this is a five-point Q table; the current model has three points and its Q(50) = 64 is only a LOWER BOUND (the +23.5 dB peak was read on 1/17-octave bands and the true peak is narrower than one band). The clicks on these rows give the ring decay directly, which is the independent check the first campaign could not make.",
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 10, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 37, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "_note": "ROWS 14-18: THE DEPTH LAW, on a loud driver. Depth 0/10/25/37/50 at Type 2 / Harmonics 50 / Sensitivity 25 / Resonance 25 / Decay 25. The first campaign's Depth 25 and Depth 50 put the ramp's 1 kHz crossing 0.3 dB apart, which constrains nothing; here the DI clip's peak track is 30 dB above the floor and the corner trajectory can be read per note.",
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 10, "Decay": 25, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 25, "Decay": 25, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 37, "Decay": 25, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 50, "Decay": 25, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "_note": "ROWS 19-22: THE SENSITIVITY LAW, on a loud driver. Sensitivity 0/10/37/50 at Depth 50 (row 18 above is the Sensitivity 25 point). The model's maps.sens has 50 -> 1.00 from the all-up row and 25 -> 0.69 from row 21 of the first grid, and 10 -> 0.35 is a guess. Sensitivity 0 is the row that says whether the control can switch the sweep off.",
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 0, "Polarity": "UP", "Depth": 50, "Decay": 25, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 10, "Polarity": "UP", "Depth": 50, "Decay": 25, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 37, "Polarity": "UP", "Depth": 50, "Decay": 25, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 50, "Polarity": "UP", "Depth": 50, "Decay": 25, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "_note": "ROWS 23-26: THE DECAY LAW, on a loud driver. Decay 0/10/37/50 at Depth 50 / Sensitivity 25 (row 18 is the Decay 25 point). Decay is the weakest law in the model: it was fitted to a 98 ms shift in the ramp's 1 kHz crossing between Decay 0 and 25, plus the observation that Decay 50 is still 8 dB elevated 1.5 s after the previous segment. Here the four burst decays and the 4 s sine's release are all 30 dB above the floor, so the corner's fall time can be fitted directly.",
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 50, "Decay": 0, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 50, "Decay": 10, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 50, "Decay": 37, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 50, "Decay": 50, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "_note": "ROWS 27-29: POLARITY DOWN on a loud driver, Depth 10/25/50. The first campaign has exactly one DOWN capture and it is at Type 1 / Harmonics 0, so all that could be said is that the corner moves the other way. These three say whether DOWN has the same octave range as UP, and where it bottoms out.",
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "DOWN", "Depth": 10, "Decay": 25, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "DOWN", "Depth": 25, "Decay": 25, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "DOWN", "Depth": 50, "Decay": 25, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "_note": "ROW 30: the ORDER row. Type 2 / Harmonics 50 / Resonance 50 / Depth 0 with the send 20 dB DOWN at the interface (needs a matching BYPASS capture at the same send level in the same sitting). The driver's clip threshold is at -25.6 dBFS at the normal send, so at -20 dB send the whole signal set is below it and the effect path is LINEAR -- which is the only way to see the resonator's own response without a fuzz in front of it, and the only clean test of whether the resonator is before or after the driver (if before, the Resonance-50 boost disappears from a clipped row; if after, it stays).",
+  "effect": "HYPR", "input": "LIN", "send_db": -20,
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 50, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "_note": "ROW 31: the same at Resonance 0, the partner of row 30. Their ratio is the resonator's Q-dependent response measured on a linear path.",
+  "effect": "HYPR", "input": "LIN", "send_db": -20,
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "_note": "ROW 32: the SLOW-STATE row, the largest unmodelled discrepancy. Type 1 / Harmonics 50 / Depth 0 / Resonance 0, captured with the LFO signal set (`make signals-lfo`, a 30 s 1 kHz tone) instead of the normal set. On the normal set this setting reads H1 -87.2 / H2 -67.8 on the steady 4 s sine and H1 -63.1 / H2 -87.6 as the ramp passes the same level -- the two harmonics swap places -- and the output takes about 0.6 s to settle after a tone starts. A 30 s tone says what the settling actually is and how long it takes.",
+  "effect": "HYPR", "input": "LIN", "signal_set": "lfo",
+  "params": {"Type": 1, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "_note": "ROW 33: the same slow-state test at Type 2 / Harmonics 0, the row whose ramp is the cleanest hard clip in the campaign (flat to 0.1 dB over 22 dB). If its 30 s tone is flat and Type 1's is not, the slow state belongs to the even/rectifier branch.",
+  "effect": "HYPR", "input": "LIN", "signal_set": "lfo",
+  "params": {"Type": 2, "Harmonics": 0, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "_note": "ROW 34: MAX input on the loud driver, Type 2 / Harmonics 50 / Depth 0 / Resonance 0. The first campaign's only MAX row is at Type 1 / Harmonics 50, where the output is near the floor; this one says whether the converter's ceiling is ever reached before the driver's own, which is the one thing the input-stage model needs from this block.",
+  "effect": "HYPR", "input": "MAX",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "_note": "ROW 35: the Etherbunny-style listening row and the model's hold-out. Type 2 / Harmonics 37 / Sensitivity 37 / Depth 37 / Decay 37 / Resonance 37 / Direct 25 / Effect 25 -- every axis off the points the model was fitted on, so nothing in it is interpolated from its own neighbours.",
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 37, "Sensitivity": 37, "Polarity": "UP", "Depth": 37, "Decay": 37, "Resonance": 37, "Direct Level": 25, "Effect Level": 25}
+ }
+]

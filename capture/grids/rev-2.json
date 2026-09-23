@@ -1,0 +1,170 @@
+[
+ {
+  "_note": "REV hot-broadband grid, REV set (`make signals-rev` first, relaunch Bench; `make signals-normal` afterwards). LIN, all other blocks off, Block 2 Ambience slot only -- same setup as capture/grids/rev.json. Answers docs/rev-identification-2026-09-17.md section 8: the tail set's -16 dBFS click only carries 28 dB of range, which is what stopped the structural identification short of the tank. ROWS 1-6: TANK TOPOLOGY at high SNR. Balance 50 (all wet, no dry path to deconvolve around), each Type at Rev Time 10 (long tail, tank fully excited) and Rev Time 0.1 (near-minimum, the open-loop taps alone).",
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "ROOM",
+   "Pre Dly": 1,
+   "Rev Time": 10.0,
+   "High Damp": 0,
+   "Balance": 50
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "ROOM",
+   "Pre Dly": 1,
+   "Rev Time": 0.1,
+   "High Damp": 0,
+   "Balance": 50
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 10.0,
+   "High Damp": 0,
+   "Balance": 50
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 0.1,
+   "High Damp": 0,
+   "Balance": 50
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "PLATE",
+   "Pre Dly": 1,
+   "Rev Time": 10.0,
+   "High Damp": 0,
+   "Balance": 50
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "PLATE",
+   "Pre Dly": 1,
+   "Rev Time": 0.1,
+   "High Damp": 0,
+   "Balance": 50
+  }
+ },
+ {
+  "_note": "ROWS 7-11: BALANCE crossfade table (section 8 item 3) -- HALL, Rev Time 2, High Damp 0 (matches rev.json's Balance-25 row, already captured, as the sixth point). Wet side reads to 0.05 dB nulling against Balance 50 (row 3 above).",
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 0,
+   "Balance": 0
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 0,
+   "Balance": 5
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 0,
+   "Balance": 15
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 0,
+   "Balance": 35
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 2.0,
+   "High Damp": 0,
+   "Balance": 45
+  }
+ },
+ {
+  "_note": "ROWS 12-15: REV TIME coefficient table (section 8 item 2) -- HALL, High Damp 0, Balance 25 (rev.json's existing Rev Time 0.3/1/3/10 rows at this same Type/HD/Balance are the other four points). Decides whether the mapping is smooth and where the coefficient saturates.",
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 0.5,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 1.5,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 5.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ },
+ {
+  "effect": "REV",
+  "input": "LIN",
+  "params": {
+   "Type": "HALL",
+   "Pre Dly": 1,
+   "Rev Time": 7.0,
+   "High Damp": 0,
+   "Balance": 25
+  }
+ }
+]

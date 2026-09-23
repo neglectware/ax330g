@@ -1,0 +1,63 @@
+{
+ "name": "AX30G Reverb -- four parallel feedback combs (tapped twice, once per output) into a per-channel Schroeder allpass cascade; measured 2026-09-18",
+ "notes": [
+  "Derivation: docs/rev-model-2026-09-18.md, from the hot-broadband REV capture set (-6 dBFS click / 5 s sweep / 60 ms burst at Balance 50). It supersedes the candidate-A model of docs/rev-identification-2026-09-17.md, which was known wrong.",
+  "Structure per Type: predelay -> a per-channel pure input delay -> FOUR parallel feedback combs (each a plain recirculating delay, no filter unless High Damp is up) -> each comb is read at ONE position per output channel, the four reads summed with equal weight -> a three-section series Schroeder allpass cascade, its own lengths per channel -> wet, inverted.",
+  "Every allpass is y[n] = u*v[n] + v[n-L] - u*y[n-L] (a Schroeder allpass with a NEGATIVE coefficient), the sign pattern the unit shows (+,+,-,+ along each element's own echo series). Sections whose LENGTH is shared between L and R also share u, to the measurement's 0.3 %.",
+  "comb read offsets are given in each channel's own frame, i.e. after input_delay[channel]; several exceed the comb's own length (PLATE), which a delay line longer than its feedback tap supplies.",
+  "Rev Time law: comb gain g_i = 10^(-3*rt_length_i/(RevTime*fs)) -- each comb's own RT60 IS the displayed Rev Time in seconds. rt_length equals the comb's delay for ROOM and HALL; for PLATE's two short combs it is twice the delay (measured: those two decay at exactly 2x the rate per sample that a common RT60 would give).",
+  "High Damp: one first-order lowpass in each comb's feedback path, pole a. The coefficients are fitted by simulation against the per-octave decay of the click tails and are the weakest part of this model (see the report's uncertainties).",
+  "Balance is a crossfade; the wet and dry tables are measured, eight points each."
+ ],
+ "effect": "REV",
+ "sample_rate": 39063.829787,
+ "chain": "ax30g-chain.json",
+ "input": "sum",
+ "wet_polarity": -1.0,
+ "params": {
+  "Type": "HALL",
+  "Pre Dly": 1,
+  "Rev Time": 2.0,
+  "High Damp": 0,
+  "Balance": 25
+ },
+ "maps": {
+  "pre_delay": {"type": "samples_per_ms", "k": 39, "offset_samples": 2},
+  "balance_wet": {"type": "interp", "points": [[0, 0.0], [5, 0.0919], [10, 0.1833], [15, 0.2749], [25, 0.7031], [35, 0.8435], [45, 0.9478], [50, 1.0]]},
+  "balance_dry": {"type": "interp", "points": [[0, 1.0], [5, 0.9769], [10, 0.9367], [15, 0.8919], [25, 0.7715], [35, 0.4687], [45, 0.1583], [50, 0.0]]},
+  "high_damp": {"type": "linear", "in_max": 50.0, "out_max": 0.0}
+ },
+ "comb_mix": 0.5,
+ "types": {
+  "ROOM": {
+   "input_delay": [0, 0],
+   "combs": [898, 1064, 1687, 1955],
+   "rt_length": [898, 1064, 1687, 1955],
+   "reads": [[0, 814], [873, 0], [0, 1150], [631, 0]],
+   "input_gain": 0.5254,
+   "allpass_l": [[151, 0.7544], [226, 0.6506], [265, 0.6523]],
+   "allpass_r": [[130, 0.7126], [226, 0.6492], [265, 0.6569]],
+   "high_damp_map": {"type": "interp", "points": [[0, 0.0], [25, 0.15], [50, 0.40]]}
+  },
+  "HALL": {
+   "input_delay": [353, 470],
+   "combs": [4298, 4689, 5002, 5744],
+   "rt_length": [4298, 4689, 5002, 5744],
+   "reads": [[3945, 1641], [0, 4219], [4649, 0], [2149, 5274]],
+   "input_gain": 0.4541,
+   "allpass_l": [[809, 0.8007], [917, 0.6518], [1955, 0.6058]],
+   "allpass_r": [[809, 0.8024], [917, 0.6497], [1759, 0.5019]],
+   "high_damp_map": {"type": "interp", "points": [[0, 0.0], [25, 0.40], [50, 0.70]]}
+  },
+  "PLATE": {
+   "input_delay": [0, 0],
+   "combs": [1955, 1994, 4298, 4439],
+   "rt_length": [3910, 3988, 4298, 4439],
+   "reads": [[0, 3908], [3947, 0], [0, 2150], [2228, 0]],
+   "input_gain": 0.7988,
+   "allpass_l": [[923, 0.7777], [1017, 0.7010], [1330, 0.6405]],
+   "allpass_r": [[1505, 0.7003], [1017, 0.7000], [1330, 0.6405]],
+   "high_damp_map": {"type": "interp", "points": [[0, 0.0], [25, 0.40], [50, 0.80]]}
+  }
+ }
+}

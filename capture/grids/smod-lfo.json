@@ -1,0 +1,4 @@
+[
+  {"effect": "SMOD", "input": "LIN", "params": {"Speed": 1.0, "Depth": 25, "L Dly": 100, "R Dly": 100, "L Fb": 0, "R Fb": 0, "L Bal": 50, "R Bal": 50}},
+  {"effect": "SMOD", "input": "LIN", "params": {"Speed": 5.0, "Depth": 50, "L Dly": 100, "R Dly": 100, "L Fb": 0, "R Fb": 0, "L Bal": 50, "R Bal": 50}}
+]

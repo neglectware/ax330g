@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 3.22)
+project(pluginrender VERSION 0.1.0)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_OSX_DEPLOYMENT_TARGET "13.0" CACHE STRING "")
+if(NOT DEFINED JUCE_DIR)
+  set(JUCE_DIR "$ENV{HOME}/Developer/JUCE")
+endif()
+add_subdirectory(${JUCE_DIR} JUCE)
+juce_add_console_app(pluginrender PRODUCT_NAME "pluginrender")
+target_sources(pluginrender PRIVATE main.cpp)
+target_compile_definitions(pluginrender PRIVATE JUCE_PLUGINHOST_VST3=1 JUCE_PLUGINHOST_AU=1 JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_MODAL_LOOPS_PERMITTED=1)
+target_link_libraries(pluginrender PRIVATE juce::juce_audio_processors juce::juce_audio_formats juce::juce_audio_utils
+  PUBLIC juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
