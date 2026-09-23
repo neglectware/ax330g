@@ -51,10 +51,10 @@ The **Input** control is a model of the Input Level knob of the unit. It has two
 
 | Input | Equivalent position of the unit's Input Level knob |
 |---|---|
-| 0 dB | LIN, the reference position. The author measured all effect blocks at this position. |
+| 0 dB | LIN, the reference position. All captures of the effect blocks use this position. |
 | +14 dB | MAX, the knob at its fully clockwise position |
 
-The measured difference between LIN and MAX is 14.05 dB. The author did not measure positions between LIN and MAX. Thus, the plugin shows the Input control in dB and not in the numbers of the unit's knob.
+The measured difference between LIN and MAX is 14.05 dB. There are no captures at positions between LIN and MAX. Thus, the plugin shows the Input control in dB and not in the numbers of the unit's knob.
 
 Values above +14 dB have no equivalent on the unit. They drive the emulated converter harder than the unit can.
 
@@ -179,7 +179,7 @@ The LCD is a model of the 16-character, 2-line display of the unit. It uses the 
 
 ### The start-up sequence
 
-The start-up sequence plays when the editor opens for the first time in a plugin instance. It is a copy of the sequence that the unit shows when you connect its power. The author measured the sequence dot by dot from video of an AX300G.
+The start-up sequence plays when the editor opens for the first time in a plugin instance. It is a copy of the sequence that the unit shows when you connect its power. Mark O'Brien recorded a video of his AX300G at power-on. Claude measured the sequence dot by dot from that video.
 
 | Time from start | Display |
 |---|---|

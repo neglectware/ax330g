@@ -12,7 +12,7 @@
 
 The plugin is a universal binary. It contains a program for Apple silicon and a program for Intel processors. The installer puts both programs on the computer, and macOS selects the correct one.
 
-NOTE: The Intel program has a minimum system version of macOS 10.13. The author has not tested the plugin on macOS 10.13. The author tested the plugin on a later version of macOS on Apple silicon.
+NOTE: The Intel program has a minimum system version of macOS 10.13. Nobody has tested the plugin on macOS 10.13. Mark O'Brien uses the plugin on a later version of macOS on Apple silicon.
 
 ## 2.2 The installer
 

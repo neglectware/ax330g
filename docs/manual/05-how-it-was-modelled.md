@@ -1,22 +1,22 @@
 # 5. Measurement and models
 
-This chapter tells how the author measured the unit and made the models. It is for readers who want to know the method. You do not need it to use the plugin.
+This chapter tells how Mark O'Brien and Claude measured the unit, and how Claude made the models. It is for readers who want to know the method. You do not need it to use the plugin.
 
 ## 5.1 The principle
 
-The firmware of the unit is in mask ROM, and the author did not read it. The author treated the unit as a black box. A black box has an input and an output, and nothing else is visible.
+The firmware of the unit is in mask ROM, and nobody on the project read it. The project treated the unit as a black box. A black box has an input and an output, and nothing else is visible.
 
 The method has five steps:
 
 1. Send a fixed set of test signals into the unit.
-2. Record the output of the unit. This manual calls each record a capture.
+2. Record the output of the unit. This manual calls each record a capture. Mark O'Brien made every capture by hand.
 3. Measure the properties of each effect from the captures.
 4. Write a model that gives the same properties, and render the test signals through it.
 5. Compare the model output with the capture. The difference shows the error of the model.
 
 ## 5.2 The bench
 
-The bench has three parts: the unit, an audio interface and a computer.
+Mark O'Brien set up the bench. It has three parts: the unit, an audio interface and a computer.
 
 - One output of the interface goes to the guitar input of the unit.
 - A second output sends the same signal back into an input of the interface. This is the reference channel.
@@ -24,11 +24,11 @@ The bench has three parts: the unit, an audio interface and a computer.
 
 The interface records three channels on one clock: unit left, unit right and the reference. The analysis finds the test signal in the reference channel and uses it to align each capture. Thus, a capture can start at any time, and the exact send level is known for each capture.
 
-The Input Level knob of the unit stays at one calibrated position, LIN, for all normal captures. LIN is 14 dB below the MAX position, and the author set it with a meter. At LIN, a full-scale 1 kHz sine from the interface is still 1.5 dB below the clip level of the unit's converter. The Output Level knob also stays at one fixed position.
+The Input Level knob of the unit stays at one calibrated position, LIN, for all normal captures. LIN is 14 dB below the MAX position. Mark O'Brien set it with a meter. At LIN, a full-scale 1 kHz sine from the interface is still 1.5 dB below the clip level of the unit's converter. The Output Level knob also stays at one fixed position.
 
 ## 5.3 The test signals
 
-The normal signal set is one 48 kHz file of about 57 seconds. It has these parts, each with a gap after it for the effect tail:
+Claude designed the test signals. The normal signal set is one 48 kHz file of about 57 seconds. It has these parts, each with a gap after it for the effect tail:
 
 | Part | Content | Use |
 |---|---|---|
@@ -44,7 +44,7 @@ The normal signal set is one 48 kHz file of about 57 seconds. It has these parts
 
 The clicks and bursts occur at irregular times. This makes sure that they do not all occur at the same LFO phase.
 
-The author also used three special sets:
+Claude also designed three special sets:
 
 | Set | Content | Use |
 |---|---|---|
@@ -54,7 +54,7 @@ The author also used three special sets:
 
 ## 5.4 Parameter grids
 
-For each effect, the author wrote a grid: a list of parameter values to capture. Each row of the grid is one capture. A row changes one parameter and keeps the others at fixed values. For example, the Stereo Delay grid changes Balance with Feedback at 0, and changes Feedback with Balance at 25.
+For each effect, Claude wrote a grid: a list of parameter values to capture. Mark O'Brien then set the knobs of the unit to each row and recorded it. Each row of the grid is one capture. A row changes one parameter and keeps the others at fixed values. For example, the Stereo Delay grid changes Balance with Feedback at 0, and changes Feedback with Balance at 25.
 
 Rows at the MAX input position come at the end of a grid. They measure overload behavior.
 
@@ -73,9 +73,9 @@ Rows at the MAX input position come at the end of a grid. They measure overload 
 
 ## 5.6 Fit by render
 
-A measurement alone cannot always choose between two possible models. Then the author rendered each candidate model through the test signals and compared the result with the capture. The candidate with the smallest difference is the one that the model uses.
+A measurement alone cannot always choose between two possible models. Then Claude rendered each candidate model through the test signals and compared the result with the capture. The candidate with the smallest difference is the one that the model uses.
 
-The author set the stop criterion before each fit: a fixed number of candidates or a fixed tolerance. The fit stops on that criterion and not on the appearance of the result.
+Claude set the stop criterion before each fit: a fixed number of candidates or a fixed tolerance. The fit stops on that criterion and not on the appearance of the result.
 
 ## 5.7 Validation: the null test
 
@@ -89,7 +89,7 @@ The main test of a model is the null test:
 
 A more negative null depth shows a smaller error. A null of −30 dB means that the residual is 30 dB below the signal. A null of 0 dB means that the model and the capture have no relation.
 
-The guitar part of the signal set is a hold-out. The author never used it to fit a model. It shows how the model behaves on real music.
+The guitar part of the signal set is a hold-out. Claude never used it to fit a model. It shows how the model behaves on real music.
 
 The bench itself limits the null depth. The bypass capture of the unit, with no effect, nulls at about −30 dB overall against the model of the converter chain. The noise and guitar parts have a lower limit because of the playback path of the interface. Thus, a block model that reaches about −30 dB overall is at the limit of the bench.
 
@@ -117,17 +117,17 @@ These numbers are measurements of the error. They do not mean that the model is 
 
 ## 5.8 From the reference model to the plugin
 
-The author first wrote each model in a reference renderer, and made all the measurements and fits with it. Then the author wrote the plugin code in C++ from the reference model.
+Claude first wrote each model in a reference renderer in Python, and made all the measurements and fits with it. Then Claude wrote the plugin code in C++ from the reference model.
 
-The author compared the C++ code with the reference renderer on the same signals. The difference was −98 dB or lower for every block, and often below −150 dB. Thus, the plugin code is a correct copy of the models, and the null depths above apply to the plugin.
+Claude compared the C++ code with the reference renderer on the same signals. The difference was −98 dB or lower for every block, and often below −150 dB. Thus, the plugin code is a correct copy of the models, and the null depths above apply to the plugin.
 
 ## 5.9 The hardware facts
 
-The service manual of the unit gives these facts. The author used them to check the measurements.
+The service manual of the unit gives these facts. Mark O'Brien found the manual. Claude read it and used its facts to check the measurements.
 
 | Part | Fact |
 |---|---|
-| Sample clock | A 10 MHz system clock, divided by 256, gives 39,062.5 Hz. The author confirmed the rate with an oscilloscope. |
+| Sample clock | A 10 MHz system clock, divided by 256, gives 39,062.5 Hz. Mark O'Brien confirmed the rate with an oscilloscope. |
 | Analog-to-digital converter | SAA7366T, 18-bit bitstream |
 | Digital-to-analog converter | TDA1386T, 18-bit, 4-times oversampling and noise shaper |
 | Delay memory | 128 KB of DRAM |
@@ -136,7 +136,7 @@ The service manual of the unit gives these facts. The author used them to check 
 
 ## 5.10 The converter chain
 
-The author measured the response of the unit with no effect, from its input to its output. This is the converter chain. The model has two parts:
+Claude measured the response of the unit with no effect, from its input to its output. This is the converter chain. The model has two parts:
 
 - Three first-order high-pass filters at 5.49 Hz. They give the low-frequency response.
 - A filter that gives the high-frequency response.
@@ -155,17 +155,17 @@ The unit has a latency of 0.255 ms from input to output. The plugin includes thi
 
 ### The delay clock
 
-The measured delay times gave a law of 39 device samples for each displayed millisecond, plus 2 samples. The author found this law with three captures at 20 ms, 300 ms and 500 ms. The author then tested offsets of 1, 2 and 3 samples. The offset of 2 samples gave a null more than 20 dB better than the other two.
+The measured delay times gave a law of 39 device samples for each displayed millisecond, plus 2 samples. Claude found this law with three captures at 20 ms, 300 ms and 500 ms. Claude then tested offsets of 1, 2 and 3 samples. The offset of 2 samples gave a null more than 20 dB better than the other two.
 
 The Chorus gave an independent check. Its fixed delay of 939 samples is exact only at the nominal device rate.
 
 ## 5.11 The input stage
 
-The author measured the input stage from two bypass captures: one at LIN and one at MAX.
+Claude measured the input stage from two bypass captures: one at LIN and one at MAX.
 
 - **The gain difference.** MAX is 14.05 dB above LIN. The difference is flat within ±0.002 dB from 20 Hz to 7 kHz.
 - **The clip.** The overload is a hard clip. On the 1 kHz ramp, the measured compression follows the law of a hard clip within 0.019 dB rms over 18 dB of overload. A soft clip (tanh) gives 0.80 dB rms, which is 42 times worse.
-- **The pre-emphasis.** A first-order shelf filter before the clip. Its zero is at 2489 Hz and its pole is at 8759 Hz, with a total lift of 10.9 dB. The author found it with two independent methods. One method uses the clip point of the sweep at each frequency. The other uses the level of each harmonic of the clipped ramp.
+- **The pre-emphasis.** A first-order shelf filter before the clip. Its zero is at 2489 Hz and its pole is at 8759 Hz, with a total lift of 10.9 dB. Claude found it with two independent methods. One method uses the clip point of the sweep at each frequency. The other uses the level of each harmonic of the clipped ramp.
 - **A check against the schematic.** The component values in the service manual give a pole time constant of 18.33 µs. The measurement gives 18.17 µs. They agree to 0.9 %.
 - **The Peak LED.** The rule "1 dB below full scale, after the pre-emphasis" predicts the Peak LED threshold at five frequencies. Each prediction is inside the measured range.
 - **The recovery after a loud click.** A loud click at MAX has a tail of about 20 ms. The clip removes part of the click, and this leaves a small step of DC. The three 5.49 Hz high-pass filters of the converter chain then remove this DC slowly. The model has no special recovery part, and it gives the same tail.

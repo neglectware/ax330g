@@ -37,7 +37,7 @@ The plugin shows the parameters in the order of this table. The unit shows Speed
 6. The High Damp filter operates on the signal at the delay line input.
 7. Each output channel mixes the mono dry signal and the delay output with its own Balance value.
 
-The LFO is inside the feedback loop. Thus, each repeat goes through the delay line again with a new LFO position, and the pitch change increases with each repeat. The author measured this on the unit with short tone bursts. A later repeat of a burst had a larger pitch change than the first repeat.
+The LFO is inside the feedback loop. Thus, each repeat goes through the delay line again with a new LFO position, and the pitch change increases with each repeat. Claude measured this in captures with short tone bursts. A later repeat of a burst had a larger pitch change than the first repeat.
 
 The block uses the shared laws in the [block overview](README.md):
 
@@ -49,13 +49,13 @@ The block uses the shared laws in the [block overview](README.md):
 
 ### The LFO measurement
 
-The author measured the LFO of the unit from the pitch of a long tone through the Mod Delay at Feedback 0. The pitch change of the delayed tone gives the rate of change of the delay time. The author integrated it to get the delay against time.
+Claude measured the LFO of the unit from the pitch of a long tone through the Mod Delay at Feedback 0. The pitch change of the delayed tone gives the rate of change of the delay time. Claude integrated it to get the delay against time.
 
 At Speed 1, 5 and 9.5, the model delay follows the measured delay to within 0.08 to 0.22 device samples rms. One device sample is 0.0256 ms.
 
 ## Limits
 
-- The author captured the Mod Delay only at Dly Time 200 ms, at Feedback 0 and 25, and at High Damp 0.
-- The delay law, the feedback table, the balance table and the High Damp law come from the Stereo Delay measurements. The author did not measure them separately on the Mod Delay.
+- The captures of the Mod Delay use only Dly Time 200 ms, at Feedback 0 and 25, and at High Damp 0.
+- The delay law, the feedback table, the balance table and the High Damp law come from the Stereo Delay measurements. The project did not measure them separately on the Mod Delay.
 
 See also [chapter 6](../06-limitations.md).

@@ -20,7 +20,7 @@ The Chorus has no delay time, feedback or mix parameter. The unit fixes these va
 
 ## How it works
 
-The author measured these properties on the unit:
+Claude measured these properties in the captures:
 
 | Property | Value |
 |---|---|
@@ -36,7 +36,7 @@ The static delay is not a whole number of milliseconds in the delay time law of 
 
 The LFO moves the delay only above the static value. At the lowest point of the LFO cycle, the delay is 24.04 ms. At Depth 50, the highest point is 24.04 ms + 13.05 ms = 37.09 ms.
 
-The Chorus uses the same LFO as the Mod Delay: the same Speed table, the same shape and the same Depth law. The author measured each of these on the Chorus separately and compared the result with the Mod Delay:
+The Chorus uses the same LFO as the Mod Delay: the same Speed table, the same shape and the same Depth law. Claude measured each of these on the Chorus separately and compared the result with the Mod Delay:
 
 | Property | Chorus measurement | Mod Delay table |
 |---|---|---|
@@ -55,6 +55,6 @@ See [4.7](README.md#47-the-lfo-and-the-speed-parameter) for the LFO laws.
 
 ## Limits
 
-- The author did not measure the LFO rate at Speed 0.2 on the Chorus. The Mod Delay table gives this value.
+- There is no measurement of the LFO rate at Speed 0.2 on the Chorus. The Mod Delay table gives this value.
 
 See also [chapter 6](../06-limitations.md).

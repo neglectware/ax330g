@@ -1,10 +1,10 @@
 # 6. Limits of this version
 
-This chapter lists the known differences between the plugin and the unit. It also lists the properties that the author did not measure.
+This chapter lists the known differences between the plugin and the unit. It also lists the properties that the project did not measure.
 
 ## 6.1 Effects of the unit that are not in the plugin
 
-The unit has 27 effects that connect in chains, and one noise reduction function. The plugin contains 7 of the 27 effects. The author measured the Hyper Resonator, but it is not in the plugin yet.
+The unit has 27 effects that connect in chains, and one noise reduction function. The plugin contains 7 of the 27 effects. The project measured the Hyper Resonator, but it is not in the plugin yet.
 
 | Group on the unit | Effect | In the plugin |
 |---|---|---|
@@ -54,7 +54,7 @@ NOTE: The Distortion 1 of the unit uses an analog diode clip circuit outside the
 
 ## 6.3 The input stage
 
-- The author measured only the LIN and MAX positions of the Input Level knob. The law of the knob between these positions is not known. The plugin Input control is in dB.
+- The captures use only the LIN and MAX positions of the Input Level knob. The law of the knob between these positions is not known. The plugin Input control is in dB.
 - The model clips a single-sample click about 1 dB more than the unit does. This has no measurable effect on music.
 - The even harmonics above the second harmonic are about 5 dB lower in the model than on the unit, at full overload.
 - The unit's clip has a knee that is 0.06 dB softer than an ideal hard clip.
@@ -63,24 +63,24 @@ NOTE: The Distortion 1 of the unit uses an analog diode clip circuit outside the
 
 - The Speed control of the plugin moves in steps of 0.01 Hz. The dial of the unit moves in steps of 0.02 Hz up to 0.20 Hz and in steps of 0.1 Hz above that. Thus, the plugin can give Speed values that the unit cannot give.
 - The LFO of the plugin starts at the start of its cycle when the host starts or resets the plugin. The LFO of the unit runs freely from power-on.
-- Mod Delay: the delay law, feedback, balance and High Damp come from the Stereo Delay. The author captured the Mod Delay only at 200 ms and at High Damp 0.
+- Mod Delay: the delay law, feedback, balance and High Damp come from the Stereo Delay. The captures of the Mod Delay use only 200 ms and High Damp 0.
 - Stereo Mod Delay: no null test validates the long tails with the LFO on.
-- Stereo Delay: the author captured Ducking only at 0, 10, 25, 40 and 50, all at High Damp 0 and at LIN. The model assumes a mono Ducking detector.
+- Stereo Delay: the captures of Ducking use only 0, 10, 25, 40 and 50, all at High Damp 0 and at LIN. The model assumes a mono Ducking detector.
 - The unit has Ducking also on the Cross Delay, the Tap Tempo Delay and the Hold Delay. These delays are not in the plugin.
 - Stereo Delay: the unit has one mono input. The plugin gives the left and right host channels to the two delay lines. With a stereo source, the two lines get different signals.
 
 ## 6.5 The 3-Band EQ
 
 - At Mid Freq 250 Hz and 500 Hz, the unit has a level error of up to about 0.8 dB below 150 Hz. The model does not have this error.
-- The author captured only 5 of the 13 Mid Freq steps. One law gives the other 8.
-- The author did not capture gains between −2 dB and +2 dB. The half-dB steps near 0 dB come from the gain law.
+- The captures use only 5 of the 13 Mid Freq steps. One law gives the other 8.
+- There are no captures of gains between −2 dB and +2 dB. The half-dB steps near 0 dB come from the gain law.
 - It is not known if the unit also clips inside each band. The model clips only after the three bands.
 - The Mid Freq knob moves in steps of 1 Hz. The block uses the nearest of the 13 steps.
 
 ## 6.6 The Reverb
 
 - A long, loud signal makes the reverb path of the unit compress, by up to 9 dB in ROOM and PLATE. The model does not compress.
-- The author captured High Damp only at 0, 25 and 50. At High Damp 50, the decay at 1 kHz on the unit is about 4 % different from the model.
+- The captures use High Damp only at 0, 25 and 50. At High Damp 50, the decay at 1 kHz on the unit is about 4 % different from the model.
 - ROOM has the weakest null of the three types, mostly at short Rev Time values.
 - The dry column of the Balance table has two measurements that differ by up to 1.5 % at low Balance values.
 
@@ -102,4 +102,4 @@ The Hyper Resonator is not in the plugin. Its model does not null yet, and the f
 ## 6.10 Operating systems
 
 - The plugin is for macOS only.
-- The author has not tested the plugin on macOS 10.13.
+- Nobody has tested the plugin on macOS 10.13.

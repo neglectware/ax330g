@@ -2,7 +2,7 @@
 
 NOTE: This block is not in the plugin yet. This chapter describes the measured behavior of the original unit.
 
-NOTE: The author will revise this chapter after more measurements. The first set of measurements could not settle some properties. This chapter marks each of these properties as "not confirmed".
+NOTE: Mark O'Brien made a second set of captures. Claude will revise this chapter when the new model is ready. The first set of measurements could not settle some properties. This chapter marks each of these properties as "not confirmed".
 
 ## What it does
 
@@ -39,9 +39,9 @@ The block has these parts:
 5. The **sweep law**. It moves the corner frequency of the resonator with the envelope. Sensitivity, Depth, Polarity and Decay control it.
 6. The **effect path** output. Effect Level sets its level.
 
-The author found that the resonator comes after the driver. The harmonics of the clipped signal decrease at 12 dB per octave above the resonator corner, as a filter after a clip gives. Also, on Type 2, the Resonance value changes the level of the clipped signal. A filter before the clip cannot do this.
+Claude found that the resonator comes after the driver. The harmonics of the clipped signal decrease at 12 dB per octave above the resonator corner, as a filter after a clip gives. Also, on Type 2, the Resonance value changes the level of the clipped signal. A filter before the clip cannot do this.
 
-The whole block operates on the signal with the pre-emphasis of the input stage still in it (see 3.3 in [chapter 3](../03-using-the-plugin.md)). The output of the block does not get the de-emphasis that the other blocks get. Thus, the Hyper Resonator output has a treble lift of up to about +9 dB, relative to 1 kHz. The author measured this on three different test signals. No other measured block of the unit does this. The reason is not known.
+The whole block operates on the signal with the pre-emphasis of the input stage still in it (see 3.3 in [chapter 3](../03-using-the-plugin.md)). The output of the block does not get the de-emphasis that the other blocks get. Thus, the Hyper Resonator output has a treble lift of up to about +9 dB, relative to 1 kHz. Claude measured this on three different test signals. No other measured block of the unit does this. The reason is not known.
 
 ## The resonator at rest
 
@@ -49,7 +49,7 @@ When the input is quiet, the resonator stays at its rest frequency of **389 Hz**
 
 The resonator is a resonant low-pass filter, not a band-pass filter. Its response is flat below about 150 Hz, has a peak near 389 Hz, and falls steeply above the peak.
 
-The resonator has a second, fixed low-pass filter at 5706 Hz with a Q of 1.92. The author found this value from the driver harmonics.
+The resonator has a second, fixed low-pass filter at 5706 Hz with a Q of 1.92. Claude found this value from the driver harmonics.
 
 The rest frequency is well below 1 kHz. Thus, a steady 1 kHz tone gets almost nothing through the effect path at Type 1 and Harmonics 0. A short click makes the resonator ring, and gets 19 dB more level through the block than through the bypass path.
 
@@ -93,7 +93,7 @@ The measurements on a guitar signal give this behavior:
 - Above this threshold, the corner moves by about 0.8 octave for each dB at Sensitivity 50. At Sensitivity 25, it moves by about 0.55 octave for each dB.
 - The movement stops at about 4.6 octaves above the rest frequency, near 9 kHz.
 
-The model uses a sensitivity factor of 1.00 at Sensitivity 50 and 0.69 at Sensitivity 25. The author measured these two points.
+The model uses a sensitivity factor of 1.00 at Sensitivity 50 and 0.69 at Sensitivity 25. Claude measured these two points.
 
 Not confirmed: The factor 0.35 at Sensitivity 10. This value is an estimate.
 
@@ -110,13 +110,13 @@ Polarity sets the direction of the corner movement:
 
 On one DOWN capture, the resonator peak was at 188 Hz to 234 Hz. On the same test with UP, it was at 375 Hz and above.
 
-Not confirmed: The range of the movement at DOWN. The author has only one DOWN capture, at the quietest driver value.
+Not confirmed: The range of the movement at DOWN. There is only one DOWN capture, at the quietest driver value.
 
 ### Depth
 
 Depth sets the size of the corner movement. The model uses a linear law: Depth 0 gives no movement, Depth 25 gives half of the full movement, and Depth 50 gives the full movement.
 
-Not confirmed: The Depth law. The author did not measure it. On the test signals with the quietest driver, Depth 25 and Depth 50 gave almost the same result.
+Not confirmed: The Depth law. The first captures do not measure it. On the test signals with the quietest driver, Depth 25 and Depth 50 gave almost the same result.
 
 ### Decay
 
@@ -182,7 +182,7 @@ The Hyper Resonator is the first block of the unit that is both nonlinear and ti
 - The effect path nulls at 0.0 dB. The model output and the capture have no correlation.
 - The direct path nulls at −26.8 dB on the level ramp.
 
-For this reason, the author uses other measures:
+For this reason, Claude uses other measures:
 
 | Measure | Result |
 |---|---|

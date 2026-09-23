@@ -71,7 +71,7 @@ The detector follows the peaks of the input signal:
 - It rises with a time constant of 1.2 ms.
 - It falls with a time constant of 48 ms.
 
-The author found that the detector measures peaks, not an average. A steady sine gives E equal to its peak value. White noise gives E equal to 4.19 times its rms value. An average detector cannot give both results.
+Claude found that the detector measures peaks, not an average. A steady sine gives E equal to its peak value. White noise gives E equal to 4.19 times its rms value. An average detector cannot give both results.
 
 The detector is on the input of the block, not on its output. A detector on the output cannot give the steep limiter curve that the unit has.
 
@@ -105,10 +105,10 @@ On the static gain curve, the model agrees with the unit to 0.006 dB to 0.038 dB
 
 ## Limits
 
-- The author measured the gain only for inputs above −40 dBFS in the measurement files. Below this level, the gain law is an extrapolation.
+- The captures measure the gain only for inputs above −40 dBFS in the measurement files. Below this level, the gain law is an extrapolation.
 - At Sensitivity 50, the extrapolation gives a very high maximum gain. The model limits it with a floor on the detector value. This floor is not a measured property of the unit. It is the point where the measured data stops.
 - At Sensitivity 50, the model is less accurate. The overall null is −16.0 dB, and a short click comes out louder than on the unit.
 - The Attack law has only three measured points. The Level law has only two measured points and the mute at 0.
-- The author measured Sensitivity only at 0, 10, 25, 40 and 50.
+- The captures use Sensitivity only at 0, 10, 25, 40 and 50.
 
 See also [chapter 6](../06-limitations.md).

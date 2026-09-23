@@ -4,7 +4,7 @@ This manual is for AX330G **version 0.8.6, build 19**. The editor shows the vers
 
 This manual uses ASD-STE100 Simplified Technical English.
 
-Author: Mark O'Brien. Publisher: Neglectware.
+Directed by Mark O'Brien. Written by Claude (Anthropic). Published by Neglectware.
 
 ## Contents
 

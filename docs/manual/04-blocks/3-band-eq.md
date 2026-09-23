@@ -58,7 +58,7 @@ NOTE: To get an exact step, type the step value in the box below the knob.
 4. The Treble section.
 5. A hard clip.
 
-The author found that Trim Gain comes before the bands. A +16 dB Treble boost makes the block clip a −20 dBFS sweep. With Trim Gain at −9 dB or −18 dB, the same boost does not clip.
+Claude found that Trim Gain comes before the bands. A +16 dB Treble boost makes the block clip a −20 dBFS sweep. With Trim Gain at −9 dB or −18 dB, the same boost does not clip.
 
 ### Bass and Treble
 
@@ -79,7 +79,7 @@ The phase response of these two sections is unusual:
 - A boost is not minimum phase. It inverts the phase at its own end of the spectrum.
 - A cut is minimum phase.
 
-The author measured these phase properties on the unit in two independent ways. The model copies them.
+Claude measured these phase properties in two independent ways. The model copies them.
 
 ### Mid
 
@@ -92,7 +92,7 @@ The Mid section is a peak filter at the Mid Freq step. The section adds or remov
 
 Thus, a Mid boost is wide, and a Mid cut of the same size is narrow. A boost and a cut are not mirror images. At 0 dB, the Mid section has no effect.
 
-The author measured the Mid section at 250, 500, 1000, 2000 and 4000 Hz. The other eight steps come from one law that fits the five measured steps. The law also corrects a small change of bandwidth at 4000 Hz.
+Claude measured the Mid section at 250, 500, 1000, 2000 and 4000 Hz. The other eight steps come from one law that fits the five measured steps. The law also corrects a small change of bandwidth at 4000 Hz.
 
 ### Half-dB steps
 
@@ -114,8 +114,8 @@ CAUTION: A large boost on more than one band can make the block clip. Decrease T
 ## Limits
 
 - At Mid Freq 250 Hz and 500 Hz, the unit does not come back to 0 dB at low frequencies. The difference is up to about 0.8 dB below 150 Hz. The model does not have this difference.
-- The author did not capture the Mid steps 315, 400, 630, 800, 1250, 1600, 2500 and 3150 Hz.
-- The author did not capture gains between −2 dB and +2 dB. The half-dB steps near 0 dB come from the gain law, not from a measurement.
+- There are no captures of the Mid steps 315, 400, 630, 800, 1250, 1600, 2500 and 3150 Hz.
+- There are no captures of gains between −2 dB and +2 dB. The half-dB steps near 0 dB come from the gain law, not from a measurement.
 - It is not known if the unit clips inside each band or only after the three bands. The captures agree better with a clip after the bands.
 
 See also [chapter 6](../06-limitations.md).

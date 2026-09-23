@@ -35,13 +35,13 @@ The Stereo Mod Delay has no High Damp parameter, on the unit or in the plugin.
 4. The LFO is inside each feedback loop, as in the Mod Delay.
 5. Each output mixes the mono dry signal with the output of its own delay line.
 
-The author measured the opposite movement on the unit. The right-channel delay movement is the left-channel movement with its sign changed, with no time offset between them.
+Claude measured the opposite movement in the captures. The right-channel delay movement is the left-channel movement with its sign changed, with no time offset between them.
 
 The block uses three shared laws from the [block overview](README.md). These are the delay time law (4.3), the balance table (4.6), and the LFO laws (4.7).
 
 ### Feedback
 
-The Stereo Mod Delay has its own feedback table. The author measured it from long delay tails at Feedback 46 and 50, with more than 100 repeats in each capture.
+The Stereo Mod Delay has its own feedback table. Claude measured it from long delay tails at Feedback 46 and 50, with more than 100 repeats in each capture.
 
 | Feedback | Loop gain |
 |---|---|
@@ -58,16 +58,16 @@ NOTE: At Feedback 50, the repeats decrease by only about 0.005 dB for each pass.
 
 ### No high-frequency loss in the loop
 
-The author measured the long tails for a loss of high frequencies in each pass. The measurement found no low-pass filter in the loop with a corner below 40 kHz. Thus, the model has no filter in the loop.
+Claude measured the long tails for a loss of high frequencies in each pass. The measurement found no low-pass filter in the loop with a corner below 40 kHz. Thus, the model has no filter in the loop.
 
 ## Measured accuracy
 
-The author tested the model with Depth 0, delay times of 250 ms, Feedback 46 and Balance 25. The full tail of the model nulls at −41.3 dB against the unit. The tail contains more than 100 repeats. See [chapter 5](../05-how-it-was-modelled.md).
+Claude tested the model with Depth 0, delay times of 250 ms, Feedback 46 and Balance 25. The full tail of the model nulls at −41.3 dB against the unit. The tail contains more than 100 repeats. See [chapter 5](../05-how-it-was-modelled.md).
 
 ## Limits
 
-- The delay law comes from the Stereo Delay. The author confirmed it on this block only at 250 ms.
-- With the LFO on and high Feedback, the author did not get a usable null against the unit. Small errors in the LFO rate, depth and shape add up over many repeats. Thus, no null test validates the long modulated tails.
+- The delay law comes from the Stereo Delay. Claude confirmed it on this block only at 250 ms.
+- With the LFO on and high Feedback, Claude did not get a usable null against the unit. Small errors in the LFO rate, depth and shape add up over many repeats. Thus, no null test validates the long modulated tails.
 - At Speed 0.6, one measurement gave a real LFO rate of 0.5990 Hz. The model uses 0.5961 Hz. This difference is not confirmed.
 
 See also [chapter 6](../06-limitations.md).

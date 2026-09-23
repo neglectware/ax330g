@@ -6,6 +6,8 @@ Each effect was measured on a real AX300G and then modeled. The unit was a "blac
 
 AX330G is an unofficial project. It is not affiliated with or endorsed by Korg. Korg, Toneworks, AX30G and AX300G are trademarks of their owners.
 
+AX330G is an AI-authored, human-directed project, published by Neglectware. Mark O'Brien owns the AX300G, did every capture by hand at the unit, judged the results and directed the project. Claude, an AI model from Anthropic, designed the tests, wrote all the software, did the analysis and the model fits, and wrote the manual.
+
 ## Status
 
 AX330G is in development. This table shows the effects ("blocks") that are in the plug-in now.

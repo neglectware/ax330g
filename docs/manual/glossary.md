@@ -65,7 +65,7 @@ This glossary tells what each technical name in this manual means.
 | Headroom | The level difference between a signal and the clip level. |
 | High Damp | The parameter that sets the loss of high frequencies in a delay or reverb loop. |
 | High-pass filter | A filter that decreases the frequencies below its corner frequency. |
-| Hold-out | A test signal that the author did not use to fit a model. It shows how the model behaves on new material. |
+| Hold-out | A test signal that Claude did not use to fit a model. It shows how the model behaves on new material. |
 | Host | The application that loads the plugin, for example Logic Pro or MainStage. |
 | Impulse response | The output of a system for a click at its input. It shows the full linear behavior of the system. |
 | Input stage | The model of the analog input circuit and the analog-to-digital converter of the unit. |
@@ -122,7 +122,7 @@ This glossary tells what each technical name in this manual means.
 | Schroeder reverberator | A reverb design with parallel comb filters followed by allpass filters in series. |
 | Sensitivity | A parameter that sets how strongly an effect reacts to the input level. |
 | Shelf filter | A filter that increases or decreases all frequencies above or below a corner frequency by a fixed quantity. |
-| Signal set | The fixed file of test signals that the author used for all captures. |
+| Signal set | The fixed file of test signals for all captures. Claude designed it. |
 | Sine | A pure tone with one frequency. |
 | Slot | One of the eight positions in the plugin that can hold a block. |
 | Smoother | A filter that makes a control signal change more slowly. |

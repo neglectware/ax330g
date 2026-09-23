@@ -24,7 +24,7 @@ The default value of each parameter is the value that the block gets when you se
 
 ## 4.3 The delay time law
 
-Stereo Delay, Mod Delay, Stereo Mod Delay and the Pre Dly parameter of the Reverb use one law for their delay time. The author measured this law on the unit:
+Stereo Delay, Mod Delay, Stereo Mod Delay and the Pre Dly parameter of the Reverb use one law for their delay time. Claude measured this law from the captures:
 
     delay in device samples = round(39 × displayed ms) + 2
 
@@ -61,7 +61,7 @@ The Stereo Delay and the Mod Delay use this table. The plugin interpolates in a 
 | 40 | 0.8 |
 | 50 | 0.993 |
 
-The Stereo Mod Delay has its own table (see [Stereo Mod Delay](stereo-mod-delay.md)). The author measured it at high Feedback values.
+The Stereo Mod Delay has its own table (see [Stereo Mod Delay](stereo-mod-delay.md)). Claude measured it at high Feedback values.
 
 ## 4.6 Balance
 
@@ -100,7 +100,7 @@ The **Speed** parameter sets the LFO rate.
 | Steps of the unit's dial | 0.02 Hz from 0.02 to 0.20 Hz, then 0.1 Hz from 0.2 to 9.5 Hz |
 | Default | 1.00 Hz |
 
-The real rate is a little lower than the displayed rate. The author measured this table on the unit:
+The real rate is a little lower than the displayed rate. Claude measured this table from the captures:
 
 | Displayed Speed | Real rate |
 |---|---|

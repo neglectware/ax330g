@@ -45,7 +45,7 @@ NOTE: The feedback loop gain at Feedback 50 is 0.993. The repeats decrease by ab
 
 ### Ducking
 
-The Ducking function is a gain on the delay output. A detector measures the level of the input signal, and the gain decreases when that level increases. The author measured the Ducking function on the unit with seven captures.
+The Ducking function is a gain on the delay output. A detector measures the level of the input signal, and the gain decreases when that level increases. Claude measured the Ducking function from seven captures.
 
 The Ducking law is subtractive and linear:
 
@@ -79,13 +79,13 @@ When the input stops, the delay level comes back to its full value with the 52 m
 
 ## Measured accuracy
 
-The author compared the model with captures of the unit at 20 ms, 300 ms and 500 ms delay times. The null depths are in [chapter 5](../05-how-it-was-modelled.md). With the Ducking function on, each capture nulls within 0.5 dB of the same capture without Ducking.
+Claude compared the model with captures of the unit at 20 ms, 300 ms and 500 ms delay times. The null depths are in [chapter 5](../05-how-it-was-modelled.md). With the Ducking function on, each capture nulls within 0.5 dB of the same capture without Ducking.
 
 ## Limits
 
-- The author captured only the Ducking values 0, 10, 25, 40 and 50. The linear law gives the other values.
+- The captures use only the Ducking values 0, 10, 25, 40 and 50. The linear law gives the other values.
 - All Ducking captures used High Damp 0 and Input at LIN.
-- The feedback value at Feedback 50 comes from a fit with High Damp at 50. The author did not measure Feedback 46 to 50 on this block without High Damp.
+- The feedback value at Feedback 50 comes from a fit with High Damp at 50. There is no measurement of Feedback 46 to 50 on this block without High Damp.
 - The unit has one mono input. In the plugin, the two delay lines get the left and right host channels. With a mono source, both lines get the same signal, as on the unit.
 
 See also [chapter 6](../06-limitations.md).

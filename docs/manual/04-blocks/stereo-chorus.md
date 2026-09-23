@@ -6,7 +6,7 @@ NOTE: The unit does not have a Stereo Chorus. This block is a "what-if" block. I
 
 The Stereo Chorus is the [Chorus](chorus.md) of the unit with a stereo output. It has a mono input. The **Mode** parameter selects one of two ways to make the stereo output.
 
-The author made this block from measured parts of the unit:
+Claude made this block from measured parts of the unit:
 
 - The delay, the mix, the LFO and the Depth law come from the Chorus.
 - The inverted LFO for the right channel comes from the Stereo Mod Delay.

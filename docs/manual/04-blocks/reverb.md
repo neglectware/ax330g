@@ -34,7 +34,7 @@ In the host, the Type parameter has the name "Reverb Type".
 
 ## How it works
 
-The Reverb of the unit is a Schroeder reverberator. The author found its structure from impulse responses of the unit.
+The Reverb of the unit is a Schroeder reverberator. Claude found its structure from impulse responses of the unit.
 
 ### Signal flow
 
@@ -62,7 +62,7 @@ The two outputs read the same four comb filters at different positions. Thus, th
 | HALL | 809 / 0.8007, 917 / 0.6518, 1955 / 0.6058 | 809 / 0.8024, 917 / 0.6497, 1759 / 0.5019 |
 | PLATE | 923 / 0.7777, 1017 / 0.7010, 1330 / 0.6405 | 1505 / 0.7003, 1017 / 0.7000, 1330 / 0.6405 |
 
-The left and right outputs share two of their three allpass lengths. For these shared lengths, the author measured the coefficient on each channel separately. The two values agree to 0.3 %.
+The left and right outputs share two of their three allpass lengths. For these shared lengths, Claude measured the coefficient on each channel separately. The two values agree to 0.3 %.
 
 The ROOM comb filters are short. The sound goes around the ROOM loops about 40 times each second, and about 8 times each second in HALL.
 
@@ -72,7 +72,7 @@ The block sets the feedback gain of each comb filter so that the comb decays by 
 
     comb gain = 10^(−3 × comb length / (Rev Time × device rate))
 
-This is one law for all three types. The author checked it at Rev Time 0.1, 0.3, 0.5, 1, 1.5, 2, 3, 5, 7 and 10 s.
+This is one law for all three types. Claude checked it at Rev Time 0.1, 0.3, 0.5, 1, 1.5, 2, 3, 5, 7 and 10 s.
 
 These special cases apply:
 
@@ -117,14 +117,14 @@ The block interpolates in a straight line between the points.
 
 ## Measured accuracy
 
-- At High Damp 0, the reverb tail of the model nulls against the unit at −41.6 dB median and −45.2 dB at best. The captures cover all three types, Rev Time 0.1 to 10, and all the Pre Dly and Balance values that the author tested.
+- At High Damp 0, the reverb tail of the model nulls against the unit at −41.6 dB median and −45.2 dB at best. The captures cover all three types, Rev Time 0.1 to 10, and all the Pre Dly and Balance values in the captures.
 - At High Damp 25 and 50, the tail nulls at −20.2 dB median and −38.5 dB at best, over 11 captures.
 
 ## Limits
 
-- A long, loud signal makes the reverb path of the unit compress. The author measured up to 9 dB of compression in ROOM and PLATE with a −6 dBFS sweep. The model does not compress.
-- The author captured High Damp only at 0, 25 and 50. The model is linear between these values.
+- A long, loud signal makes the reverb path of the unit compress. Claude measured up to 9 dB of compression in ROOM and PLATE with a −6 dBFS sweep. The model does not compress.
+- The captures use High Damp only at 0, 25 and 50. The model is linear between these values.
 - ROOM gives the weakest null of the three types, mostly at short Rev Time values.
-- The author did not capture Balance 30 and 40. The model interpolates these values.
+- There are no captures at Balance 30 and 40. The model interpolates these values.
 
 See also [chapter 6](../06-limitations.md).
