@@ -62,37 +62,7 @@ jobs:
           fi
           mkdir -p "dist/$NAME"
           cp -R "$BUNDLE" "dist/$NAME/"
-          cat > "dist/$NAME/INSTALL-Windows.txt" <<'EOF'
-AX330G for Windows (VST3, x64)
-===============================
-
-This build is UNSIGNED, and as of this build nobody has tested it on a
-real Windows machine -- it was compiled in GitHub Actions on a Windows
-runner, which proves it builds, not that it runs correctly. Please report
-back what happens: it loads or it doesn't, it makes sound or it doesn't,
-a control does the wrong thing, anything.
-
-To install:
-
-1. Copy the "AX330G.vst3" folder (inside this zip) to:
-
-       C:\Program Files\Common Files\VST3\
-
-   Create that folder if it isn't there already. You'll likely need
-   administrator permission to copy into Program Files.
-
-2. Rescan plug-ins in your DAW, or restart it, so it picks up the new
-   VST3.
-
-3. Because the build is unsigned, Windows or your DAW may show a warning
-   the first time you load it (SmartScreen, or your DAW's own "unknown
-   publisher" notice). There's no code-signing certificate behind this
-   build, so that warning is expected -- there's no way to make it go
-   away without one.
-
-AX330G emulates the effects of a Korg AX30G / AX300G (1997) guitar
-multi-effects unit. It is not affiliated with or endorsed by Korg.
-EOF
+          cp INSTALL-Windows.txt "dist/$NAME/"
           mkdir -p dist-zip
           ZIP_NAME="${NAME}.zip"
           powershell -NoProfile -Command "Compress-Archive -Path 'dist/${NAME}' -DestinationPath 'dist-zip/${ZIP_NAME}' -Force"
