@@ -73,7 +73,6 @@ NOTE: The Distortion 1 of the unit uses an analog diode clip circuit outside the
 
 - At Mid Freq 250 Hz and 500 Hz, the unit has a level error of up to about 0.8 dB below 150 Hz. The model does not have this error.
 - The captures use only 5 of the 13 Mid Freq steps. One law gives the other 8.
-- There are no captures of gains between −2 dB and +2 dB. The half-dB steps near 0 dB come from the gain law.
 - It is not known if the unit also clips inside each band. The model clips only after the three bands.
 - The Mid Freq knob moves in steps of 1 Hz. The block uses the nearest of the 13 steps.
 

@@ -1,6 +1,8 @@
 # AX330G
 
-AX330G is an audio plug-in for macOS. It emulates the effects of the Korg Toneworks AX30G and AX300G guitar multi-effects units (1997). It is available in the AU and VST3 formats.
+AX330G is an audio plug-in. It emulates the effects of the Korg Toneworks AX30G and AX300G guitar multi-effects units (1997). It is available for macOS (AU and VST3) and for Windows (VST3, 64-bit).
+
+NOTE: Nobody has tested the Windows version on a Windows computer yet.
 
 Each effect was measured on a real AX300G and then modeled. The unit was a "black box": no firmware was read or copied. The models were tested against recordings of the real unit.
 
@@ -31,6 +33,10 @@ Read the [manual](docs/manual/README.md). It tells you how to install and use th
 
 The manual uses ASD-STE100 Simplified Technical English.
 
+## Install
+
+Download the latest version from [Releases](https://github.com/neglectware/ax330g/releases). For macOS, open the `.pkg` file. For Windows, unzip the file and read `INSTALL-Windows.txt`.
+
 ## Build from source
 
 You need:
@@ -45,7 +51,7 @@ Do these steps:
 2. Type `cmake -B build-release -G Xcode`.
 3. Type `cmake --build build-release --config Release --target AX330G_AU AX330G_VST3`.
 
-The build copies the AU and VST3 plug-ins into `~/Library/Audio/Plug-Ins`. To make an installer package, type `tools/make-installer.sh` in the project folder.
+The build copies the AU and VST3 plug-ins into `~/Library/Audio/Plug-Ins`. GitHub Actions builds the Windows version: read `.github/workflows/build.yml`. To make an installer package, type `tools/make-installer.sh` in the project folder.
 
 ## What is in this repository
 

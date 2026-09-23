@@ -1,29 +1,28 @@
-AX330G for Windows (VST3, x64)
-===============================
+AX330G for Windows (VST3, 64-bit)
+=================================
 
-This build is UNSIGNED, and as of this build nobody has tested it on a
-real Windows machine -- it was compiled in GitHub Actions on a Windows
-runner, which proves it builds, not that it runs correctly. Please report
-back what happens: it loads or it doesn't, it makes sound or it doesn't,
-a control does the wrong thing, anything.
+WARNING: Nobody has tested this build on a Windows computer. GitHub Actions
+compiled it on a Windows build server. This shows that it compiles. It does
+not show that it operates correctly. Please tell us what occurs: the plugin
+loads or not, it makes sound or not, a control does the wrong thing.
 
-To install:
+The build is not signed. Windows or your host can show a warning when you
+load it for the first time. This warning is expected.
 
-1. Copy the "AX330G.vst3" folder (inside this zip) to:
+To install the plugin:
+
+1. Copy the "AX330G.vst3" folder from this zip file to this folder:
 
        C:\Program Files\Common Files\VST3\
 
-   Create that folder if it isn't there already. You'll likely need
-   administrator permission to copy into Program Files.
+   If the folder does not exist, make it. You must have administrator
+   permission to copy files into Program Files.
 
-2. Rescan plug-ins in your DAW, or restart it, so it picks up the new
-   VST3.
+2. Start your host again, or tell it to scan for plugins again.
 
-3. Because the build is unsigned, Windows or your DAW may show a warning
-   the first time you load it (SmartScreen, or your DAW's own "unknown
-   publisher" notice). There's no code-signing certificate behind this
-   build, so that warning is expected -- there's no way to make it go
-   away without one.
+3. Find the plugin under Neglectware > AX330G.
 
-AX330G emulates the effects of a Korg AX30G / AX300G (1997) guitar
-multi-effects unit. It is not affiliated with or endorsed by Korg.
+AX330G emulates the effects of the Korg Toneworks AX30G and AX300G guitar
+multi-effects units (1997). It is an unofficial project. It is not
+affiliated with or endorsed by Korg. The manual is at
+https://github.com/neglectware/ax330g

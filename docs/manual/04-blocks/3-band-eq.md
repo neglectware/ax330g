@@ -96,7 +96,7 @@ Claude measured the Mid section at 250, 500, 1000, 2000 and 4000 Hz. The other e
 
 ### Half-dB steps
 
-The unit changes Bass, Mid Gain, Treble and Trim Gain in steps of 0.5 dB. The plugin uses the same steps. The gain law of the model gives the values between the measured points.
+The unit changes Bass, Mid Gain, Treble and Trim Gain in steps of 0.5 dB. The plugin uses the same steps. Mark O'Brien captured ±0.5 dB and ±1 dB on each gain, and some half steps at higher gains. Claude compared these captures with the model. The null was −28.3 to −29.5 dB. This is the same as the null of the flat setting, which is the limit of the measurement.
 
 ### The hard clip
 
@@ -115,7 +115,6 @@ CAUTION: A large boost on more than one band can make the block clip. Decrease T
 
 - At Mid Freq 250 Hz and 500 Hz, the unit does not come back to 0 dB at low frequencies. The difference is up to about 0.8 dB below 150 Hz. The model does not have this difference.
 - There are no captures of the Mid steps 315, 400, 630, 800, 1250, 1600, 2500 and 3150 Hz.
-- There are no captures of gains between −2 dB and +2 dB. The half-dB steps near 0 dB come from the gain law, not from a measurement.
 - It is not known if the unit clips inside each band or only after the three bands. The captures agree better with a clip after the bands.
 
 See also [chapter 6](../06-limitations.md).

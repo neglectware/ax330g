@@ -7,6 +7,7 @@
 | Computer | A Mac with an Apple silicon processor or an Intel processor |
 | Operating system, Apple silicon | macOS 11 or later |
 | Operating system, Intel | macOS 10.13 or later (see the note below) |
+| Operating system, Windows | 64-bit Windows, VST3 hosts only (see 2.6) |
 | Host | An application that loads AU plugins or VST3 plugins |
 | Audio channels | Stereo output. Stereo input or mono input. |
 
@@ -70,3 +71,21 @@ NOTE: Versions before 0.8.6 used the manufacturer name "Mark O'Brien". From vers
 2. Move `/Library/Audio/Plug-Ins/Components/AX330G.component` to the Trash.
 3. Move `/Library/Audio/Plug-Ins/VST3/AX330G.vst3` to the Trash.
 4. Type your administrator password when the Finder asks for it.
+
+## 2.6 Windows
+
+A Windows version is available in the VST3 format, for 64-bit Windows. GitHub Actions compiles it on a Windows build server.
+
+WARNING: Nobody has tested the Windows version on a Windows computer yet. Please report the results to the project.
+
+To install the Windows version:
+
+1. Download the Windows zip file from the Releases page of the project.
+2. Unzip the file.
+3. Copy the `AX330G.vst3` folder to `C:\Program Files\Common Files\VST3\`.
+4. Start the host again, or tell it to scan for plugins.
+5. Find the plugin under Neglectware > AX330G.
+
+NOTE: The Windows version is not signed. Windows or the host can show a warning when you load it for the first time.
+
+NOTE: The Windows version has no AU format, because AU is only for macOS. The LCD uses a simpler drawing method on Windows. It shows the same content.
