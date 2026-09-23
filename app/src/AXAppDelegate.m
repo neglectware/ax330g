@@ -35,6 +35,9 @@
 @property NSPopUpButton *devPop, *outPop, *inL, *inR, *inRef;
 @property NSPopUpButton *toneLevel, *toneHz;
 @property NSString *signalVariant;   // layout.json "variant" (e.g. lfo); tags file names so alternate sets never overwrite normal-set captures
+@property NSString *currentSignalSetName;              // e.g. "normal", "lfo" -- which signalset-<name>.wav/layout-<name>.json is loaded into self.signal
+@property NSMutableDictionary<NSString *, AVAudioPCMBuffer *> *signalCache;   // name -> mono buffer, loaded once per project root
+@property NSMutableDictionary<NSString *, NSString *> *variantCache;         // name -> its layout's "variant" (NSNull cached as "no variant")
 @property NSButton *monitorBtn, *toneBtn, *captureBtn, *skipBtn, *openGridBtn, *outDirBtn, *rootBtn;
 @property NSTextField *status, *stepText, *outDirLabel, *rootLabel, *gridLabel;
 @property AXMeter *mL, *mR, *mRef;
@@ -304,22 +307,68 @@ static NSTextField *label(NSString *s) {
 }
 
 // --- signal set and grid --------------------------------------------------
+// Grid rows may name a signal set other than normal (`"signal_set": "lfo"`,
+// etc.) -- `capture/signalset-<name>.wav` + `capture/layout-<name>.json`. A
+// row without the key uses "normal". Sets are cached per project root so
+// switching back and forth between rows never re-reads the WAV from disk.
+- (NSString *)variantForSignalSetNamed:(NSString *)name {
+    if (!self.variantCache) self.variantCache = [NSMutableDictionary dictionary];
+    NSString *cached = self.variantCache[name];
+    if (cached) return [cached isEqualToString:@""] ? nil : cached;
+    NSString *layPath = [self.root stringByAppendingPathComponent:[NSString stringWithFormat:@"capture/layout-%@.json", name]];
+    NSData *ld = [NSData dataWithContentsOfFile:layPath];
+    NSDictionary *lay = ld ? [NSJSONSerialization JSONObjectWithData:ld options:0 error:nil] : nil;
+    NSString *variant = [lay[@"variant"] isKindOfClass:[NSString class]] ? lay[@"variant"] : nil;
+    self.variantCache[name] = variant ?: @"";
+    return variant;
+}
+
+- (NSString *)signalSetNameFor:(NSDictionary *)step {
+    NSString *s = step[@"signal_set"];
+    return ([s isKindOfClass:[NSString class]] && s.length) ? s : @"normal";
+}
+
+// Loads (or switches to, from cache) capture/signalset-<name>.wav into
+// self.signal, and self.signalVariant to its layout's "variant" (for
+// -fileNameFor:'s log line and Monitor's tone; -fileNameFor: itself no
+// longer depends on this -- it looks up the row's own set directly, so a
+// grid's done-ticks are correct before any row's set is actually loaded).
+- (BOOL)ensureSignalSet:(NSString *)name {
+    if (!name.length) name = @"normal";
+    if ([self.currentSignalSetName isEqualToString:name] && self.signal) return YES;
+    if (!self.signalCache) self.signalCache = [NSMutableDictionary dictionary];
+    NSString *variant = [self variantForSignalSetNamed:name];
+    AVAudioPCMBuffer *buf = self.signalCache[name];
+    BOOL fresh = (buf == nil);
+    if (fresh) {
+        NSString *p = [self.root stringByAppendingPathComponent:[NSString stringWithFormat:@"capture/signalset-%@.wav", name]];
+        NSError *e = nil;
+        AVAudioFile *f = [[AVAudioFile alloc] initForReading:[NSURL fileURLWithPath:p] error:&e];
+        if (!f) { [self logLine:[NSString stringWithFormat:@"no signal set \"%@\" at %@ (see the Makefile's signals-* targets)", name, p]]; return NO; }
+        AVAudioFormat *mono = [[AVAudioFormat alloc] initStandardFormatWithSampleRate:f.processingFormat.sampleRate channels:1];
+        AVAudioPCMBuffer *raw = [[AVAudioPCMBuffer alloc] initWithPCMFormat:f.processingFormat frameCapacity:(AVAudioFrameCount)f.length];
+        if (![f readIntoBuffer:raw error:&e]) { [self logLine:[NSString stringWithFormat:@"could not read signal set \"%@\": %@", name, e.localizedDescription]]; return NO; }
+        buf = [[AVAudioPCMBuffer alloc] initWithPCMFormat:mono frameCapacity:raw.frameLength];
+        buf.frameLength = raw.frameLength;
+        memcpy(buf.floatChannelData[0], raw.floatChannelData[0], raw.frameLength * sizeof(float));
+        self.signalCache[name] = buf;
+    }
+    self.signal = buf;
+    self.signalVariant = variant;
+    self.currentSignalSetName = name;
+    [self logLine:[NSString stringWithFormat:@"signal set: %@ (%.1f s at %.0f Hz)%@%@", name, (double)buf.frameLength / buf.format.sampleRate, buf.format.sampleRate,
+        fresh ? @"" : @" (cached)", variant.length ? [NSString stringWithFormat:@", file names tagged _SET-%@", variant] : @""]];
+    return YES;
+}
+
+// The default set, loaded at launch and whenever the project root changes.
 - (void)loadSignal {
-    NSString *p = [self.root stringByAppendingPathComponent:@"capture/signalset.wav"];
-    NSError *e = nil;
-    AVAudioFile *f = [[AVAudioFile alloc] initForReading:[NSURL fileURLWithPath:p] error:&e];
-    if (!f) { [self logLine:[NSString stringWithFormat:@"no signal set at %@ (run capture/signals.py)", p]]; self.signal = nil; return; }
-    AVAudioFormat *mono = [[AVAudioFormat alloc] initStandardFormatWithSampleRate:f.processingFormat.sampleRate channels:1];
-    AVAudioPCMBuffer *raw = [[AVAudioPCMBuffer alloc] initWithPCMFormat:f.processingFormat frameCapacity:(AVAudioFrameCount)f.length];
-    [f readIntoBuffer:raw error:&e];
-    AVAudioPCMBuffer *m = [[AVAudioPCMBuffer alloc] initWithPCMFormat:mono frameCapacity:raw.frameLength];
-    m.frameLength = raw.frameLength;
-    memcpy(m.floatChannelData[0], raw.floatChannelData[0], raw.frameLength * sizeof(float));
-    self.signal = m;
+    self.signalCache = nil;
+    self.variantCache = nil;
+    self.currentSignalSetName = nil;
+    self.signal = nil;
     self.signalVariant = nil;
-    NSData *ld = [NSData dataWithContentsOfFile:[self.root stringByAppendingPathComponent:@"capture/layout.json"]];
-    if (ld) { NSDictionary *lay = [NSJSONSerialization JSONObjectWithData:ld options:0 error:nil]; if ([lay[@"variant"] isKindOfClass:[NSString class]]) self.signalVariant = lay[@"variant"]; }
-    [self logLine:[NSString stringWithFormat:@"signal set: %.1f s at %.0f Hz%@", (double)m.frameLength / mono.sampleRate, mono.sampleRate, self.signalVariant ? [NSString stringWithFormat:@" (variant %@, file names tagged _SET-%@)", self.signalVariant, self.signalVariant] : @""]];
+    [self ensureSignalSet:@"normal"];
 }
 
 - (void)openGrid:(id)sender {
@@ -376,7 +425,9 @@ static NSTextField *label(NSString *s) {
         [n appendFormat:@"_%@-%@", ks, p[k]];
     }
     [n appendFormat:@"_IN-%@", step[@"input"] ?: @"N"];
-    if (self.signalVariant.length) [n appendFormat:@"_SET-%@", self.signalVariant];
+    if (step[@"send_db"]) [n appendFormat:@"_SEND-%g", [step[@"send_db"] doubleValue]];
+    NSString *variant = [self variantForSignalSetNamed:[self signalSetNameFor:step]];
+    if (variant.length) [n appendFormat:@"_SET-%@", variant];
     [n appendString:@".wav"];
     return n;
 }
@@ -449,7 +500,11 @@ static NSTextField *label(NSString *s) {
     NSMutableArray *a = [NSMutableArray array];
     NSDictionary *p = step[@"params"];
     for (NSString *k in [self unitOrderedKeys:p effect:step[@"effect"]]) [a addObject:[NSString stringWithFormat:@"%@ %@", k, p[k]]];
-    return [a componentsJoinedByString:@"   "];
+    NSMutableString *line = [[a componentsJoinedByString:@"   "] mutableCopy];
+    if ([step[@"signal_set"] isKindOfClass:[NSString class]] && [step[@"signal_set"] length])
+        [line appendFormat:@" · %@ set", [step[@"signal_set"] uppercaseString]];
+    if (step[@"send_db"]) [line appendFormat:@" · send %g dB", [step[@"send_db"] doubleValue]];
+    return line;
 }
 
 - (void)selectNext {
@@ -474,6 +529,8 @@ static NSTextField *label(NSString *s) {
     d[@"effect"] = step[@"effect"] ?: @"";
     d[@"input"] = step[@"input"] ?: @"N";
     d[@"params"] = step[@"params"] ?: @{};
+    d[@"signal_set"] = [self signalSetNameFor:step];
+    d[@"send_db"] = step[@"send_db"] ?: @0;
     [[NSUserDefaults standardUserDefaults] setObject:d forKey:@"unitState"];
 }
 
@@ -516,12 +573,29 @@ static NSTextField *label(NSString *s) {
     if (!sameEffect) add(was ? [NSString stringWithFormat:@"New effect — set every parameter:\n"] : @"Set every parameter:\n", dim);
     else if (!changed.count && !inputChanged) add(@"\nNo changes from the last capture (a repeat).\n", chg);
     else add(@"Change:\n", dim);
-    for (NSString *k in changed) {
+    // More than five changes (a new effect, HYPR's nine): two per line, so
+    // the list fits the card instead of running off its bottom.
+    const BOOL twoUp = changed.count > 5;
+    for (NSUInteger i = 0; i < changed.count; i++) {
+        NSString *k = changed[i];
         NSString *pad = [k stringByPaddingToLength:w withString:@" " startingAtIndex:0];
-        if (wasP && wasP[k]) add([NSString stringWithFormat:@"  %@  %@ → %@\n", pad, wasP[k], p[k]], chg);
-        else add([NSString stringWithFormat:@"  %@  %@\n", pad, p[k]], chg);
+        NSString *item = (wasP && wasP[k]) ? [NSString stringWithFormat:@"%@  %@ → %@", pad, wasP[k], p[k]]
+                                           : [NSString stringWithFormat:@"%@  %@", pad, p[k]];
+        if (twoUp && i % 2 == 0 && i + 1 < changed.count)
+            add([NSString stringWithFormat:@"  %@", [item stringByPaddingToLength:w + 12 withString:@" " startingAtIndex:0]], chg);
+        else
+            add([NSString stringWithFormat:@"  %@\n", item], chg);
     }
     if (inputChanged) add([NSString stringWithFormat:@"  Input Level  %@ → %@\n", was[@"input"], input], chg);
+    // Signal set and send level: the Bench switches these itself (loads the
+    // set, scales playback), so they're informational, not something Mark
+    // has to do -- dim text either way, never the big orange "you set this".
+    NSString *sigSet = [self signalSetNameFor:s];
+    NSString *wasSigSet = [was[@"signal_set"] isKindOfClass:[NSString class]] ? was[@"signal_set"] : @"normal";
+    double sendVal = s[@"send_db"] ? [s[@"send_db"] doubleValue] : 0.0;
+    double wasSend = was[@"send_db"] ? [was[@"send_db"] doubleValue] : 0.0;
+    if (![sigSet isEqualToString:wasSigSet]) add([NSString stringWithFormat:@"  Signal set  %@ → %@  (the Bench switches this)\n", wasSigSet, sigSet], dim);
+    if (fabs(sendVal - wasSend) > 0.001) add([NSString stringWithFormat:@"  Send  %g dB → %g dB  (the Bench switches this)\n", wasSend, sendVal], dim);
     if (same.count) {
         NSMutableArray *a = [NSMutableArray array];
         for (NSString *k in same) [a addObject:[NSString stringWithFormat:@"%@ %@", k, p[k]]];
@@ -560,21 +634,24 @@ static NSTextField *label(NSString *s) {
 - (void)capture:(id)sender {
     if (self.current < 0 || !self.grid.count) { [self logLine:@"open a grid first"]; return; }
     if (!self.audio.running) { [self logLine:@"start Monitor first"]; return; }
-    if (!self.signal) { [self logLine:@"no signal set"]; return; }
     NSDictionary *step = self.grid[self.current];
+    NSString *setName = [self signalSetNameFor:step];
+    if (![self ensureSignalSet:setName] || !self.signal) { [self logLine:@"no signal set"]; return; }
     [self setUnitStateFromStep:step];   // the unit is now set to this step, whatever happens to the capture
     NSInteger take = 1;
     NSString *name = [self nextAvailableFileNameFor:step take:&take];
     [[NSFileManager defaultManager] createDirectoryAtPath:self.outDir withIntermediateDirectories:YES attributes:nil error:nil];
     NSString *path = [self.outDir stringByAppendingPathComponent:name];
     NSInteger row = self.current;
+    double sendDb = step[@"send_db"] ? [step[@"send_db"] doubleValue] : 0.0;
     self.captureBtn.enabled = NO;
     self.toneBtn.state = NSControlStateValueOff; [self.audio playTone:NO];
     [self applyChannels];
     for (AXMeter *m in @[self.mL, self.mR, self.mRef]) m.hold = 0;
+    if (sendDb != 0) [self logLine:[NSString stringWithFormat:@"send %g dB", sendDb]];
     [self logLine:[NSString stringWithFormat:@"capturing %@%@", name, take > 1 ? [NSString stringWithFormat:@" (take %ld)", (long)take] : @""]];
     NSError *e = nil;
-    BOOL ok = [self.audio playrecSignal:self.signal tailSeconds:3.0 toURL:[NSURL fileURLWithPath:path] done:^(NSError *err) {
+    BOOL ok = [self.audio playrecSignal:self.signal sendDb:sendDb tailSeconds:3.0 toURL:[NSURL fileURLWithPath:path] done:^(NSError *err) {
         self.captureBtn.enabled = YES;
         if (err) { [self logLine:[NSString stringWithFormat:@"capture failed: %@", err.localizedDescription]]; return; }
         float pk = fmaxf(self.mL.hold, self.mR.hold);
@@ -582,7 +659,7 @@ static NSTextField *label(NSString *s) {
         self.doneFiles[row] = path;
         [self appendLog:step file:name];
         [self.table reloadData];
-        [self analyze:path step:step];
+        [self analyze:path step:step signalSet:setName];
         [self selectNext];
     } error:&e];
     if (!ok) { self.captureBtn.enabled = YES; [self logLine:[NSString stringWithFormat:@"could not start capture: %@", e.localizedDescription]]; }
@@ -613,11 +690,14 @@ static NSTextField *label(NSString *s) {
     return [[NSFileManager defaultManager] fileExistsAtPath:f] ? f : nil;
 }
 
-- (void)analyze:(NSString *)path step:(NSDictionary *)step {
+- (void)analyze:(NSString *)path step:(NSDictionary *)step signalSet:(NSString *)setName {
     NSString *py = [self.root stringByAppendingPathComponent:@".venv/bin/python"];
     NSString *run = [self.root stringByAppendingPathComponent:@"analysis/run.py"];
     if (![[NSFileManager defaultManager] fileExistsAtPath:py]) { [self logLine:@"no .venv in the project (make venv)"]; return; }
-    NSMutableArray *args = [NSMutableArray arrayWithObjects:run, path, @"--effect", step[@"effect"], nil];
+    if (!setName.length) setName = @"normal";
+    NSString *sigPath = [self.root stringByAppendingPathComponent:[NSString stringWithFormat:@"capture/signalset-%@.wav", setName]];
+    NSString *layPath = [self.root stringByAppendingPathComponent:[NSString stringWithFormat:@"capture/layout-%@.json", setName]];
+    NSMutableArray *args = [NSMutableArray arrayWithObjects:run, path, @"--effect", step[@"effect"], @"--signal", sigPath, @"--layout", layPath, nil];
     NSString *effect = step[@"effect"];
     NSString *ref = nil;
     if ([@[@"SDLY", @"XDLY", @"HDLY"] containsObject:effect]) { if ((ref = [self referenceFor:step key:@"High Damp"])) [args addObjectsFromArray:@[@"--ref-damp0", ref]]; }

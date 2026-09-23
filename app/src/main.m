@@ -22,7 +22,7 @@ static int selftest(int argc, const char *argv[]) {
     silence.frameLength = silence.frameCapacity;
     memset(silence.floatChannelData[0], 0, silence.frameLength * sizeof(float));
     __block BOOL done = NO;
-    if (![a playrecSignal:silence tailSeconds:0.5 toURL:[NSURL fileURLWithPath:@(argv[3])] done:^(NSError *err) {
+    if (![a playrecSignal:silence sendDb:0 tailSeconds:0.5 toURL:[NSURL fileURLWithPath:@(argv[3])] done:^(NSError *err) {
         if (err) fprintf(stderr, "playrec: %s\n", err.localizedDescription.UTF8String);
         done = YES; } error:&e]) { fprintf(stderr, "playrec start: %s\n", e.localizedDescription.UTF8String); return 3; }
     while (!done) [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];

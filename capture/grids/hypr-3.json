@@ -1,0 +1,52 @@
+[
+ {
+  "_note": "HYPR-3, 2026-09-23, after the hypr-2 re-fit (docs/hypr-model-2-2026-09-23.md). SMALL: it only re-asks the three questions hypr-2 could not answer because of how they were captured, plus two DOWN rows. READ BEFORE STARTING: (1) The Bench does NOT read the grid's `signal_set` key or any send-level note -- in hypr-2, rows 30-33 were all captured on the normal set at the normal send, so the order test and the slow-state test never happened. Switch the signal set / send BY HAND where a row says so; the reference channel records the send, so a wrong send shows up in the analysis. (2) MAX rows are LAST, after every LIN row, so the input pot is calibrated to -27 dBFS once and turned fully up only at the end (Mark's standing rule). ROW 1 (and the matching row 10): Type 1 / Harmonics 50 at the START of the sitting; row 10 repeats it at the END. On 09-18 this setting read H1 -87.2 / H3 -88.3 on the steady sine and on 09-23 H1 -75.4 / H3 -104.5 -- 12 dB apart on a setting whose same-day repeats agree to 0.2 dB. The pair says whether that drifts within a sitting (warm-up) or only between days.",
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 1, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "_note": "ROWS 2-4: THE ORDER TEST, as hypr-2 rows 30/31 intended. SEND 20 dB DOWN (lower the Bench tone/output level or the interface output by 20 dB; check the analysis reports send about -20 dB). Row 2 is BYPASS at that send, rows 3-4 are Type 2 / Harmonics 50 / Depth 0 at Resonance 50 and 0. At -20 dB the whole signal set sits below the driver's -25 dBFS knee, so the effect path is as linear as it gets and the Resonance-50/Resonance-0 ratio is the resonator's own response with no clipper in front of it. NAMING: a LIN Bypass capture already exists, so the Bench will save row 2 as the next _takeN, and rows 3-4 share names with the hypr-2 Resonance 50/0 captures and will also get _takeN suffixes -- note the take numbers in the log so the -20 dB files can be told apart.",
+  "effect": "BYPASS", "input": "LIN", "send_db": -20,
+  "params": {}
+ },
+ {
+  "effect": "HYPR", "input": "LIN", "send_db": -20,
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 50, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN", "send_db": -20,
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "_note": "ROWS 5-6: THE SLOW STATE, as hypr-2 rows 32/33 intended. SEND BACK TO NORMAL. LOAD THE LFO SIGNAL SET BY HAND (`make signals-lfo`, the 30 s 1 kHz tone) for these two rows only, then switch back to the normal set. Type 1 / Harmonics 50 and Type 2 / Harmonics 0.",
+  "effect": "HYPR", "input": "LIN", "signal_set": "lfo",
+  "params": {"Type": 1, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN", "signal_set": "lfo",
+  "params": {"Type": 2, "Harmonics": 0, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "_note": "ROWS 7-9: POLARITY DOWN, NORMAL SET. hypr-2 showed DOWN rests at the top (about 11.7 kHz) and sweeps down, at Decay 25 only. Decay 0 and Decay 50 at Depth 50 say whether DOWN's decay is the same law as UP's (the fit put DOWN's excursion at 0.70 of UP's per Depth unit, which may be the top clamp rather than a different law); Depth 37 is the missing DOWN depth point.",
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "DOWN", "Depth": 50, "Decay": 0, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "DOWN", "Depth": 50, "Decay": 50, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 2, "Harmonics": 50, "Sensitivity": 25, "Polarity": "DOWN", "Depth": 37, "Decay": 25, "Resonance": 25, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "_note": "ROW 10: row 1 again, the last LIN capture of the sitting (drift check).",
+  "effect": "HYPR", "input": "LIN",
+  "params": {"Type": 1, "Harmonics": 50, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 50}
+ },
+ {
+  "_note": "ROW 11 (MAX, LAST): Type 1 / Harmonics 25 at MAX. Type 1 is the worst-modelled part of the driver (a hard clip per Harmonics point, ramp describing-function error 5-10 dB); MAX extends its measured transfer curve 14 dB further into drive with the same signal set. Turn the input pot fully up only now.",
+  "effect": "HYPR", "input": "MAX",
+  "params": {"Type": 1, "Harmonics": 25, "Sensitivity": 25, "Polarity": "UP", "Depth": 0, "Decay": 25, "Resonance": 0, "Direct Level": 0, "Effect Level": 50}
+ }
+]

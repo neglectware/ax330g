@@ -1,0 +1,2746 @@
+[
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-1_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-0_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -13.198920528186322,
+  "segments": {
+   "clicks": 0.002428170972663679,
+   "bursts": 0.04642775394646037,
+   "sine20": 0.04767756593248862,
+   "sine40": -0.032548997847158034,
+   "ramp": 0.947711591993837,
+   "sweep": -0.30323030416924723,
+   "noise": 0.0017562702254210194,
+   "di": 0.01433102911943962
+  },
+  "drive_gain_db": 28.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.012337733040503451,
+  "curve_rms_db": 7.177106049931376,
+  "harm_capture": [
+   -77.44256103269453,
+   -104.90465199747032,
+   -120.50455865723906,
+   -116.1024332514427,
+   -118.65868897578027
+  ],
+  "harm_model": [
+   -85.09295432511523,
+   -105.85336255402368,
+   -116.64184816095667,
+   -117.63941292754424,
+   -135.52199212275812
+  ],
+  "harm_rms_db": 5.451081050985732,
+  "cents_rms": 1131.4581627210316,
+  "sgram_rms_db": 26.23329408222878
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-1_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-0_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -9.743390073373702,
+  "segments": {
+   "clicks": 0.004550963153860721,
+   "bursts": 0.06918815400135259,
+   "sine20": 0.07488464677577156,
+   "sine40": -0.0432635176333207,
+   "ramp": 1.416651849369643,
+   "sweep": -0.5520050085838548,
+   "noise": 0.001503197298156067,
+   "di": 0.03552320202815196
+  },
+  "drive_gain_db": 28.0,
+  "Q": 7.25,
+  "f_max_track": 388.9999999999999,
+  "total": -0.04024586877168446,
+  "curve_rms_db": 7.589905371525927,
+  "harm_capture": [
+   -77.43454968307256,
+   -105.17384040722337,
+   -120.52148721327339,
+   -116.24247023620865,
+   -118.93878759907196
+  ],
+  "harm_model": [
+   -81.60564624314952,
+   -102.41664138749832,
+   -112.8800863603214,
+   -114.51324649608573,
+   -130.80133916808916
+  ],
+  "harm_rms_db": 3.5355475493803388,
+  "cents_rms": 531.1314238060443,
+  "sgram_rms_db": 21.79428049160079
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-1_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-0_Polarity-UP_Resonance-50_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 50,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -7.4042826634637695,
+  "segments": {
+   "clicks": 0.06046611215493414,
+   "bursts": 0.06701487272479056,
+   "sine20": 0.10600104789281062,
+   "sine40": -0.03329215220466608,
+   "ramp": 1.6847121755903203,
+   "sweep": -0.945752613924391,
+   "noise": -0.11852052701542704,
+   "di": 0.19292806142009056
+  },
+  "drive_gain_db": 28.0,
+  "Q": 139.99999999999994,
+  "f_max_track": 388.9999999999999,
+  "total": -0.3260469388322562,
+  "curve_rms_db": 7.510678595913159,
+  "harm_capture": [
+   -77.45970342076455,
+   -104.84345566723002,
+   -118.64801414673283,
+   -117.98676639685021,
+   -119.46667527928258
+  ],
+  "harm_model": [
+   -79.256694609694,
+   -100.10976396208953,
+   -110.46350441449626,
+   -111.85410599307065,
+   -130.55052801221245
+  ],
+  "harm_rms_db": 3.5802942960325126,
+  "cents_rms": 198.01505416957835,
+  "sgram_rms_db": 17.960342894112276
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-1_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-10_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 10,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -16.737183368552934,
+  "segments": {
+   "clicks": -0.031015439192088934,
+   "bursts": 0.5135059359929457,
+   "sine20": -1.2669566393073097,
+   "sine40": -0.01637671407114283,
+   "ramp": 0.35438494187450686,
+   "sweep": -0.11787863679751354,
+   "noise": -0.08678611915222945,
+   "di": -0.039492107868767334
+  },
+  "drive_gain_db": 27.5,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.09869833406468587,
+  "curve_rms_db": 8.15569140130582,
+  "harm_capture": [
+   -48.59842394856258,
+   -66.88288724580237,
+   -80.89613887356239,
+   -93.05216359292693,
+   -103.55985466707313
+  ],
+  "harm_model": [
+   -64.56377460405933,
+   -80.36385928907083,
+   -96.3228131267829,
+   -104.15434632556094,
+   -116.1367976417322
+  ],
+  "harm_rms_db": 13.82786507972909,
+  "cents_rms": 1519.4506591872982,
+  "sgram_rms_db": 21.07859707591345
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-1_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-25_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 25,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -29.453222986717048,
+  "segments": {
+   "clicks": 0.0014860096286781754,
+   "bursts": -0.04878697616222638,
+   "sine20": 0.4809809879968654,
+   "sine40": 1.911341451054028,
+   "ramp": -0.08349825770670094,
+   "sweep": -0.02069173995089102,
+   "noise": -0.028563911994453406,
+   "di": 0.009759912999484754
+  },
+  "drive_gain_db": 43.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.01150168664952389,
+  "curve_rms_db": 10.434727048519807,
+  "harm_capture": [
+   -51.084498801420175,
+   -86.83468930221117,
+   -71.33457118263281,
+   -96.15163554119705,
+   -81.37268031120243
+  ],
+  "harm_model": [
+   -74.27660873277628,
+   -111.01574639011142,
+   -102.77399480304437,
+   -121.51738652213497,
+   -113.20637320555797
+  ],
+  "harm_rms_db": 27.451193666794108,
+  "cents_rms": 1860.9899963192788,
+  "sgram_rms_db": 22.03090300306254
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-1_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-37_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 37,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -18.001369133872984,
+  "segments": {
+   "clicks": 0.0138153536073915,
+   "bursts": 0.27871844641103394,
+   "sine20": 0.5897674118655729,
+   "sine40": 1.2426782891301968,
+   "ramp": 0.5650666871373744,
+   "sweep": -0.1409641121426759,
+   "noise": -0.005918993398459804,
+   "di": 0.05458340383307103
+  },
+  "drive_gain_db": 44.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.04936025605100269,
+  "curve_rms_db": 8.773481616890857,
+  "harm_capture": [
+   -62.33197533889543,
+   -71.47900791821714,
+   -75.85399098656028,
+   -126.4307517573047,
+   -82.84152180152486
+  ],
+  "harm_model": [
+   -72.5308628011958,
+   -82.01979315098646,
+   -101.00229092601411,
+   -105.81932248577587,
+   -111.47481271019569
+  ],
+  "harm_rms_db": 20.417074942908332,
+  "cents_rms": 1948.9129333902315,
+  "sgram_rms_db": 17.935968395916912
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-1_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -20.022243676084216,
+  "segments": {
+   "clicks": -0.0017691407179540874,
+   "bursts": 0.2205740779827039,
+   "sine20": -0.05055650973560688,
+   "sine40": -0.18790159084140612,
+   "ramp": -0.014913389677111866,
+   "sweep": -0.07762812231720062,
+   "noise": 0.00947608233720132,
+   "di": 0.007049698680894778
+  },
+  "drive_gain_db": 90.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.011029847275011662,
+  "curve_rms_db": 9.539033352986115,
+  "harm_capture": [
+   -87.16696665921398,
+   -67.80322523812275,
+   -88.27113401441771,
+   -81.54766954900086,
+   -89.9298425405774
+  ],
+  "harm_model": [
+   -83.36615263299421,
+   -86.20233316525456,
+   -111.7590445401018,
+   -103.53272349995534,
+   -122.10391207745988
+  ],
+  "harm_rms_db": 22.014398235832946,
+  "cents_rms": 1740.6811288542156,
+  "sgram_rms_db": 23.11576806220072
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-1_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN_take2",
+  "params": {
+   "Type": 1,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -33.036850700988026,
+  "segments": {
+   "clicks": 6.258567407968485e-05,
+   "bursts": -0.021894570064077357,
+   "sine20": 0.037433724014476866,
+   "sine40": -0.1981821296223245,
+   "ramp": 0.0048880871817829075,
+   "sweep": 0.0021716616092106733,
+   "noise": -0.002193050659549556,
+   "di": 0.002012862052573894
+  },
+  "drive_gain_db": 90.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.0005265645339065372,
+  "curve_rms_db": 9.894816101477423,
+  "harm_capture": [
+   -75.42005146825491,
+   -66.31413973090116,
+   -104.49347008221075,
+   -80.43710506981552,
+   -99.42605890018345
+  ],
+  "harm_model": [
+   -96.38075965789803,
+   -99.21694019015837,
+   -124.77365156500561,
+   -116.54733052485915,
+   -135.11851910236368
+  ],
+  "harm_rms_db": 30.037081830785308,
+  "cents_rms": 1790.4763039917304,
+  "sgram_rms_db": 36.024513360217206
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-1_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-0_Sensitivity-25_IN-MAX_take2",
+  "params": {
+   "Type": 1,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "MAX",
+  "gain_db": -26.90949990794438,
+  "segments": {
+   "clicks": 0.0014982331288919681,
+   "bursts": -0.015769908858978,
+   "sine20": 0.1216892024155456,
+   "sine40": -0.06123893147749726,
+   "ramp": -0.02516722682601369,
+   "sweep": -0.010422028354241775,
+   "noise": -0.002077857792464499,
+   "di": 0.001993891794661806
+  },
+  "drive_gain_db": 90.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.0019419439605030675,
+  "curve_rms_db": 6.308228445541453,
+  "harm_capture": [
+   -68.58458565488783,
+   -82.59729217366998,
+   -78.68165789344968,
+   -120.94518743296507,
+   -81.65170615662092
+  ],
+  "harm_model": [
+   -90.2524660360565,
+   -105.50821820564903,
+   -118.66632494523037,
+   -115.54008660899538,
+   -129.0688600070714
+  ],
+  "harm_rms_db": 34.790687153225704,
+  "cents_rms": 1531.4103576402836,
+  "sgram_rms_db": 31.46259144688362
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-1_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-5_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 5,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -9.387187200320119,
+  "segments": {
+   "clicks": -0.010936895994063889,
+   "bursts": 0.03888082793324088,
+   "sine20": 1.8468781963681735,
+   "sine40": -0.11728503334134643,
+   "ramp": 1.6223513432869652,
+   "sweep": -0.49235241221755643,
+   "noise": -0.3479492016938437,
+   "di": 0.11847364659390536
+  },
+  "drive_gain_db": 24.5,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.25563407221540757,
+  "curve_rms_db": 8.29143606918127,
+  "harm_capture": [
+   -47.84057325782905,
+   -84.43403031176325,
+   -88.8632379130051,
+   -104.87383437334333,
+   -108.89087159437895
+  ],
+  "harm_model": [
+   -59.827910728598184,
+   -87.91681680488881,
+   -96.44573266174379,
+   -108.2083642346575,
+   -116.21063240340715
+  ],
+  "harm_rms_db": 7.490650462500725,
+  "cents_rms": 1181.9954460508793,
+  "sgram_rms_db": 16.14130356535159
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-1_Decay-25_DirectLevel-25_EffectLevel-25_Harmonics-0_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 25,
+   "Effect Level": 25
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -5.48716359338283,
+  "segments": {
+   "clicks": -0.30507877093078406,
+   "bursts": -8.797862984398229,
+   "sine20": -24.560282661333545,
+   "sine40": -22.21569614626611,
+   "ramp": -26.674526677449713,
+   "sweep": -15.076306908025153,
+   "noise": -11.961320105042105,
+   "di": -8.57416181816118
+  },
+  "drive_gain_db": 28.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -14.375668568721679,
+  "curve_rms_db": 0.061240610204023466,
+  "harm_capture": [
+   -32.75068672269378,
+   -112.26316755050692,
+   -102.92474643481432,
+   -115.048349681567,
+   -111.45640709169497
+  ],
+  "harm_model": [
+   -33.017394105256884,
+   -104.35836625641562,
+   -114.43519626921615,
+   -114.9267748821144,
+   -129.8116004658357
+  ],
+  "harm_rms_db": 8.141301745365867,
+  "cents_rms": 0.0,
+  "sgram_rms_db": 10.65113053360688
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-1_Decay-25_DirectLevel-50_EffectLevel-0_Harmonics-0_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 50,
+   "Effect Level": 0
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -5.470902989809585,
+  "segments": {
+   "clicks": -11.474451955622499,
+   "bursts": -26.581212769809383,
+   "sine20": -26.830817673472716,
+   "sine40": -25.787228962128097,
+   "ramp": -26.76333888940825,
+   "sweep": -15.376346854872587,
+   "noise": -12.168525566369702,
+   "di": -14.769541012259872
+  },
+  "drive_gain_db": 28.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -15.649803092694803,
+  "curve_rms_db": 0.010396683619863265,
+  "harm_capture": [
+   -26.704282619890204,
+   -113.04547679950309,
+   -126.32492439848224,
+   -130.3108811181062,
+   -114.75352718485655
+  ],
+  "harm_model": [
+   -26.95430789026293,
+   -140.0,
+   -140.0,
+   -137.2966818133188,
+   -138.5950136933003
+  ],
+  "harm_rms_db": 0.25002527037272415,
+  "cents_rms": 0.0,
+  "sgram_rms_db": 8.614886241020823
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-0_Harmonics-50_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 0
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -240.0,
+  "segments": {
+   "clicks": 0.0,
+   "bursts": 0.0,
+   "sine20": 0.0,
+   "sine40": 0.0,
+   "ramp": 0.0,
+   "sweep": 0.0,
+   "noise": 0.0,
+   "di": 0.0
+  },
+  "drive_gain_db": 0.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": 0.0,
+  "curve_rms_db": null,
+  "harm_capture": [
+   -144.1284507270789,
+   -144.9423820021441,
+   -144.76554104435706,
+   -148.50805323068553,
+   -145.7990544657589
+  ],
+  "harm_model": [
+   -140.0,
+   -140.0,
+   -140.0,
+   -140.0,
+   -140.0
+  ],
+  "harm_rms_db": null,
+  "cents_rms": 5650.173577154439,
+  "sgram_rms_db": 100.5779090802216
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-12_Harmonics-50_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 12
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -14.06276342806975,
+  "segments": {
+   "clicks": -0.012258522871626099,
+   "bursts": -0.2587039740254511,
+   "sine20": -1.028969602279716,
+   "sine40": -1.0532751750891407,
+   "ramp": -1.0479882279410901,
+   "sweep": -0.42241631090148957,
+   "noise": -0.288676521336491,
+   "di": -1.0343492703536938
+  },
+  "drive_gain_db": 0.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.45627079199945086,
+  "curve_rms_db": 0.6001598027170686,
+  "harm_capture": [
+   -53.31581679820145,
+   -78.78813574011355,
+   -83.36507018963096,
+   -91.5677535022941,
+   -94.47041821072534
+  ],
+  "harm_model": [
+   -62.03336096753195,
+   -92.81356457201426,
+   -90.44406549533058,
+   -110.44747438758324,
+   -100.72514516071762
+  ],
+  "harm_rms_db": 11.98654140881714,
+  "cents_rms": 450.7890147787985,
+  "sgram_rms_db": 11.091901294922986
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-25_Harmonics-50_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 25
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -14.105194061838201,
+  "segments": {
+   "clicks": -0.008341717786230163,
+   "bursts": -0.2545678878107296,
+   "sine20": -1.022948171910798,
+   "sine40": -1.0357887550774478,
+   "ramp": -1.0469383063269788,
+   "sweep": -0.42301628200064556,
+   "noise": -0.2884939808203626,
+   "di": -1.0302937012810531
+  },
+  "drive_gain_db": 0.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.4556027257998352,
+  "curve_rms_db": 0.6104916735854597,
+  "harm_capture": [
+   -46.95974923418113,
+   -72.46259193301889,
+   -76.79557265921895,
+   -86.56875672606074,
+   -89.89094015770037
+  ],
+  "harm_model": [
+   -55.70058963159157,
+   -86.49121721141202,
+   -84.11294028952256,
+   -104.0351890757662,
+   -94.37810763657949
+  ],
+  "harm_rms_db": 11.418926552893979,
+  "cents_rms": 453.1372716900023,
+  "sgram_rms_db": 11.086676008933225
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-37_Harmonics-50_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 37
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -14.061516001042955,
+  "segments": {
+   "clicks": -0.006230906653165391,
+   "bursts": -0.2622058095438433,
+   "sine20": -1.0247893945653388,
+   "sine40": -0.999024688551934,
+   "ramp": -1.049773692016558,
+   "sweep": -0.42380866225112257,
+   "noise": -0.2944150627465092,
+   "di": -1.037292235835352
+  },
+  "drive_gain_db": 0.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.4570595385269698,
+  "curve_rms_db": 0.6098418109436609,
+  "harm_capture": [
+   -43.56455986938962,
+   -69.06698195822192,
+   -73.538159362304,
+   -82.79186417766992,
+   -85.48394552270146
+  ],
+  "harm_model": [
+   -52.25167870689097,
+   -83.03144599523483,
+   -80.66059800225759,
+   -100.53695862720531,
+   -90.9457343629279
+  ],
+  "harm_rms_db": 11.540545360388784,
+  "cents_rms": 449.84823862525184,
+  "sgram_rms_db": 11.358878667301441
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-0_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -19.296705382541298,
+  "segments": {
+   "clicks": 0.0006274325411652626,
+   "bursts": -0.06497971373873668,
+   "sine20": -0.8615874337927139,
+   "sine40": -0.4174203344383898,
+   "ramp": -0.9685558484391521,
+   "sweep": -0.45260666023244056,
+   "noise": -0.3291165847410866,
+   "di": -1.3099233588880352
+  },
+  "drive_gain_db": 0.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.5269503067449577,
+  "curve_rms_db": 0.18823345160292348,
+  "harm_capture": [
+   -46.97724741878413,
+   -103.94528055041776,
+   -76.79458096747165,
+   -112.17642318720424,
+   -90.27605808573533
+  ],
+  "harm_model": [
+   -56.178847589673495,
+   -116.06181010897862,
+   -84.5919489259594,
+   -128.88297291105206,
+   -94.87411347049567
+  ],
+  "harm_rms_db": 8.851847189284353,
+  "cents_rms": 400.6005317049817,
+  "sgram_rms_db": 10.597593938724689
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-0_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN_take2",
+  "params": {
+   "Type": 2,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -13.393608830698064,
+  "segments": {
+   "clicks": -0.0012339111097148248,
+   "bursts": -0.10682642434578327,
+   "sine20": -1.064949248977527,
+   "sine40": -0.6340806467603173,
+   "ramp": -1.1698460016854852,
+   "sweep": -0.41296363685713544,
+   "noise": -0.32267320855731896,
+   "di": -1.2408028043598236
+  },
+  "drive_gain_db": 0.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.49447654012386977,
+  "curve_rms_db": 0.08019454569812476,
+  "harm_capture": [
+   -40.81752662707588,
+   -97.22176516458332,
+   -70.45563516962774,
+   -104.03421306698769,
+   -83.7793163040698
+  ],
+  "harm_model": [
+   -50.27575103783026,
+   -110.15871355713527,
+   -78.68885237411617,
+   -122.97987635921001,
+   -88.97101691865242
+  ],
+  "harm_rms_db": 11.920573988745215,
+  "cents_rms": 446.534980257789,
+  "sgram_rms_db": 11.362568763647541
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-0_Polarity-UP_Resonance-50_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 50,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -13.43427447625003,
+  "segments": {
+   "clicks": 0.1142604292765057,
+   "bursts": 0.26775759810197997,
+   "sine20": -0.8101014614787729,
+   "sine40": -0.37284679612443483,
+   "ramp": -0.9124903971966276,
+   "sweep": -0.9981548078243563,
+   "noise": -0.4892732423564148,
+   "di": -1.0570330028045234
+  },
+  "drive_gain_db": 0.0,
+  "Q": 139.99999999999994,
+  "f_max_track": 388.9999999999999,
+  "total": -0.829769735083211,
+  "curve_rms_db": 0.20706541519669455,
+  "harm_capture": [
+   -40.954755324667005,
+   -96.98939691763931,
+   -70.62393582167354,
+   -103.97167573914432,
+   -83.92340270225354
+  ],
+  "harm_model": [
+   -50.26359096373051,
+   -110.00111098864367,
+   -78.7271332013371,
+   -123.49023834321387,
+   -89.01372127483442
+  ],
+  "harm_rms_db": 12.070679857355199,
+  "cents_rms": 158.17675768269018,
+  "sgram_rms_db": 11.421285370641904
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-10_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 10,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -12.19451444306469,
+  "segments": {
+   "clicks": -0.03827298924553446,
+   "bursts": 0.5165484588748868,
+   "sine20": -1.7064806290794294,
+   "sine40": -0.7703749733265326,
+   "ramp": -0.7800492778050128,
+   "sweep": -0.5409443480189893,
+   "noise": -0.4018325950217303,
+   "di": -0.9038180449679842
+  },
+  "drive_gain_db": 0.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.5938746895534095,
+  "curve_rms_db": 1.3869459089428924,
+  "harm_capture": [
+   -38.7523939868502,
+   -66.87574746525135,
+   -73.50662983093561,
+   -91.94431824009985,
+   -83.94940287146716
+  ],
+  "harm_model": [
+   -49.211508277285546,
+   -75.9334017292596,
+   -77.62080146428212,
+   -100.1812525414953,
+   -87.90153939298334
+  ],
+  "harm_rms_db": 7.639725787036284,
+  "cents_rms": 582.1993461605905,
+  "sgram_rms_db": 11.061750401727958
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-25_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 25,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -14.957235439922421,
+  "segments": {
+   "clicks": 0.0031589032006635875,
+   "bursts": 0.122419452165758,
+   "sine20": -1.2722156438311814,
+   "sine40": -1.0413361994903951,
+   "ramp": -0.7284643398000199,
+   "sweep": -0.40013735863683664,
+   "noise": 0.012915541002641362,
+   "di": -0.7885866841546445
+  },
+  "drive_gain_db": 0.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.41605112915995335,
+  "curve_rms_db": 0.9061100223932274,
+  "harm_capture": [
+   -39.38113764032264,
+   -87.49736544186489,
+   -64.91586912712349,
+   -98.83740417616886,
+   -80.15140066643396
+  ],
+  "harm_model": [
+   -50.52146909344473,
+   -97.56510558253636,
+   -78.93529589369824,
+   -108.18608355052758,
+   -89.21422278473074
+  ],
+  "harm_rms_db": 10.87697801856114,
+  "cents_rms": 603.1143802641839,
+  "sgram_rms_db": 11.945215106953814
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-37_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 37,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -15.096523755142853,
+  "segments": {
+   "clicks": -0.020489488467092087,
+   "bursts": -0.38972986824580147,
+   "sine20": -1.15936859181501,
+   "sine40": -0.689690080990971,
+   "ramp": -1.0218557825965675,
+   "sweep": -0.39430230750083695,
+   "noise": 0.018725369710502093,
+   "di": -0.8706421158576632
+  },
+  "drive_gain_db": 0.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.3952585708149954,
+  "curve_rms_db": 0.7953585168281393,
+  "harm_capture": [
+   -40.459274522307396,
+   -71.92929988941232,
+   -66.77071459403712,
+   -107.505407198907,
+   -79.38087268168971
+  ],
+  "harm_model": [
+   -50.55018042579577,
+   -79.25504600204548,
+   -78.96440217054528,
+   -103.61428426258004,
+   -89.24532050753263
+  ],
+  "harm_rms_db": 9.128276106556951,
+  "cents_rms": 690.1694863144171,
+  "sgram_rms_db": 11.952187625605996
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -14.11445001996952,
+  "segments": {
+   "clicks": -0.010352787128923069,
+   "bursts": -0.4070832472070478,
+   "sine20": -0.8558371560256433,
+   "sine40": -0.4647962869930069,
+   "ramp": -0.8295362619008344,
+   "sweep": -0.43915049535610606,
+   "noise": -0.27607570964419637,
+   "di": -1.0699945922698575
+  },
+  "drive_gain_db": 0.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.46374163542151337,
+  "curve_rms_db": 0.6101496084898553,
+  "harm_capture": [
+   -40.978585390238095,
+   -67.8503026557307,
+   -71.87476809349867,
+   -80.68235818421508,
+   -83.74088004153806
+  ],
+  "harm_model": [
+   -49.68929983852384,
+   -80.46444914693681,
+   -78.10154920097406,
+   -98.05701977780748,
+   -88.3901299544483
+  ],
+  "harm_rms_db": 10.929413809588736,
+  "cents_rms": 511.23185361597086,
+  "sgram_rms_db": 10.763348949313375
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN_take2",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -14.04736052777523,
+  "segments": {
+   "clicks": -0.007558622512036095,
+   "bursts": -0.26454746453762823,
+   "sine20": -1.0273269508340306,
+   "sine40": -1.0397180167529072,
+   "ramp": -1.052152819936346,
+   "sweep": -0.4240279152809734,
+   "noise": -0.29065645846404564,
+   "di": -1.043870184142655
+  },
+  "drive_gain_db": 0.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.4573643694764087,
+  "curve_rms_db": 0.6113297960720582,
+  "harm_capture": [
+   -40.9828252257425,
+   -66.45907570895929,
+   -70.86924771215462,
+   -79.76031531470025,
+   -83.47069101462056
+  ],
+  "harm_model": [
+   -49.622210346329545,
+   -80.39735965474253,
+   -78.03445970877976,
+   -97.98993028561314,
+   -88.32304046225403
+  ],
+  "harm_rms_db": 11.62857819960257,
+  "cents_rms": 455.0032781163842,
+  "sgram_rms_db": 11.041067098799715
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-0_Sensitivity-25_IN-MAX_take2",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "MAX",
+  "gain_db": -13.440915817052211,
+  "segments": {
+   "clicks": -0.0032277101657030016,
+   "bursts": -0.09972328842524547,
+   "sine20": -1.1412237542053774,
+   "sine40": -1.3059691832516478,
+   "ramp": -1.0935432446374875,
+   "sweep": -0.31429924656841735,
+   "noise": -0.28926440024238786,
+   "di": -1.3450273428359658
+  },
+  "drive_gain_db": 0.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.6399695993927281,
+  "curve_rms_db": 0.6752520191688912,
+  "harm_capture": [
+   -41.09024732065286,
+   -82.82272538001295,
+   -74.1191225827248,
+   -109.78876754442886,
+   -79.53242527598645
+  ],
+  "harm_model": [
+   -49.015824830608295,
+   -92.76789527953775,
+   -77.42796454178263,
+   -102.83301121520486,
+   -87.71715682799521
+  ],
+  "harm_rms_db": 7.74046912152608,
+  "cents_rms": 516.1763594907169,
+  "sgram_rms_db": 16.82576931305123
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-10_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 10,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -12.663253441728502,
+  "segments": {
+   "clicks": -0.014291030708044161,
+   "bursts": -0.24114770984273548,
+   "sine20": -1.0539772819123385,
+   "sine40": -1.128410707324818,
+   "ramp": -1.090012097438425,
+   "sweep": -0.6268594828884169,
+   "noise": -0.32843396850082485,
+   "di": -1.1655229645161995
+  },
+  "drive_gain_db": 0.0,
+  "Q": 4.94,
+  "f_max_track": 388.9999999999999,
+  "total": -0.6157554918333616,
+  "curve_rms_db": 0.6105085706804042,
+  "harm_capture": [
+   -40.971467990073194,
+   -66.47504463250297,
+   -70.8995754863372,
+   -79.78745959383176,
+   -83.60300066184126
+  ],
+  "harm_model": [
+   -48.22231338903555,
+   -79.01400834252587,
+   -76.65206455281118,
+   -96.56721868877062,
+   -86.93096939705751
+  ],
+  "harm_rms_db": 10.349175731115865,
+  "cents_rms": 434.5946869685501,
+  "sgram_rms_db": 9.901928458431247
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -10.5842373927081,
+  "segments": {
+   "clicks": 0.0036598776885057305,
+   "bursts": -0.18713137518847844,
+   "sine20": -0.9687213994445969,
+   "sine40": -1.1010626100366494,
+   "ramp": -1.0395739928888759,
+   "sweep": -1.113346270083948,
+   "noise": -0.3776341767056124,
+   "di": -1.3051131361628947
+  },
+  "drive_gain_db": 0.0,
+  "Q": 7.25,
+  "f_max_track": 388.9999999999999,
+  "total": -0.9602299188270678,
+  "curve_rms_db": 0.6119192623158193,
+  "harm_capture": [
+   -40.977617441892555,
+   -66.50323159314864,
+   -70.89526508492091,
+   -79.79264788459713,
+   -83.69399843902647
+  ],
+  "harm_model": [
+   -46.12345405730311,
+   -76.93091640831524,
+   -74.56967396809021,
+   -94.54064449768151,
+   -84.85604448823867
+  ],
+  "harm_rms_db": 8.57404549600371,
+  "cents_rms": 723.4693549548509,
+  "sgram_rms_db": 8.265200409924574
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN_take2",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -10.578926233738695,
+  "segments": {
+   "clicks": -0.008950845822973008,
+   "bursts": -0.18473128469761946,
+   "sine20": -0.9685137615935275,
+   "sine40": -1.148796471220507,
+   "ramp": -1.0390690001763616,
+   "sweep": -1.112466767708682,
+   "noise": -0.38614416118424444,
+   "di": -1.2968302428738951
+  },
+  "drive_gain_db": 0.0,
+  "Q": 7.25,
+  "f_max_track": 388.9999999999999,
+  "total": -0.9619239890202778,
+  "curve_rms_db": 0.6106226926329632,
+  "harm_capture": [
+   -40.97445641964217,
+   -66.50362643664052,
+   -70.8908324887744,
+   -79.79194064608053,
+   -83.67977236157061
+  ],
+  "harm_model": [
+   -46.1181428983337,
+   -76.92560524934585,
+   -74.56436280912081,
+   -94.53533333871204,
+   -84.85073332926927
+  ],
+  "harm_rms_db": 8.570983090113655,
+  "cents_rms": 725.2631337033155,
+  "sgram_rms_db": 8.261517804104475
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-37_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 37,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -9.340639712531019,
+  "segments": {
+   "clicks": 0.008975945998670909,
+   "bursts": -0.1511435388957878,
+   "sine20": -0.7865170972070743,
+   "sine40": -1.0625770748275372,
+   "ramp": -0.9004866381106282,
+   "sweep": -1.7864935145630092,
+   "noise": -0.431599288071002,
+   "di": -1.398003857115718
+  },
+  "drive_gain_db": 0.0,
+  "Q": 13.1,
+  "f_max_track": 388.9999999999999,
+  "total": -1.3673322866909459,
+  "curve_rms_db": 0.6115594519414015,
+  "harm_capture": [
+   -40.98582248493922,
+   -66.52538302744559,
+   -70.90844894788214,
+   -79.83506431847353,
+   -83.794221448576
+  ],
+  "harm_model": [
+   -44.86778000647331,
+   -75.68917330925129,
+   -73.3255130953333,
+   -93.26576005566467,
+   -83.6082176418621
+  ],
+  "harm_rms_db": 7.553873589383423,
+  "cents_rms": 926.5657969722462,
+  "sgram_rms_db": 7.412533292855802
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-50_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 50,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -12.549480580125472,
+  "segments": {
+   "clicks": 0.04568143295519178,
+   "bursts": 0.25503460753002827,
+   "sine20": -0.9864122101069839,
+   "sine40": -1.009774769207887,
+   "ramp": -1.032786456941679,
+   "sweep": -0.731036933803086,
+   "noise": -0.4695266681281183,
+   "di": -0.8386188715990492
+  },
+  "drive_gain_db": 0.0,
+  "Q": 139.99999999999994,
+  "f_max_track": 388.9999999999999,
+  "total": -0.6359498366548806,
+  "curve_rms_db": 0.6114182934064605,
+  "harm_capture": [
+   -41.00345748240042,
+   -66.54829749620002,
+   -70.9291460331798,
+   -79.90094202596529,
+   -83.8872538618068
+  ],
+  "harm_model": [
+   -48.07152703303618,
+   -78.89240920393857,
+   -76.5323741511985,
+   -96.43377796698049,
+   -86.81694611719685
+  ],
+  "harm_rms_db": 10.155280669012786,
+  "cents_rms": 531.6807684366827,
+  "sgram_rms_db": 10.351361005794756
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-0_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-5_Polarity-UP_Resonance-0_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 5,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 0,
+   "Decay": 25,
+   "Resonance": 0,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -17.71303096812115,
+  "segments": {
+   "clicks": -0.01279625054930733,
+   "bursts": -0.1721102140660875,
+   "sine20": -0.997440147285424,
+   "sine40": -0.42089129279078463,
+   "ramp": -0.8521331762956379,
+   "sweep": -0.06553655550960258,
+   "noise": -0.1584235486926886,
+   "di": -0.6774598684847319
+  },
+  "drive_gain_db": 0.0,
+  "Q": 4.13,
+  "f_max_track": 388.9999999999999,
+  "total": -0.16340683724820337,
+  "curve_rms_db": 1.2364894903411092,
+  "harm_capture": [
+   -38.55880799515954,
+   -83.84715373922148,
+   -71.65317437097178,
+   -104.72874908545828,
+   -84.11313793780084
+  ],
+  "harm_model": [
+   -54.30679802896363,
+   -96.89000592814303,
+   -82.71905302072526,
+   -119.0655502037786,
+   -93.00223240138715
+  ],
+  "harm_rms_db": 12.846234625809615,
+  "cents_rms": 446.534980257789,
+  "sgram_rms_db": 15.225554563492572
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-10_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-DOWN_Resonance-25_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "DOWN",
+   "Depth": 10,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -22.38716834203609,
+  "segments": {
+   "clicks": 0.008279424499384902,
+   "bursts": -0.07725650701485165,
+   "sine20": -0.043366034428835576,
+   "sine40": -0.13690146813686965,
+   "ramp": -0.036610755706785625,
+   "sweep": 0.013901735278029292,
+   "noise": -0.04055462483498573,
+   "di": -0.008632956823682036
+  },
+  "drive_gain_db": 0.0,
+  "Q": 7.25,
+  "f_max_track": 11688.6,
+  "total": -0.020088531221901462,
+  "curve_rms_db": 0.4939878571137977,
+  "harm_capture": [
+   -25.928060942525008,
+   -38.0896659726018,
+   -34.99738316188249,
+   -38.935108848440464,
+   -37.38266572533038
+  ],
+  "harm_model": [
+   -42.864904319545346,
+   -60.35152676664032,
+   -50.40735053742688,
+   -64.77511089971044,
+   -50.502113109682526
+  ],
+  "harm_rms_db": 19.2859524513913,
+  "cents_rms": 2602.866109971027,
+  "sgram_rms_db": 22.128839550242116
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-10_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 10,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -12.763007023935984,
+  "segments": {
+   "clicks": -0.0033235895891010614,
+   "bursts": -0.34968261700708325,
+   "sine20": 1.07932086764702,
+   "sine40": -1.0419367629410488,
+   "ramp": 1.2200588613005152,
+   "sweep": -1.007058178891974,
+   "noise": -0.24795962459842968,
+   "di": -0.1859385631314936
+  },
+  "drive_gain_db": 0.0,
+  "Q": 7.25,
+  "f_max_track": 2520.8075277034864,
+  "total": -0.5438889546674659,
+  "curve_rms_db": 1.4186765643267902,
+  "harm_capture": [
+   -40.97673923483767,
+   -66.5037818125553,
+   -70.89269639381135,
+   -79.79501923359143,
+   -83.68895766362287
+  ],
+  "harm_model": [
+   -48.302223688531,
+   -79.10968603954313,
+   -76.7484435993181,
+   -96.71941412890939,
+   -87.0348141194666
+  ],
+  "harm_rms_db": 10.43543211555581,
+  "cents_rms": 114.89237328756029,
+  "sgram_rms_db": 9.987653071035542
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-25_Type-1_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-0_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 25,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -11.751635170360794,
+  "segments": {
+   "clicks": 0.0029963048431440598,
+   "bursts": 0.0061162025059218195,
+   "sine20": 0.06240959279497105,
+   "sine40": -0.03862740181178026,
+   "ramp": 2.1060117963912717,
+   "sweep": -0.43241491598455895,
+   "noise": 0.01930186754086094,
+   "di": 0.05527789736031252
+  },
+  "drive_gain_db": 28.0,
+  "Q": 7.25,
+  "f_max_track": 5893.768646230633,
+  "total": -0.036135134147670556,
+  "curve_rms_db": 6.163457622679108,
+  "harm_capture": [
+   -77.4288372077768,
+   -105.09827078823827,
+   -120.55435500129038,
+   -116.17142819823785,
+   -118.99107301861996
+  ],
+  "harm_model": [
+   -83.61389134013662,
+   -104.42488648448543,
+   -114.88833145730851,
+   -116.52149159307284,
+   -132.80958426507613
+  ],
+  "harm_rms_db": 4.39933750925989,
+  "cents_rms": 2320.6243903392838,
+  "sgram_rms_db": 25.4008441473558
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-25_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-DOWN_Resonance-25_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "DOWN",
+   "Depth": 25,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -23.949107356540242,
+  "segments": {
+   "clicks": 0.006180764537958794,
+   "bursts": -0.18172076432145445,
+   "sine20": -0.040835238116756045,
+   "sine40": -0.12130955321956804,
+   "ramp": -0.03370648462469106,
+   "sweep": 0.00927342437113765,
+   "noise": -0.032968374030300396,
+   "di": 0.0342391548801082
+  },
+  "drive_gain_db": 0.0,
+  "Q": 7.25,
+  "f_max_track": 11688.6,
+  "total": -0.015191534124575412,
+  "curve_rms_db": 0.49364236493264085,
+  "harm_capture": [
+   -25.928907472501223,
+   -38.089321894350704,
+   -34.99466093435021,
+   -38.93125859800147,
+   -37.37955769745322
+  ],
+  "harm_model": [
+   -44.426843334049494,
+   -61.913465781144474,
+   -51.96928955193103,
+   -66.33704991421459,
+   -52.06405212418669
+  ],
+  "harm_rms_db": 20.80679338109546,
+  "cents_rms": 1335.0807982541787,
+  "sgram_rms_db": 23.54766056415107
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-25_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 25,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -15.171382896123076,
+  "segments": {
+   "clicks": 0.030026043921772327,
+   "bursts": 0.22720340960212582,
+   "sine20": 0.567347684326883,
+   "sine40": -0.9438997086321876,
+   "ramp": 0.8499337424502329,
+   "sweep": -0.8713539141566997,
+   "noise": -0.19419427694468894,
+   "di": 0.10368246682935478
+  },
+  "drive_gain_db": 0.0,
+  "Q": 7.25,
+  "f_max_track": 5893.768646230633,
+  "total": -0.34447140436791557,
+  "curve_rms_db": 1.310653642013846,
+  "harm_capture": [
+   -40.9776031684718,
+   -66.50201852014865,
+   -70.90679941643988,
+   -79.7964178637821,
+   -83.71690435872809
+  ],
+  "harm_model": [
+   -50.71059956071808,
+   -81.51806191173021,
+   -79.15681947150519,
+   -99.12779000109643,
+   -89.44318999165364
+  ],
+  "harm_rms_db": 12.60767944293875,
+  "cents_rms": 1557.9343665646975,
+  "sgram_rms_db": 12.284935504713705
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-37_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 37,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -15.897838672763104,
+  "segments": {
+   "clicks": 0.052286468970237365,
+   "bursts": 0.011756085893544821,
+   "sine20": 0.37115051846728875,
+   "sine40": -0.8889125016149961,
+   "ramp": 0.7599560516314199,
+   "sweep": -0.8296634104666829,
+   "noise": -0.15505939966227444,
+   "di": 0.16357374327962404
+  },
+  "drive_gain_db": 0.0,
+  "Q": 7.25,
+  "f_max_track": 8971.528739768162,
+  "total": -0.2988634102784893,
+  "curve_rms_db": 1.260408259097872,
+  "harm_capture": [
+   -40.977697449020134,
+   -66.50254792227396,
+   -70.89527920980078,
+   -79.79057096893628,
+   -83.68958813433848
+  ],
+  "harm_model": [
+   -51.43705533735812,
+   -82.24451768837025,
+   -79.88327524814521,
+   -99.85424577773654,
+   -90.16964576829369
+  ],
+  "harm_rms_db": 13.285586521572844,
+  "cents_rms": 1590.5777720181939,
+  "sgram_rms_db": 13.03628370084421
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-37_Type-2_Decay-37_DirectLevel-25_EffectLevel-25_Harmonics-37_Polarity-UP_Resonance-37_Sensitivity-37_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 37,
+   "Sensitivity": 37,
+   "Polarity": "UP",
+   "Depth": 37,
+   "Decay": 37,
+   "Resonance": 37,
+   "Direct Level": 25,
+   "Effect Level": 25
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -17.911244920936763,
+  "segments": {
+   "clicks": 0.07624366242115599,
+   "bursts": -0.5054249815555139,
+   "sine20": 0.11701900896202133,
+   "sine40": -1.4551492403911936,
+   "ramp": -1.4492851439826495,
+   "sweep": -1.031717048278022,
+   "noise": -0.17326800528582353,
+   "di": 0.2736482340024011
+  },
+  "drive_gain_db": 0.0,
+  "Q": 13.1,
+  "f_max_track": 10214.227808531487,
+  "total": -0.2590424153305264,
+  "curve_rms_db": 2.4099663008235197,
+  "harm_capture": [
+   -33.02682820562176,
+   -77.84914543630443,
+   -73.11707177060964,
+   -104.92016146183062,
+   -85.60135369810163
+  ],
+  "harm_model": [
+   -47.377121132122625,
+   -88.03101746147348,
+   -87.74631092555614,
+   -112.37646010516619,
+   -98.02421979971983
+  ],
+  "harm_rms_db": 12.112308243297504,
+  "cents_rms": 848.5100730162085,
+  "sgram_rms_db": 14.96995300829596
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-50_Type-1_Decay-0_DirectLevel-0_EffectLevel-50_Harmonics-0_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 0,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -9.610187530575955,
+  "segments": {
+   "clicks": 0.004953337048576145,
+   "bursts": -0.004812945041010153,
+   "sine20": -0.06102866643932714,
+   "sine40": -0.04489080562491665,
+   "ramp": 1.6687536485053727,
+   "sweep": -0.5205257303814932,
+   "noise": 0.021967564065377587,
+   "di": 0.05741716315337442
+  },
+  "drive_gain_db": 28.0,
+  "Q": 7.25,
+  "f_max_track": 13419.966868749385,
+  "total": -0.05090165044886419,
+  "curve_rms_db": 6.926876314287341,
+  "harm_capture": [
+   -77.43429009753045,
+   -105.25616940420049,
+   -120.6719007641752,
+   -116.71540738541157,
+   -119.30974081389013
+  ],
+  "harm_model": [
+   -81.47244370035179,
+   -102.28343884470057,
+   -112.74688381752367,
+   -114.38004395328798,
+   -130.6681366252912
+  ],
+  "harm_rms_db": 3.5456883322821593,
+  "cents_rms": 1406.9340836060355,
+  "sgram_rms_db": 21.22563744125915
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-50_Type-1_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-0_Polarity-DOWN_Resonance-25_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "DOWN",
+   "Depth": 50,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -29.196051529582153,
+  "segments": {
+   "clicks": -0.0002710883963885635,
+   "bursts": 0.008313950794708092,
+   "sine20": -0.019274227953182788,
+   "sine40": 0.2113362201609732,
+   "ramp": -0.18993017336224227,
+   "sweep": -0.014840449752377083,
+   "noise": 0.0016392530052087295,
+   "di": 0.0005310179317845609
+  },
+  "drive_gain_db": 28.0,
+  "Q": 7.25,
+  "f_max_track": 11688.6,
+  "total": -0.0007254335884567809,
+  "curve_rms_db": 7.2585452366613605,
+  "harm_capture": [
+   -62.00985842121163,
+   -79.864922147553,
+   -112.81054029549728,
+   -123.66696738577757,
+   -127.0055302648235
+  ],
+  "harm_model": [
+   -85.99951043767012,
+   -93.52421210178967,
+   -96.4868727900545,
+   -92.07543840396461,
+   -104.4087076869595
+  ],
+  "harm_rms_db": 19.520240853082242,
+  "cents_rms": 2181.117759033659,
+  "sgram_rms_db": 34.13293299682465
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-50_Type-1_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-0_Polarity-UP_Resonance-25_Sensitivity-10_IN-LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 10,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -12.355832165410288,
+  "segments": {
+   "clicks": 0.003081077433535029,
+   "bursts": -0.003622736936378601,
+   "sine20": 0.0932734224126861,
+   "sine40": -0.03576284017565001,
+   "ramp": 1.7442846112345194,
+   "sweep": -0.4109736150961325,
+   "noise": 0.018070011493669824,
+   "di": 0.056920814226685934
+  },
+  "drive_gain_db": 28.0,
+  "Q": 7.25,
+  "f_max_track": 13419.966976698763,
+  "total": -0.03432930447487337,
+  "curve_rms_db": 6.059911529621945,
+  "harm_capture": [
+   -77.4333876932006,
+   -105.15874838642789,
+   -120.09654936356935,
+   -116.09125443765089,
+   -119.03021999739997
+  ],
+  "harm_model": [
+   -84.21808833518611,
+   -105.02908347953492,
+   -115.49252845235799,
+   -117.12568858812233,
+   -133.41378126012563
+  ],
+  "harm_rms_db": 4.798383883634059,
+  "cents_rms": 1357.3868933231993,
+  "sgram_rms_db": 26.279102468661506
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-50_Type-1_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-0_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -12.384799508258947,
+  "segments": {
+   "clicks": 0.0031591082866810893,
+   "bursts": -0.0036428674236361758,
+   "sine20": 0.09300752697807013,
+   "sine40": -0.034065356078258446,
+   "ramp": 1.8497372832696186,
+   "sweep": -0.41591247644099383,
+   "noise": 0.017329461482908926,
+   "di": 0.05730091200272369
+  },
+  "drive_gain_db": 28.0,
+  "Q": 7.25,
+  "f_max_track": 13419.966976698763,
+  "total": -0.03432488940900669,
+  "curve_rms_db": 6.041766884766518,
+  "harm_capture": [
+   -77.43368058846224,
+   -105.00363592344706,
+   -120.00711628467386,
+   -116.91448905826488,
+   -118.96492907773393
+  ],
+  "harm_model": [
+   -84.24705567803478,
+   -105.05805082238356,
+   -115.52149579520666,
+   -117.15465593097099,
+   -133.44274860297438
+  ],
+  "harm_rms_db": 4.817937374667398,
+  "cents_rms": 1357.3868933231993,
+  "sgram_rms_db": 26.11233427449121
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-50_Type-1_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-0_Polarity-UP_Resonance-25_Sensitivity-50_IN-LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 50,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -11.626127763474798,
+  "segments": {
+   "clicks": 0.0036324743297839746,
+   "bursts": -0.0032003379811058608,
+   "sine20": 0.10662385124396678,
+   "sine40": -0.03674781690472173,
+   "ramp": 1.3735877179037175,
+   "sweep": -0.5226570533152,
+   "noise": 0.023446616321130875,
+   "di": 0.06591587957554168
+  },
+  "drive_gain_db": 28.0,
+  "Q": 7.25,
+  "f_max_track": 13536.500000000002,
+  "total": -0.04007696926270654,
+  "curve_rms_db": 5.962869945812893,
+  "harm_capture": [
+   -77.43221542460272,
+   -105.06438792966321,
+   -120.16052506440991,
+   -116.53881680634841,
+   -119.1443450233706
+  ],
+  "harm_model": [
+   -83.48838393325062,
+   -104.29937907759943,
+   -114.7628240504225,
+   -116.39598418618684,
+   -132.6840768581902
+  ],
+  "harm_rms_db": 4.316388278924551,
+  "cents_rms": 1357.3868933231993,
+  "sgram_rms_db": 25.04648584565084
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-50_Type-1_Decay-25_DirectLevel-25_EffectLevel-25_Harmonics-50_Polarity-UP_Resonance-50_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 25,
+   "Resonance": 50,
+   "Direct Level": 25,
+   "Effect Level": 25
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -10.890650084190002,
+  "segments": {
+   "clicks": 4.908279276982228,
+   "bursts": 0.20297150858592516,
+   "sine20": -3.1206588142457363,
+   "sine40": -5.413685871637128,
+   "ramp": -5.534222844109529,
+   "sweep": -0.808257434200776,
+   "noise": -0.19763987770720703,
+   "di": 0.16169314993171469
+  },
+  "drive_gain_db": 90.0,
+  "Q": 139.99999999999994,
+  "f_max_track": 13419.966976698763,
+  "total": -0.3088856796966546,
+  "curve_rms_db": 0.6117374848231774,
+  "harm_capture": [
+   -32.725820729885605,
+   -73.94233343702273,
+   -92.385939112144,
+   -86.72155935407984,
+   -96.17687822458413
+  ],
+  "harm_model": [
+   -38.46527060621089,
+   -83.08325429418788,
+   -108.57392903554994,
+   -100.41446506523772,
+   -118.37778666376524
+  ],
+  "harm_rms_db": 14.552832982616561,
+  "cents_rms": 2708.2371584280104,
+  "sgram_rms_db": 10.477346134402524
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-50_Type-1_Decay-50_DirectLevel-0_EffectLevel-50_Harmonics-0_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 1,
+   "Harmonics": 0,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 50,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -27.07325649634829,
+  "segments": {
+   "clicks": -0.00030264710810001816,
+   "bursts": 0.0007125205996416639,
+   "sine20": -0.08495685050640134,
+   "sine40": 0.1984873282844859,
+   "ramp": -0.31643685858452386,
+   "sweep": 0.025438763151413468,
+   "noise": 0.006086470867217031,
+   "di": 0.0004559213205652668
+  },
+  "drive_gain_db": 28.0,
+  "Q": 7.25,
+  "f_max_track": 13536.500000000002,
+  "total": -0.0020897098931627056,
+  "curve_rms_db": 7.561439866190495,
+  "harm_capture": [
+   -61.93365924657668,
+   -79.63829158304152,
+   -111.29974537893793,
+   -122.0228949302413,
+   -129.27867846411027
+  ],
+  "harm_model": [
+   -83.81708385522144,
+   -91.14866734168194,
+   -93.7628894286911,
+   -88.78333566869358,
+   -100.18279530692448
+  ],
+  "harm_rms_db": 17.483892911867997,
+  "cents_rms": 0.0,
+  "sgram_rms_db": 32.522112553373894
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-50_Type-2_Decay-0_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 0,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -12.45498430501855,
+  "segments": {
+   "clicks": 0.1362300526095126,
+   "bursts": 0.27617899966131176,
+   "sine20": 0.5372883782727058,
+   "sine40": -1.1079306946020537,
+   "ramp": 0.6102669409927941,
+   "sweep": -1.0756475555130294,
+   "noise": -0.2518008673287362,
+   "di": -0.15263925843781934
+  },
+  "drive_gain_db": 0.0,
+  "Q": 7.25,
+  "f_max_track": 13419.966868749385,
+  "total": -0.6008987380432629,
+  "curve_rms_db": 1.1174919435315964,
+  "harm_capture": [
+   -40.9794268406214,
+   -66.50157542197702,
+   -70.89726258261565,
+   -79.79573012500404,
+   -83.69011916115925
+  ],
+  "harm_model": [
+   -47.99420096961356,
+   -78.80166332062569,
+   -76.44042088040065,
+   -96.41139140999198,
+   -86.72679140054917
+  ],
+  "harm_rms_db": 10.163930347424586,
+  "cents_rms": 970.8023677601394,
+  "sgram_rms_db": 10.019067478953868
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-50_Type-2_Decay-10_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 10,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -13.097513005959591,
+  "segments": {
+   "clicks": 0.1162006292963298,
+   "bursts": 0.3856660800511378,
+   "sine20": 0.4355755608946694,
+   "sine40": -1.0141508953655531,
+   "ramp": 0.7038577083645237,
+   "sweep": -1.041931063043652,
+   "noise": -0.2385185529397269,
+   "di": -0.03995292150112917
+  },
+  "drive_gain_db": 0.0,
+  "Q": 7.25,
+  "f_max_track": 13419.966868749385,
+  "total": -0.5255556479293091,
+  "curve_rms_db": 1.1367678827115424,
+  "harm_capture": [
+   -40.97968842081653,
+   -66.50128574128695,
+   -70.89808092074335,
+   -79.79637300315333,
+   -83.69040632616037
+  ],
+  "harm_model": [
+   -48.63672967055461,
+   -79.44419202156674,
+   -77.08294958134171,
+   -97.05392011093296,
+   -87.36932010149013
+  ],
+  "harm_rms_db": 10.730881070748032,
+  "cents_rms": 1145.609303733117,
+  "sgram_rms_db": 10.52737532377161
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-50_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-DOWN_Resonance-25_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "DOWN",
+   "Depth": 50,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -23.447481195282947,
+  "segments": {
+   "clicks": 0.004974515642288679,
+   "bursts": -0.057862226032035835,
+   "sine20": -0.04176726503036221,
+   "sine40": -0.12642351216072711,
+   "ramp": -0.0341793484442654,
+   "sweep": 0.010680085429974895,
+   "noise": -0.036635363981034175,
+   "di": -0.011327643750970395
+  },
+  "drive_gain_db": 0.0,
+  "Q": 7.25,
+  "f_max_track": 11688.6,
+  "total": -0.01954189798549777,
+  "curve_rms_db": 0.5131981768447806,
+  "harm_capture": [
+   -25.928961401275362,
+   -38.08860904445838,
+   -34.99545126627186,
+   -38.937936926351625,
+   -37.37908906378906
+  ],
+  "harm_model": [
+   -43.9252171727922,
+   -61.411839619887175,
+   -51.467663390673735,
+   -65.83542375295731,
+   -51.562425962929396
+  ],
+  "harm_rms_db": 20.31656428494594,
+  "cents_rms": 1456.808129137342,
+  "sgram_rms_db": 23.03774100287227
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-50_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-0_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 0,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -14.913483766458253,
+  "segments": {
+   "clicks": 0.07447660445991033,
+   "bursts": 0.008948526128691014,
+   "sine20": 0.2065253667450193,
+   "sine40": -0.9608389768118144,
+   "ramp": 0.8212478441296298,
+   "sweep": -0.9502699503655911,
+   "noise": -0.17550911726628726,
+   "di": 0.1878598578084265
+  },
+  "drive_gain_db": 0.0,
+  "Q": 7.25,
+  "f_max_track": 13419.966976698763,
+  "total": -0.3592572730591108,
+  "curve_rms_db": 1.2188176267911888,
+  "harm_capture": [
+   -40.97785647195365,
+   -66.4972265321971,
+   -70.92171073560374,
+   -79.81370395068653,
+   -83.75055102671716
+  ],
+  "harm_model": [
+   -50.452700431053266,
+   -81.26016278206541,
+   -78.89892034184037,
+   -98.86989087143155,
+   -89.18529086198888
+  ],
+  "harm_rms_db": 12.361452057944154,
+  "cents_rms": 1262.2067218195384,
+  "sgram_rms_db": 12.134729604833119
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-50_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-10_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 10,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -15.365361210544908,
+  "segments": {
+   "clicks": 0.07114849500790399,
+   "bursts": -0.009513543705587324,
+   "sine20": 0.1794604594340612,
+   "sine40": -0.9264655224802638,
+   "ramp": 0.7757042762913144,
+   "sweep": -0.9233237466267674,
+   "noise": -0.16435912463358804,
+   "di": 0.19704657768482647
+  },
+  "drive_gain_db": 0.0,
+  "Q": 7.25,
+  "f_max_track": 13419.966976698763,
+  "total": -0.3212539677207289,
+  "curve_rms_db": 1.1436134603177408,
+  "harm_capture": [
+   -40.97717587746913,
+   -66.49701104341207,
+   -70.92169596807007,
+   -79.81325980250007,
+   -83.75259560145567
+  ],
+  "harm_model": [
+   -50.90457787513992,
+   -81.71204022615207,
+   -79.35079778592703,
+   -99.32176831551826,
+   -89.63716830607547
+  ],
+  "harm_rms_db": 12.777404127828522,
+  "cents_rms": 1252.809226556864,
+  "sgram_rms_db": 12.56984350371802
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-50_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -15.772776760611189,
+  "segments": {
+   "clicks": 0.06047590820304549,
+   "bursts": -0.027071960363656444,
+   "sine20": 0.15413787548795455,
+   "sine40": -0.8917789539401184,
+   "ramp": 0.7324444377151593,
+   "sweep": -0.8397576983662347,
+   "noise": -0.1618659520947574,
+   "di": 0.17586327917702604
+  },
+  "drive_gain_db": 0.0,
+  "Q": 7.25,
+  "f_max_track": 13419.966976698763,
+  "total": -0.29644013620391263,
+  "curve_rms_db": 1.1064247391928392,
+  "harm_capture": [
+   -40.977051651284036,
+   -66.50208338439846,
+   -70.89341316771508,
+   -79.79608984803635,
+   -83.69481990464746
+  ],
+  "harm_model": [
+   -51.311993425206204,
+   -82.11945577621835,
+   -79.7582133359933,
+   -99.72918386558456,
+   -90.04458385614174
+  ],
+  "harm_rms_db": 13.167731492331985,
+  "cents_rms": 1255.461357062594,
+  "sgram_rms_db": 12.926714477200903
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-50_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-37_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 37,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -15.890817732998881,
+  "segments": {
+   "clicks": 0.05604942612967534,
+   "bursts": -0.02782773184382137,
+   "sine20": 0.14805100804189664,
+   "sine40": -0.8524723588512515,
+   "ramp": 0.7072822670227552,
+   "sweep": -0.8699982781735613,
+   "noise": -0.1649271404662933,
+   "di": 0.20857684587825887
+  },
+  "drive_gain_db": 0.0,
+  "Q": 7.25,
+  "f_max_track": 13536.500000000002,
+  "total": -0.2887576850134792,
+  "curve_rms_db": 1.1819430550478929,
+  "harm_capture": [
+   -40.979419073541486,
+   -66.50145870843099,
+   -70.89852352294204,
+   -79.79360745354866,
+   -83.69484036832543
+  ],
+  "harm_model": [
+   -51.43003439759389,
+   -82.23749674860602,
+   -79.876254308381,
+   -99.84722483797225,
+   -90.16262482852946
+  ],
+  "harm_rms_db": 13.277181251557016,
+  "cents_rms": 1262.2472896447,
+  "sgram_rms_db": 13.272811315496579
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-50_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-50_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 50,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 25,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -38.40729697087521,
+  "segments": {
+   "clicks": 0.0020611221054522844,
+   "bursts": 0.030295782896594403,
+   "sine20": 0.015894872602217447,
+   "sine40": 0.08455487036798104,
+   "ramp": 0.033710368417011694,
+   "sweep": -0.0373757179234282,
+   "noise": 0.016692041553451276,
+   "di": 0.01260013531192783
+  },
+  "drive_gain_db": 0.0,
+  "Q": 7.25,
+  "f_max_track": 13536.500000000002,
+  "total": -0.0017984066244665087,
+  "curve_rms_db": 0.8275083000066928,
+  "harm_capture": [
+   -40.97638848192208,
+   -66.49886563538463,
+   -70.91311878767422,
+   -79.81064203914875,
+   -83.72762847594899
+  ],
+  "harm_model": [
+   -73.94651363547023,
+   -104.75397598648236,
+   -102.39273354625732,
+   -122.36370407584859,
+   -112.67910406640581
+  ],
+  "harm_rms_db": 35.18636040720364,
+  "cents_rms": 1262.2472896447,
+  "sgram_rms_db": 34.85638872258292
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-50_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-50_Sensitivity-50_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 50,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 25,
+   "Resonance": 50,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -24.515493149219903,
+  "segments": {
+   "clicks": 0.4909370183979149,
+   "bursts": 0.047105991474008846,
+   "sine20": 0.2176417594566047,
+   "sine40": -0.23510278726264744,
+   "ramp": 0.04338897567913946,
+   "sweep": -0.1044835277783136,
+   "noise": -0.08241286700795314,
+   "di": 0.019464033544025483
+  },
+  "drive_gain_db": 0.0,
+  "Q": 139.99999999999994,
+  "f_max_track": 13536.500000000002,
+  "total": -0.039134010500255556,
+  "curve_rms_db": 1.643240253256143,
+  "harm_capture": [
+   -40.999776761189956,
+   -67.95457723849796,
+   -71.9217558886623,
+   -80.76111731684844,
+   -83.8597828576712
+  ],
+  "harm_model": [
+   -60.037539294643096,
+   -90.85842285666054,
+   -88.49837611690988,
+   -108.39988769086955,
+   -98.78295740377251
+  ],
+  "harm_rms_db": 20.7287705901416,
+  "cents_rms": 2021.3526191944218,
+  "sgram_rms_db": 21.291513273463966
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-50_Type-2_Decay-37_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 37,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -37.99732639354012,
+  "segments": {
+   "clicks": -0.0010565324471230042,
+   "bursts": -0.012047675587567142,
+   "sine20": 0.013592246469208646,
+   "sine40": -0.08603729659208881,
+   "ramp": 0.013368959179256734,
+   "sweep": -0.009112369130708231,
+   "noise": -0.008063911002935242,
+   "di": 0.001035293041933727
+  },
+  "drive_gain_db": 0.0,
+  "Q": 7.25,
+  "f_max_track": 13527.044047425432,
+  "total": -0.001808886505617835,
+  "curve_rms_db": 1.9397162119098539,
+  "harm_capture": [
+   -40.97670656077807,
+   -66.4953419638081,
+   -70.92165643068056,
+   -79.81235183304308,
+   -83.73588774105065
+  ],
+  "harm_model": [
+   -73.46445489782033,
+   -104.28161959195955,
+   -101.9202220343503,
+   -121.86473438979206,
+   -112.20376662317697
+  ],
+  "harm_rms_db": 34.70732097190542,
+  "cents_rms": 1743.919369448483,
+  "sgram_rms_db": 35.73266436003264
+ },
+ {
+  "capture": "AX30G_HYPR_Depth-50_Type-2_Decay-50_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN",
+  "params": {
+   "Type": 2,
+   "Harmonics": 50,
+   "Sensitivity": 25,
+   "Polarity": "UP",
+   "Depth": 50,
+   "Decay": 50,
+   "Resonance": 25,
+   "Direct Level": 0,
+   "Effect Level": 50
+  },
+  "lag_samples": 14.87,
+  "input": "LIN",
+  "gain_db": -17.566206226712644,
+  "segments": {
+   "clicks": 0.014614069602373547,
+   "bursts": -0.04802346743611707,
+   "sine20": -0.09049203364487468,
+   "sine40": 0.00621067050156654,
+   "ramp": -0.040734209600085336,
+   "sweep": -0.5008544372817596,
+   "noise": 0.08419914029642683,
+   "di": 0.0405850800499401
+  },
+  "drive_gain_db": 0.0,
+  "Q": 7.25,
+  "f_max_track": 13536.500000000002,
+  "total": -0.11914122034335861,
+  "curve_rms_db": 0.6186015214555339,
+  "harm_capture": [
+   -25.868139274871847,
+   -37.790271238999296,
+   -34.23353442766757,
+   -37.508579806159766,
+   -34.816859959257044
+  ],
+  "harm_model": [
+   -37.983654380554114,
+   -55.280717797225385,
+   -44.987988387478744,
+   -58.78426531751667,
+   -43.581407967001255
+  ],
+  "harm_rms_db": 14.817771781304309,
+  "cents_rms": 22.336954567337372,
+  "sgram_rms_db": 17.754165445247306
+ }
+]

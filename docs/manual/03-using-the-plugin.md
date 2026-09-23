@@ -8,7 +8,7 @@ The plugin sends the audio through these stages, in this order:
 2. A fixed level change of −8.5 dB. This stage sets the level reference (see 3.3).
 3. A sample rate converter from the host rate to 39,062.5 Hz. This is the internal rate of the unit. This manual calls it the device rate.
 4. The input stage, with the **Input** control. This stage is a model of the analog input circuit and the analog-to-digital converter of the unit.
-5. Slots 1 to 8, in that order. A slot has an effect only when it holds a block and its **On** button is on.
+5. Slots 1 to 8, in that order. A slot has an effect only when it holds a block and its light is on.
 6. A sample rate converter from the device rate back to the host rate.
 7. The converter chain. This stage is a model of the frequency response of the converters and analog circuits of the unit.
 8. The **Output** control.
@@ -16,27 +16,49 @@ The plugin sends the audio through these stages, in this order:
 
 ## 3.2 The editor
 
-The editor window has three areas, from top to bottom:
+![The AX330G editor](images/editor.png)
 
-- The title line. It shows the plugin name, the version and the build number.
-- The top band. It contains the **Input** knob, the **Output** knob, the **Mode** menu, the **Peak** LED and the LCD.
-- The slot list. It contains eight rows, one for each slot. The list scrolls if the window is too small for all eight rows.
+The editor has these parts, from top to bottom:
 
-You can change the size of the window. Drag the lower-right corner of the window.
+1. **The face.** A blue plate, like the unit's own. It holds the AX330G logo, the **Input** and **Output** knobs, the **Peak** LED, and the LCD. It also holds a red digit that shows the selected slot, and the **Mode** keys.
+2. **Signal chain.** Eight tiles, one for each slot. Click a tile to edit that slot in the panel below it.
+3. **The editing panel.** The controls for the slot you selected.
+4. **Size.** The whole editor scales as one piece. See "Change the size" below.
+
+The editor uses the Archivo and Archivo Narrow typefaces. These fonts come with the plugin's source code, under the SIL Open Font License.
 
 ### Use a knob
 
-A knob shows its value in a box below the knob. The box also shows the unit of the value, for example "ms", "Hz", "s" or "dB".
+A knob shows its value in a box below it. The box also shows the unit of the value, for example "ms", "Hz", "s" or "dB".
 
 To change a value, do one of these steps:
 
-- Drag the knob up or to the right to increase the value.
-- Drag the knob down or to the left to decrease the value.
-- Click the value box, type a value, and push the Return key.
+- Drag the knob up to increase the value, or down to decrease it.
+- Hold the Shift key or the Command key while you drag, for finer steps.
+- Turn the mouse wheel over the knob.
+- Push an arrow key, when the knob has keyboard focus.
+- Double-click the value box, type a value, and push the Return key.
+
+Double-click a knob to reset it to the default value of its block.
 
 The knob moves only in the steps of its parameter. For example, a 0 to 50 parameter moves in steps of 1.
 
-Some knobs have no number at all. Mid Freq, Reverb Type and Stereo Chorus Mode are each a list of named items. The box below the knob shows the name of the current item, for example "HALL", and the knob steps from one item to the next.
+Some knobs have no number at all. Mid Freq, Reverb Type and Stereo Chorus Mode are each a list of named items. The box below the knob shows the name of the current item, for example "HALL". Turn the knob to step to the next or the previous item.
+
+### Change the size
+
+The editor scales as one piece, face and panel together.
+
+Do one of these steps to change the size:
+
+- Drag the lower-right corner of the window. The editor keeps its shape.
+- Right-click an empty area of the editor. Choose a size from the menu.
+
+The size menu offers 75, 100, 125, 150 and 200 %. The default size is 820 by 660 points. The size range is 70 % to 200 %.
+
+The plugin saves the size and the selected slot with the host project.
+
+The right-click menu also shows the plugin's version and build number.
 
 ## 3.3 Input and Output
 
@@ -111,28 +133,56 @@ NOTE: The LED shows the level at the input stage only. It shows this level for a
 
 ## 3.5 Mode
 
-The **Mode** menu has two items:
+The **Mode** keys are two buttons on the face: **OPEN** and **AS THE UNIT**. A lit dot shows the current mode.
 
-| Item | Function |
+| Key | Function |
 |---|---|
 | Open | Each slot can hold any block, in any order. |
-| As the unit | Reserved for a future version |
+| As the unit | Reserved for a future version. |
 
-In version 0.8.6, the Mode menu has no effect. Both items give the Open behavior.
+In version 0.9.0, the Mode keys have no effect on the sound. Both keys give the Open behavior.
 
 A future version will use "As the unit" to apply the chain rules of the unit. For example, the unit puts the 3-Band EQ last in Block 1, and it has no Stereo Chorus.
 
 ## 3.6 The slots
 
-Each of the eight rows in the slot list has these controls:
+### The signal chain
 
-- The **Type** menu, on the left. It selects the block in the slot. The item "Off" empties the slot.
-- The **On** button, below the Type menu. It turns the block on or off. The button is not visible when the slot is empty.
-- One knob for each parameter of the block, to the right. The name of the parameter is below each knob.
+Each of the eight tiles in the signal chain shows:
 
-The Type menu has these items:
+- The slot number.
+- The block's short name, for example "REV". An empty slot shows a dash.
+- The block's full name, for example "Reverb".
+- A red light. The light is on when the block is on.
 
-| Type | LCD abbreviation | Chapter |
+Click a tile to edit that slot in the editing panel. Click a tile's light to turn the block on or off.
+
+### The editing panel
+
+The editing panel shows the controls for the slot you selected:
+
+- The slot number and its group, for example "SLOT 5 · AMBIENCE".
+- The block's full name.
+- The **Effect** menu. Choose the block for this slot, or choose "Off" to empty it.
+- The **Stereo In** switch, on the blocks that have one. See "Stereo In" below.
+- One knob for each parameter of the block, in the unit's own order.
+
+An empty slot shows "Choose an effect for this slot."
+
+The group names come from the unit's own layout:
+
+| Group | Blocks |
+|---|---|
+| BLOCK 1 | Compressor, 3-Band EQ |
+| MOD1 | Chorus |
+| MOD1 · WHAT IF | Stereo Chorus |
+| MOD2 | Mod Delay, Stereo Mod Delay |
+| AMBIENCE | Stereo Delay, Reverb |
+| EMPTY | No block chosen |
+
+The Effect menu has these items:
+
+| Effect | LCD abbreviation | Chapter |
 |---|---|---|
 | Off | — | — |
 | Stereo Delay | SDLY | [Stereo Delay](04-blocks/stereo-delay.md) |
@@ -148,8 +198,8 @@ The Type menu has these items:
 
 - The plugin processes the slots in order, from slot 1 to slot 8.
 - A slot that is off, or empty, passes the signal without change.
-- You can put the same block type in more than one slot.
-- When you change the Type of a slot, the parameters of that slot go to the default values of the new block.
+- You can put the same block in more than one slot.
+- When you change the Effect of a slot, its parameters go to the default values of the new block.
 - When you open a saved project, the slots keep their saved values.
 
 ### Mono and stereo blocks
@@ -173,9 +223,9 @@ NOTE: Version 0.8.6 fixed the routing of the Mod Delay, the Reverb and the Stere
 
 ### Stereo In
 
-Six blocks have a mono input in Mono mode: 3-Band EQ, Chorus, Stereo Chorus, Mod Delay, Reverb and Compressor. Each one now has a **Stereo In** parameter, the last parameter of the block.
+Six blocks have a mono input in Mono mode: 3-Band EQ, Chorus, Stereo Chorus, Mod Delay, Reverb and Compressor. Each one has a **Stereo In** switch in its editing panel, next to the Effect menu.
 
-**Stereo In** is a list of two items: Mono and Stereo. The box below the knob shows the name of the item. Mono is the default, and it matches the unit.
+**Stereo In** has two positions: Mono and Stereo. Mono is the default, and it matches the unit.
 
 In Mono, the block mixes the left and right inputs to one signal, as the unit does. In Stereo, each channel keeps its own path through the block. Each block's chapter in [chapter 4](04-blocks/README.md) gives its exact Stereo behavior.
 
@@ -185,13 +235,13 @@ With a mono source, Stereo and Mono give the same output. Claude checked this: t
 
 Put a stereo block early in the chain to keep a wide sound through later blocks. For example, put the Stereo Chorus in Stereo before a Reverb in Stereo.
 
-NOTE: Stereo In fits the spirit of the "Open" Mode only. The Mode control does not enforce this yet.
+NOTE: Stereo In fits the spirit of the "Open" mode only. The Mode keys do not enforce this yet.
 
 ### Host automation
 
 The host shows a fixed list of parameters for each slot. The list contains the parameters of all block types, because the host cannot change the list while it runs. Only the parameters of the block in the slot have an effect.
 
-The host names each parameter with the slot number, for example "3: Speed" or "3: High Damp". Blocks that use the same parameter name share one host parameter in a slot. The Type parameter of the Reverb has the host name "Reverb Type". This name keeps it different from the Type menu of the slot.
+The host names each parameter with the slot number, for example "3: Speed" or "3: High Damp". Blocks that use the same parameter name share one host parameter in a slot. The Type parameter of the Reverb has the host name "Reverb Type". This name keeps it different from the Effect menu of the slot.
 
 ## 3.7 The LCD
 

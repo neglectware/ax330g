@@ -61,12 +61,15 @@ NOTE: The Distortion 1 of the unit uses an analog diode clip circuit outside the
 
 ### The Output control
 
-**Deliberate difference.** The plugin's Output control is a calibrated digital gain, not a model of the unit's analog Output Level knob. With Input and Output at 0 dB, the plugin passes a 1 kHz signal at the same level it went in. The real unit gives 7 dB less level than its input at LIN. Claude chose this so that a host's own gain staging stays predictable. The 0 dB point matches the same 1 kHz reference used to measure every block model, not the unit's own insertion loss. The Output knob's own analog law was never captured, so a true model of it does not exist yet.
+**Deliberate difference.** The plugin's Output control is a calibrated digital gain, not a model of the unit's analog Output Level knob. With Input and Output at 0 dB, the plugin passes a 1 kHz signal at the same level it went in. The real unit gives 7 dB less level than its input at LIN.
+
+Claude chose this so that a host's own gain staging stays predictable. The 0 dB point matches the same 1 kHz reference used to measure every block model, not the unit's own insertion loss. The Output knob's own analog law was never captured, so a true model of it does not exist yet.
 
 ## 6.3 The input stage
 
 - **Not modeled yet: needs captures.** The captures use only the LIN and MAX positions of the Input Level knob. The law of the knob between these two positions is not known. A few captures at knob positions between LIN and MAX would give this law. Until then, the plugin shows the Input control in dB, not in the numbers of the unit's knob.
-- **Not modeled yet: no law found.** The model clips a single-sample click about 1 dB more than the unit does. The likely cause is the order of two steps. The model limits its bandwidth first and then applies the treble-boost filter. The unit applies that filter first, across its full analog bandwidth, and limits the bandwidth after. Neither of the two fixes Claude tried removed the difference. It has no measurable effect on music.
+- **Not modeled yet: no law found.** The model clips a single-sample click about 1 dB more than the unit does. The likely cause is the order of two steps. The model limits its bandwidth first and then applies the treble-boost filter.
+- The unit applies that filter first, across its full analog bandwidth, and limits the bandwidth after. Neither of the two fixes Claude tried removed the difference. It has no measurable effect on music.
 - **Not modeled yet: no law found.** The even harmonics above the second harmonic are about 5 dB lower in the model than on the unit, at full overload. One fixed DC offset in the clipper gives the model's second harmonic the right level. But the model's higher even harmonics then fall off faster than the unit's do. Whatever the unit does to make its even harmonics is more than one fixed offset.
 - **Not modeled yet: no law found.** The unit's clip has a knee that is 0.06 dB softer than an ideal hard clip. No softer clip shape has been fitted to this knee yet.
 
@@ -104,7 +107,7 @@ Version 0.8.6 fixed the routing of the Mod Delay, the Reverb and the Stereo Mod 
 
 ## 6.8 The Hyper Resonator
 
-**Not in the plugin yet.** Its model does not null, and the first measurements do not confirm many of its parameters. The grid `hypr-2.json` repeats the sweep tests at a louder driver setting, which the first grid did not reach. See [Hyper Resonator](04-blocks/hyper-resonator.md).
+**Not in the plugin yet.** Its effect path does not null in the time domain. The `hypr-2.json` grid gave a new model, with much better corner tracking and harmonic levels than the first model. Several driver and sweep properties are still not settled. The grid `hypr-3.json` asks for further captures on these. See [Hyper Resonator](04-blocks/hyper-resonator.md).
 
 ## 6.9 The LCD
 

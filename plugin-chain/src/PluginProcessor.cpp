@@ -126,6 +126,8 @@ static float hostFromBlock(const String& name, int v) {
     return float(double(v) / hostScaleFor(name));
 }
 
+float ax30gHostFromBlock(const String& name, int blockValue) { return hostFromBlock(name, blockValue); }
+
 // The unit's Speed dial (Mark, 2026-09-14): 0.02 to 0.20 Hz in 0.02 steps,
 // then 0.3 to 9.5 Hz in 0.1 steps -- 103 settings. The knob moves evenly
 // through the list, like the dial, and snaps to it (2026-09-23; it was

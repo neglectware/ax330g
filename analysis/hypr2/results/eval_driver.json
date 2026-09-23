@@ -1,0 +1,26 @@
+{
+ "knee_dbfs": -25.0,
+ "fit_rms": 2.6306520192527154,
+ "w_db": {
+  "0": -29.57811050727245,
+  "5": -29.289594402063507,
+  "10": -29.712841906131548,
+  "25": -28.26001967445177,
+  "37": -28.149503838227712,
+  "50": -28.270775081349264
+ },
+ "lines": {
+  "1,0": "T1 H0  ramp held-out (H1+H3 rms after one gain / H1-curve shape rms): hardclip 6.7/6.7",
+  "1,5": "T1 H5  ramp held-out (H1+H3 rms after one gain / H1-curve shape rms): hardclip 30.9/4.9",
+  "1,10": "T1 H10 ramp held-out (H1+H3 rms after one gain / H1-curve shape rms): hardclip 39.6/7.8",
+  "1,25": "T1 H25 ramp held-out (H1+H3 rms after one gain / H1-curve shape rms): hardclip 10.4/9.7",
+  "1,37": "T1 H37 ramp held-out (H1+H3 rms after one gain / H1-curve shape rms): hardclip 11.5/9.1",
+  "1,50": "T1 H50 ramp held-out (H1+H3 rms after one gain / H1-curve shape rms): hardclip 13.0/9.8",
+  "2,0": "T2 H0  ramp held-out (H1+H3 rms after one gain / H1-curve shape rms): hardclip 4.6/5.4  square 0.3/0.1",
+  "2,5": "T2 H5  ramp held-out (H1+H3 rms after one gain / H1-curve shape rms): hardclip 4.7/5.7  square 1.0/1.2",
+  "2,10": "T2 H10 ramp held-out (H1+H3 rms after one gain / H1-curve shape rms): hardclip 4.8/5.0  square 2.0/1.4",
+  "2,25": "T2 H25 ramp held-out (H1+H3 rms after one gain / H1-curve shape rms): hardclip 5.0/5.4  square 3.3/1.0",
+  "2,37": "T2 H37 ramp held-out (H1+H3 rms after one gain / H1-curve shape rms): hardclip 5.4/5.4  square 2.5/0.7",
+  "2,50": "T2 H50 ramp held-out (H1+H3 rms after one gain / H1-curve shape rms): hardclip 5.7/5.5  square 2.4/0.6"
+ }
+}

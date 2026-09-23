@@ -1,3 +1,4 @@
+#include <cstdlib>
 // AX330GLcdSnapshot: a headless verification tool for axlcd::LcdDisplay
 // (docs/lcd-startup-2026-09-22.md). Drives the exact same boot sequence the
 // plugin editor plays, renders it at a handful of caller-chosen times, and
@@ -45,7 +46,10 @@ int main(int argc, char* argv[]) {
 
     axlcd::LcdDisplay lcd;
     lcd.setSize(width, height);
-    lcd.setPlayPage("--- INIT", "comp-DST1-3BEQ-asim-SMOD-rev");
+    // LCD_LINE1 / LCD_CHAIN override the play page (for design mockups).
+    const char* l1 = std::getenv("LCD_LINE1");
+    const char* ch = std::getenv("LCD_CHAIN");
+    lcd.setPlayPage(l1 ? l1 : "--- INIT", ch ? ch : "comp-DST1-3BEQ-asim-SMOD-rev");
     lcd.startBootSequence(0.0);
 
     double t = 0.0;

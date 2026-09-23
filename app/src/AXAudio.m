@@ -152,18 +152,27 @@ static BOOL setNominalRate(AudioDeviceID dev, double fs) {
     return out;
 }
 
-- (AVAudioPCMBuffer *)outputBufferFrom:(AVAudioPCMBuffer *)mono {
+- (AVAudioPCMBuffer *)outputBufferFrom:(AVAudioPCMBuffer *)mono gainDb:(float)gainDb {
     mono = [self resampled:mono to:self.sampleRate];
     AVAudioFormat *fmt = [self.engine.outputNode outputFormatForBus:0];
     AVAudioPCMBuffer *b = [[AVAudioPCMBuffer alloc] initWithPCMFormat:fmt frameCapacity:mono.frameLength];
     b.frameLength = mono.frameLength;
     for (NSInteger c = 0; c < (NSInteger)fmt.channelCount; c++) memset(b.floatChannelData[c], 0, mono.frameLength * sizeof(float));
-    for (NSInteger c = self.outputPairBase; c < self.outputPairBase + 2 && c < (NSInteger)fmt.channelCount; c++)
-        memcpy(b.floatChannelData[c], mono.floatChannelData[0], mono.frameLength * sizeof(float));
+    const float *src = mono.floatChannelData[0];
+    if (gainDb == 0) {
+        for (NSInteger c = self.outputPairBase; c < self.outputPairBase + 2 && c < (NSInteger)fmt.channelCount; c++)
+            memcpy(b.floatChannelData[c], src, mono.frameLength * sizeof(float));
+        return b;
+    }
+    float gain = powf(10.0f, gainDb / 20.0f);
+    for (NSInteger c = self.outputPairBase; c < self.outputPairBase + 2 && c < (NSInteger)fmt.channelCount; c++) {
+        float *dst = b.floatChannelData[c];
+        for (AVAudioFrameCount i = 0; i < mono.frameLength; i++) dst[i] = fmaxf(-1.0f, fminf(1.0f, src[i] * gain));
+    }
     return b;
 }
 
-- (BOOL)playrecSignal:(AVAudioPCMBuffer *)signal tailSeconds:(double)tail toURL:(NSURL *)outURL done:(AXDoneBlock)done error:(NSError **)err {
+- (BOOL)playrecSignal:(AVAudioPCMBuffer *)signal sendDb:(float)sendDb tailSeconds:(double)tail toURL:(NSURL *)outURL done:(AXDoneBlock)done error:(NSError **)err {
     if (!self.running || self.recording) return NO;
     NSDictionary *settings = @{AVFormatIDKey: @(kAudioFormatLinearPCM), AVSampleRateKey: @(self.sampleRate),
                                AVNumberOfChannelsKey: @(self.inputChannels.count), AVLinearPCMBitDepthKey: @32,
@@ -175,7 +184,7 @@ static BOOL setNominalRate(AudioDeviceID dev, double fs) {
     double dur = (double)signal.frameLength / signal.format.sampleRate;
     self.stopAt = [[NSDate date] timeIntervalSince1970] + 0.5 + dur + tail;
     self.recording = YES;                       // recording starts first; the reference channel aligns it
-    AVAudioPCMBuffer *ob = [self outputBufferFrom:signal];
+    AVAudioPCMBuffer *ob = [self outputBufferFrom:signal gainDb:sendDb];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         if (!self.recording) return;
         [self.player scheduleBuffer:ob completionHandler:nil];
@@ -215,7 +224,7 @@ static BOOL setNominalRate(AudioDeviceID dev, double fs) {
     // integer number of cycles in the 2 s loop so the seam is silent
     double cyc = round(hz * 2.0), w = 2 * M_PI * cyc / n;
     for (AVAudioFrameCount i = 0; i < n; i++) m.floatChannelData[0][i] = amp * sinf(w * i);
-    AVAudioPCMBuffer *ob = [self outputBufferFrom:m];
+    AVAudioPCMBuffer *ob = [self outputBufferFrom:m gainDb:0];
     [self.player scheduleBuffer:ob atTime:nil options:AVAudioPlayerNodeBufferLoops completionHandler:nil];
     [self.player play];
 }

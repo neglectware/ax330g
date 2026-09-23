@@ -85,12 +85,19 @@ juce_add_plugin(AX330G
   AU_MAIN_TYPE kAudioUnitType_Effect
   VST3_CATEGORIES Fx Delay)
 
-target_sources(AX330G PRIVATE src/PluginProcessor.cpp src/PluginEditor.cpp src/lcd/LcdDisplay.cpp ${AX_LCD_NATIVE_SRC})
+target_sources(AX330G PRIVATE src/PluginProcessor.cpp src/PluginEditor.cpp src/ui/AxUi.cpp src/lcd/LcdDisplay.cpp ${AX_LCD_NATIVE_SRC})
+
+# The editor's fonts (2026-09-23, 0.9.0): Archivo and Archivo Narrow static
+# TTFs, SIL Open Font License 1.1 (fonts/OFL.txt), embedded so the UI looks
+# the same on every machine. src/ui/AxUi.cpp looks them up by file name.
+juce_add_binary_data(AX330GFonts SOURCES
+  fonts/Archivo-Regular.ttf fonts/Archivo-SemiBold.ttf fonts/Archivo-Bold.ttf fonts/Archivo-BlackItalic.ttf
+  fonts/ArchivoNarrow-SemiBold.ttf fonts/ArchivoNarrow-Bold.ttf)
 target_include_directories(AX330G PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
 target_compile_definitions(AX330G PUBLIC
   JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_VST3_CAN_REPLACE_VST2=0 JUCE_DISPLAY_SPLASH_SCREEN=0)
 target_link_libraries(AX330G PRIVATE
-  juce::juce_audio_utils juce::juce_dsp
+  AX330GFonts juce::juce_audio_utils juce::juce_dsp
   PUBLIC juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
 
 # The two developer-tool targets below (LCD snapshot verifier, in-process AU

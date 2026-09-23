@@ -26,7 +26,7 @@ RS=(rsync -a --delete --prune-empty-dirs
 "${RS[@]}" "$HERE/tests/"    "$DEST/tests/"
 "${RS[@]}" "$HERE/models/"   "$DEST/models/"
 "${RS[@]}" --exclude '*.wav' "$HERE/capture/" "$DEST/capture/"          # signal sets are generated: make signals-normal
-"${RS[@]}" --include 'CMakeLists.txt' --include 'src/***' --include 'tools/***' --exclude '*' \
+"${RS[@]}" --include 'CMakeLists.txt' --include 'src/***' --include 'tools/***' --include 'fonts/***' --exclude '*' \
            "$HERE/plugin-chain/" "$DEST/plugin-chain/"
 "${RS[@]}" --include 'Makefile' --include 'src/***' --include 'tools/***' --exclude '*' \
            "$HERE/app/" "$DEST/app/"

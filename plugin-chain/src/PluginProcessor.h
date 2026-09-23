@@ -180,6 +180,11 @@ private:
 // -> the ID suffix used for its per-slot host parameter, e.g. "L Dly" ->
 // "ldly", "High Damp" -> "highdamp". Every name in ax30g::ParamRegistry is
 // letters and spaces only, so this is a safe, simple, deterministic map.
+// The block's integer (e.g. a BlockInfo default) -> the host parameter value,
+// exactly as the processor converts it (PluginProcessor.cpp's hostFromBlock).
+// The editor uses it to reset a knob to the CURRENT block's own default.
+float ax30gHostFromBlock(const juce::String& name, int blockValue);
+
 inline juce::String ax30gParamIdFor(const std::string& name) {
     // "Type" (ax30g::Reverb's BlockInfo parameter, ROOM/HALL/PLATE --
     // docs/rev-cpp-spec.md Sec 2) would otherwise map to "type", exactly

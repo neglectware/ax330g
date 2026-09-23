@@ -3,6 +3,12 @@
 // in-process through JUCE's AudioUnit hosting, opens its editor in a window,
 // and quits after the given number of seconds. No audio device is opened.
 //   AX330GHostHarness [seconds] [path-to-.component-or-.vst3]
+// Environment (all optional):
+//   HARNESS_SET="<s>|<param>=<norm>|...;..."  set host parameters after <s> seconds
+//   HARNESS_CLICK="<s>|<x>,<y>[,r];..."         at <s> seconds, click (r: right-click) the
+//                                               editor at design-unit point (x, y) -- the
+//                                               820x660 design, scaled by the editor's
+//                                               current width / 820 (0.9.0 editor, 2026-09-23)
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <AudioToolbox/AudioToolbox.h>
@@ -73,6 +79,20 @@ public:
             std::printf("window %ld\n", (long) [[(NSView*) peer->getNativeHandle() window] windowNumber]);
         std::fflush(stdout);
         startTimer((int) (seconds * 1000.0));
+        std::printf("editor %d x %d\n", ed->getWidth(), ed->getHeight());
+        std::fflush(stdout);
+        if (auto* env = std::getenv("HARNESS_CLICK")) {
+            for (auto& group : StringArray::fromTokens(env, ";", "")) {
+                auto parts = StringArray::fromTokens(group, "|", "");
+                auto xy = StringArray::fromTokens(parts[1], ",", "");
+                auto* c = clickers.add(new Clicker());
+                c->content = ed;
+                c->x = xy[0].getFloatValue();
+                c->y = xy[1].getFloatValue();
+                c->right = xy.size() > 2 && xy[2].trim() == "r";
+                c->startTimer((int) (parts[0].getDoubleValue() * 1000.0));
+            }
+        }
         if (auto* env = std::getenv("HARNESS_SET")) {   // groups separated by ';', each "<s>|<assign>|..."
             for (auto& group : StringArray::fromTokens(env, ";", "")) {
                 auto parts = StringArray::fromTokens(group, "|", "");
@@ -93,7 +113,49 @@ public:
             starver.startTimer(starver.periodMs);
         }
     }
-    void shutdown() override { setters.clear(); window.reset(); instance.reset(); }
+    void shutdown() override { clickers.clear(); setters.clear(); window.reset(); instance.reset(); }
+
+    // Sends a real NSEvent mouse down/up pair through the harness window, so
+    // the plug-in's own view receives it exactly as from a user's click.
+    struct Clicker : Timer {
+        juce::Component* content = nullptr;
+        float x = 0, y = 0;
+        bool right = false;
+        void timerCallback() override {
+            stopTimer();
+            auto* peer = content->getPeer();
+            if (peer == nullptr) return;
+            NSView* view = (NSView*) peer->getNativeHandle();
+            NSWindow* win = [view window];
+            const float s = (float) content->getWidth() / 820.0f;
+            const auto p = peer->getComponent().getLocalPoint(content, juce::Point<float>(x * s, y * s));
+            NSPoint vp = NSMakePoint(p.x, [view isFlipped] ? p.y : view.bounds.size.height - p.y);
+            NSPoint loc = [view convertPoint: vp toView: nil];
+            [NSApp activateIgnoringOtherApps: YES];
+            [win makeKeyAndOrderFront: nil];
+            // Put the real cursor there too: JUCE polls the actual mouse position
+            // and would otherwise see it leave the button between down and up.
+            const NSPoint sp = [win convertPointToScreen: loc];
+            const CGFloat primaryH = NSScreen.screens.firstObject.frame.size.height;
+            CGWarpMouseCursorPosition(CGPointMake(sp.x, primaryH - sp.y));
+            Thread::sleep(30);
+            const auto t = [[NSProcessInfo processInfo] systemUptime];
+            NSEvent* down = [NSEvent mouseEventWithType: right ? NSEventTypeRightMouseDown : NSEventTypeLeftMouseDown
+                                               location: loc modifierFlags: 0 timestamp: t
+                                           windowNumber: win.windowNumber context: nil eventNumber: 0
+                                             clickCount: 1 pressure: 1.0f];
+            NSEvent* up = [NSEvent mouseEventWithType: right ? NSEventTypeRightMouseUp : NSEventTypeLeftMouseUp
+                                             location: loc modifierFlags: 0 timestamp: t + 0.05
+                                         windowNumber: win.windowNumber context: nil eventNumber: 0
+                                           clickCount: 1 pressure: 0.0f];
+            [win sendEvent: down];
+            [win sendEvent: up];
+            std::printf("(key %d, main %d, active %d) ", (int) win.isKeyWindow, (int) win.isMainWindow, (int) NSApp.isActive);
+            std::printf("click %s at design (%.1f, %.1f) -> window (%.1f, %.1f)\n", right ? "right" : "left", x, y, loc.x, loc.y);
+            std::fflush(stdout);
+        }
+    };
+    OwnedArray<Clicker> clickers;
     void timerCallback() override { stopTimer(); quit(); }
 
     // HARNESS_SET="<seconds>|<param name>=<normalised value>|...[;<seconds>|...]" sets host

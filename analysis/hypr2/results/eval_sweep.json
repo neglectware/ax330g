@@ -1,0 +1,332 @@
+{
+ "AX30G_HYPR_Depth-10_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-DOWN_Resonance-25_Sensitivity-25_IN-LIN": {
+  "fit_old": [
+   5629.257368935524,
+   0.33798056611744826,
+   4734
+  ],
+  "fit_new": [
+   283.01030678299946,
+   50.755346282126744,
+   5097
+  ],
+  "di_old": [
+   5720.399443149547,
+   0.0,
+   1348
+  ],
+  "di_new": [
+   141.7385804983113,
+   71.25091441111924,
+   1367
+  ]
+ },
+ "AX30G_HYPR_Depth-25_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-DOWN_Resonance-25_Sensitivity-25_IN-LIN": {
+  "fit_old": [
+   5629.257368935524,
+   0.3165224730955898,
+   4739
+  ],
+  "fit_new": [
+   294.2228456309894,
+   50.10790661173239,
+   5097
+  ],
+  "di_old": [
+   5720.399443149547,
+   0.0,
+   1353
+  ],
+  "di_new": [
+   149.76747295552423,
+   70.81199707388441,
+   1367
+  ]
+ },
+ "AX30G_HYPR_Depth-50_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-DOWN_Resonance-25_Sensitivity-25_IN-LIN": {
+  "fit_old": [
+   5629.257368935524,
+   0.31732599957689867,
+   4727
+  ],
+  "fit_new": [
+   312.3881655267122,
+   48.342162056111434,
+   5097
+  ],
+  "di_old": [
+   5720.399443149547,
+   0.07380073800738007,
+   1355
+  ],
+  "di_new": [
+   179.14643240247287,
+   65.10607168983175,
+   1367
+  ]
+ },
+ "AX30G_HYPR_Depth-50_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-0_IN-LIN": {
+  "fit_old": [
+   2819.043414003301,
+   9.876543209876543,
+   810
+  ],
+  "fit_new": [
+   476.597836369797,
+   44.6927374301676,
+   895
+  ],
+  "di_old": [
+   1862.0516347561115,
+   14.925373134328357,
+   335
+  ],
+  "di_new": [
+   68.86374838261618,
+   94.05099150141642,
+   353
+  ]
+ },
+ "AX30G_HYPR_Depth-50_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-10_IN-LIN": {
+  "fit_old": [
+   4560.476360815787,
+   3.1612223393045316,
+   3796
+  ],
+  "fit_new": [
+   434.1591387364948,
+   44.533947065592635,
+   869
+  ],
+  "di_old": [
+   1276.1416703061134,
+   16.725559481743225,
+   849
+  ],
+  "di_new": [
+   72.9546755989719,
+   93.93203883495146,
+   412
+  ]
+ },
+ "AX30G_HYPR_Depth-50_Type-2_Decay-0_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN": {
+  "fit_old": [
+   5267.814184522986,
+   2.6424442609413705,
+   3633
+  ],
+  "fit_new": [
+   591.2227432399976,
+   26.37729549248748,
+   599
+  ],
+  "di_old": [
+   1932.6561634634002,
+   18.429003021148034,
+   662
+  ],
+  "di_new": [
+   362.46712463789305,
+   41.988950276243095,
+   181
+  ]
+ },
+ "AX30G_HYPR_Depth-50_Type-2_Decay-10_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN": {
+  "fit_old": [
+   5267.814184522986,
+   2.2317827372949717,
+   3719
+  ],
+  "fit_new": [
+   434.1591387364948,
+   38.009049773755656,
+   663
+  ],
+  "di_old": [
+   1811.7364332288328,
+   21.137206427688504,
+   809
+  ],
+  "di_new": [
+   236.19214020835477,
+   70.79646017699115,
+   226
+  ]
+ },
+ "AX30G_HYPR_Depth-10_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN": {
+  "fit_old": [
+   1645.379314823675,
+   5.212510024057739,
+   3741
+  ],
+  "fit_new": [
+   180.34054281355938,
+   57.922769640479366,
+   751
+  ],
+  "di_old": [
+   581.8374182765455,
+   29.918032786885245,
+   732
+  ],
+  "di_new": [
+   49.37068299520318,
+   92.45901639344262,
+   305
+  ]
+ },
+ "AX30G_HYPR_Depth-25_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN": {
+  "fit_old": [
+   4491.724047443146,
+   1.9190325972660356,
+   3804
+  ],
+  "fit_new": [
+   262.3170730511936,
+   52.25653206650831,
+   842
+  ],
+  "di_old": [
+   1486.3218694768077,
+   17.473435655253837,
+   847
+  ],
+  "di_new": [
+   58.63159220991548,
+   96.7123287671233,
+   365
+  ]
+ },
+ "AX30G_HYPR_Depth-37_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN": {
+  "fit_old": [
+   5267.814184522986,
+   1.5251117538785168,
+   3803
+  ],
+  "fit_new": [
+   305.32587461169396,
+   49.76689976689977,
+   858
+  ],
+  "di_old": [
+   1895.4441406586063,
+   12.142038946162657,
+   873
+  ],
+  "di_new": [
+   66.2968977704347,
+   95.64102564102565,
+   390
+  ]
+ },
+ "AX30G_HYPR_Depth-50_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN": {
+  "fit_old": [
+   5267.814184522986,
+   2.562761506276151,
+   3824
+  ],
+  "fit_new": [
+   408.84896916426874,
+   44.72527472527473,
+   910
+  ],
+  "di_old": [
+   2190.5348935799657,
+   12.372304199772985,
+   881
+  ],
+  "di_new": [
+   71.15421563866569,
+   93.47826086956522,
+   414
+  ]
+ },
+ "AX30G_HYPR_Depth-50_Type-2_Decay-37_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN": {
+  "fit_old": [
+   5267.814184522986,
+   2.3244668104481185,
+   4173
+  ],
+  "fit_new": [
+   279.9072380345715,
+   51.606978879706155,
+   2178
+  ],
+  "di_old": [
+   2342.4383506033296,
+   7.371556217423679,
+   1343
+  ],
+  "di_new": [
+   95.92116771121097,
+   98.30899308224443,
+   1301
+  ]
+ },
+ "AX30G_HYPR_Depth-50_Type-2_Decay-50_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-25_IN-LIN": {
+  "fit_old": [
+   683.4154340801995,
+   25.486979700635636,
+   4877
+  ],
+  "fit_new": [
+   73.74678628217644,
+   73.35984095427436,
+   5030
+  ],
+  "di_old": [
+   683.4154340801995,
+   0.8778346744696415,
+   1367
+  ],
+  "di_new": [
+   58.285048464269096,
+   92.09948792977323,
+   1367
+  ]
+ },
+ "AX30G_HYPR_Depth-50_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-37_IN-LIN": {
+  "fit_old": [
+   5267.814184522986,
+   2.2309711286089238,
+   3810
+  ],
+  "fit_new": [
+   464.53983014116744,
+   44.022346368715084,
+   895
+  ],
+  "di_old": [
+   2160.154202175293,
+   11.797752808988763,
+   890
+  ],
+  "di_new": [
+   87.03852851154589,
+   81.60676532769557,
+   473
+  ]
+ },
+ "AX30G_HYPR_Depth-50_Type-2_Decay-25_DirectLevel-0_EffectLevel-50_Harmonics-50_Polarity-UP_Resonance-25_Sensitivity-50_IN-LIN": {
+  "fit_old": [
+   5267.814184522986,
+   2.1859362654727414,
+   3797
+  ],
+  "fit_new": [
+   682.8146483719656,
+   40.924369747899156,
+   1190
+  ],
+  "di_old": [
+   2070.501319038447,
+   11.383928571428571,
+   896
+  ],
+  "di_new": [
+   95.62382906068491,
+   81.83632734530939,
+   501
+  ]
+ }
+}

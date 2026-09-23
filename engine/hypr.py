@@ -89,7 +89,8 @@ def _shelf_ba(fs, st):
 
 
 # ------------------------------------------------------------------ driver
-def driver(x, g, w_odd, w_even, clip_level=1.0, rect_hpf_hz=None, fs=39062.5, g_even=None):
+def driver(x, g, w_odd, w_even, clip_level=1.0, rect_hpf_hz=None, fs=39062.5, g_even=None,
+           odd_square=None):
     """The harmonic driver: gain, then a mix of a symmetric hard clip and a
     DC-blocked full-wave rectifier.
 
@@ -103,10 +104,22 @@ def driver(x, g, w_odd, w_even, clip_level=1.0, rect_hpf_hz=None, fs=39062.5, g_
     gain. The hypr-2 captures give the same H2/H4 on Type 1 and Type 2 at
     every Harmonics setting, so the even branch is fed from the input with a
     gain of its own rather than from the Type's odd-branch gain. None keeps
-    the 2026-09-18 behaviour (both branches share `g`)."""
+    the 2026-09-18 behaviour (both branches share `g`).
+
+    `odd_square` (2026-09-23): (knee, release_ms). The odd branch is then a
+    square wave whose amplitude follows the input's peak envelope up to the
+    knee, y = sign(x) * min(E, knee) / knee -- which is what Type 2
+    measures: the 1 kHz output rises 1:1 and then stops, and H3/H1 is the
+    same (-29 to -30 dB) at every level of the ramp, below the knee too,
+    which a plain hard clip cannot do."""
     u = g * np.asarray(x, dtype=float)
     y = 0.0
-    if w_odd:
+    if w_odd and odd_square:
+        knee, rel = odd_square
+        xx = np.asarray(x, dtype=float)
+        E = _decaying_peak(xx, rel, fs)
+        y = y + w_odd * np.sign(xx) * np.minimum(E, knee) / knee
+    elif w_odd:
         y = y + w_odd * np.clip(u, -clip_level, clip_level)
     if w_even:
         ue = u if g_even is None else g_even * np.asarray(x, dtype=float)
@@ -338,9 +351,12 @@ def render_hypr(x, spec, fs):
         # 2026-09-23: one even branch for both Types, with its own gain
         g_even = 10.0 ** (_interp_pairs(ev["gain_db"], H) / 20.0)
         w_even = _interp_pairs(ev["w"], H)
+    osq = None
+    if tbl.get("odd_mode") == "square_env":
+        osq = (10.0 ** (float(tbl["knee_dbfs"]) / 20.0), float(tbl["env_release_ms"]))
     d = driver(mono, g, w_odd, w_even,
                clip_level=float(dv.get("clip_level", 1.0)),
-               rect_hpf_hz=dv.get("rect_hpf_hz"), fs=fs, g_even=g_even)
+               rect_hpf_hz=dv.get("rect_hpf_hz"), fs=fs, g_even=g_even, odd_square=osq)
     truth.update({"drive_gain_db": 20 * math.log10(max(g, 1e-12)),
                   "w_odd": w_odd, "w_even": w_even})
     if g_even is not None:

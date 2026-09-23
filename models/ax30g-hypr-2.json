@@ -1,0 +1,375 @@
+{
+ "name": "AX30G Hyper Resonator (HYPR), re-fitted 2026-09-23 from capture/grids/hypr-2.json",
+ "effect": "HYPR",
+ "sample_rate": 39062.5,
+ "params": {
+  "Type": 1,
+  "Harmonics": 0,
+  "Sensitivity": 25,
+  "Polarity": "UP",
+  "Depth": 0,
+  "Decay": 25,
+  "Resonance": 0,
+  "Direct Level": 0,
+  "Effect Level": 50
+ },
+ "param_ranges": {
+  "Type": [
+   1,
+   2,
+   1,
+   "1 = fuzz-type, 2 = more overtones (displayed as 1/2)"
+  ],
+  "Harmonics": [
+   0,
+   50,
+   1,
+   "integer"
+  ],
+  "Sensitivity": [
+   0,
+   50,
+   1,
+   "integer"
+  ],
+  "Polarity": [
+   "UP",
+   "DOWN",
+   null,
+   "sweep direction"
+  ],
+  "Depth": [
+   0,
+   50,
+   1,
+   "integer"
+  ],
+  "Decay": [
+   0,
+   50,
+   1,
+   "integer"
+  ],
+  "Resonance": [
+   0,
+   50,
+   1,
+   "integer"
+  ],
+  "Direct Level": [
+   0,
+   50,
+   1,
+   "integer"
+  ],
+  "Effect Level": [
+   0,
+   50,
+   1,
+   "integer"
+  ]
+ },
+ "maps": {
+  "level": {
+   "type": "linear",
+   "in_max": 50.0,
+   "out_max": 1.0
+  },
+  "q": {
+   "type": "interp",
+   "interp": "inverse",
+   "points": [
+    [
+     0,
+     4.13
+    ],
+    [
+     10,
+     4.94
+    ],
+    [
+     25,
+     7.25
+    ],
+    [
+     37,
+     13.1
+    ],
+    [
+     50,
+     140.0
+    ]
+   ]
+  },
+  "decay_tau_ms": {
+   "type": "interp_log",
+   "points": [
+    [
+     0,
+     16.27
+    ],
+    [
+     10,
+     23.46
+    ],
+    [
+     25,
+     52.19
+    ],
+    [
+     37,
+     286.3
+    ],
+    [
+     50,
+     6370.38
+    ]
+   ]
+  },
+  "sens_hysteresis_db": {
+   "type": "interp",
+   "points": [
+    [
+     0,
+     18.75
+    ],
+    [
+     10,
+     14.5
+    ],
+    [
+     25,
+     9.0
+    ],
+    [
+     37,
+     3.75
+    ],
+    [
+     50,
+     2.25
+    ]
+   ]
+  }
+ },
+ "blocks": {
+  "driver": {
+   "clip_level": 1.0,
+   "rect_hpf_hz": 5.0,
+   "table": {
+    "1": {
+     "gain_db": [
+      [
+       0,
+       28.0
+      ],
+      [
+       5,
+       24.5
+      ],
+      [
+       10,
+       27.5
+      ],
+      [
+       25,
+       43.0
+      ],
+      [
+       37,
+       44.0
+      ],
+      [
+       50,
+       90.0
+      ]
+     ],
+     "w_odd": [
+      [
+       0,
+       0.0006126
+      ],
+      [
+       5,
+       0.0076646
+      ],
+      [
+       10,
+       0.0098429
+      ],
+      [
+       25,
+       0.0133211
+      ],
+      [
+       37,
+       0.0043567
+      ],
+      [
+       50,
+       0.0015779
+      ]
+     ],
+     "w_even": [
+      [
+       0,
+       0.0
+      ],
+      [
+       50,
+       0.0
+      ]
+     ]
+    },
+    "2": {
+     "odd_mode": "square_env",
+     "knee_dbfs": -25.0,
+     "env_release_ms": 10.0,
+     "gain_db": [
+      [
+       0,
+       0.0
+      ],
+      [
+       50,
+       0.0
+      ]
+     ],
+     "w_odd": [
+      [
+       0,
+       0.0331967
+      ],
+      [
+       5,
+       0.0343179
+      ],
+      [
+       10,
+       0.0326857
+      ],
+      [
+       25,
+       0.0386366
+      ],
+      [
+       37,
+       0.0391313
+      ],
+      [
+       50,
+       0.0385888
+      ]
+     ],
+     "w_even": [
+      [
+       0,
+       0.0
+      ],
+      [
+       50,
+       0.0
+      ]
+     ]
+    }
+   },
+   "even": {
+    "gain_db": [
+     [
+      0,
+      28.5
+     ],
+     [
+      5,
+      22.5
+     ],
+     [
+      10,
+      -15.5
+     ],
+     [
+      25,
+      32.5
+     ],
+     [
+      37,
+      -19.5
+     ],
+     [
+      50,
+      23.5
+     ]
+    ],
+    "w": [
+     [
+      0,
+      0.0010817
+     ],
+     [
+      5,
+      0.0034509
+     ],
+     [
+      10,
+      1.3788478
+     ],
+     [
+      25,
+      0.0060006
+     ],
+     [
+      37,
+      2.0883979
+     ],
+     [
+      50,
+      0.0149198
+     ]
+    ]
+   }
+  },
+  "sweep": {
+   "mode": "trigger_eg",
+   "rest_hz": 389.0,
+   "down_rest_hz": 11688.6,
+   "F_per_depth_up": 0.037885,
+   "F_per_depth_down": 0.026493,
+   "min_hz": 40.0,
+   "max_hz": 13536.5,
+   "trigger": {
+    "threshold_dbfs": -22.06,
+    "detector_release_ms": 12.99
+   },
+   "eg": {
+    "attack_ms": 8.35,
+    "attack_len_ms": 19.08
+   }
+  },
+  "resonator": {
+   "fixed_lp_hz": 5706.0,
+   "fixed_lp_q": 1.92,
+   "control_block": 1,
+   "gain_db": 5.47,
+   "q_rest_for_driver_fit": 4.13,
+   "notes": "The driver weights are fitted directly in capture dBFS; gain_db +5.47 puts the effect path on the same footing as the Direct path, which renders 5.47 dB above the capture (the 09-18 null test's fitted gain on the Direct-only row, a pre-existing offset of the Direct path, kept so the Direct/Effect balance is right)."
+  },
+  "output_de_emphasis": "none"
+ },
+ "input_stage": {
+  "file": "ax30g-input-stage.json",
+  "de_emphasis": "after_effect"
+ },
+ "chain": "ax30g-chain.json",
+ "resampler": {
+  "half_mult": 100
+ },
+ "notes": [
+  "Re-fit 2026-09-23 from the 35-row hypr-2 campaign; derivation, fit/held-out split and every residual: docs/hypr-model-2-2026-09-23.md. The 09-18 model (models/ax30g-hypr.json) is unchanged and still renders bit-identically.",
+  "SWEEP: not an envelope follower. A Schmitt trigger on a peak detector (instant attack, release blocks.sweep.trigger.detector_release_ms) fires an attack/decay envelope g; the corner is F = 2 sin(pi fc/fs) = F(389 Hz) + F_per_depth_up*Depth*g (UP) or F(down_rest_hz) - F_per_depth_down*Depth*g (DOWN). Decay is the envelope's decay time constant (maps.decay_tau_ms, interpolated in log). Sensitivity is the trigger's hysteresis (maps.sens_hysteresis_db), not a gain or threshold.",
+  "Polarity DOWN rests at the TOP (down_rest_hz) and sweeps down; UP rests at 389 Hz and sweeps up.",
+  "Resonance: Q interpolated in 1/Q (damping), which the five measured points are close to linear in.",
+  "DRIVER: odd branch per (Type, Harmonics), even branch shared by both Types with its own gain (blocks.driver.even). The level-dependent notches in the even and odd harmonics (docs, section 4) are NOT modelled.",
+  "Type 2's odd branch is a square wave whose amplitude follows the input's peak envelope up to a knee (blocks.driver.table.2.odd_mode = square_env, knee -25.0 dBFS at the device): the ramp's H3/H1 is -29 to -30 dB at every level, below the knee too, which a hard clip cannot give. Its weight is flat in Harmonics (-29.6 to -28.1 dB); on Type 2 Harmonics only adds the shared even branch. Type 1 stays a hard clip per Harmonics point and is the least well modelled part of the block.",
+  "Effect Level is linear in the displayed value, measured (-12.37/-6.00/-2.60 dB at 12/25/37 against 50)."
+ ]
+}

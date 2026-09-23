@@ -1,6 +1,6 @@
 # AX330G User Manual
 
-This manual is for AX330G **version 0.8.6, build 19**. The editor shows the version and the build number on its title line.
+This manual is for AX330G **version 0.9.0, build 20**. The editor's right-click menu shows the version and the build number.
 
 This manual uses ASD-STE100 Simplified Technical English.
 

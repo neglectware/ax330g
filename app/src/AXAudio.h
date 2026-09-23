@@ -25,7 +25,10 @@ typedef void (^AXDoneBlock)(NSError *error);
 - (void)stop;
 // Play `signal` (mono float, fs samples/s) on the output pair while writing the
 // selected input channels to `outURL` (3-channel float WAV). Calls done on the main thread.
-- (BOOL)playrecSignal:(AVAudioPCMBuffer *)signal tailSeconds:(double)tail toURL:(NSURL *)outURL done:(AXDoneBlock)done error:(NSError **)err;
+// `sendDb` scales the played signal (0 = unity; the reference channel is an
+// analog loopback off the same output, so it records whatever was actually
+// sent) -- samples are clamped to ±1.0 after scaling.
+- (BOOL)playrecSignal:(AVAudioPCMBuffer *)signal sendDb:(float)sendDb tailSeconds:(double)tail toURL:(NSURL *)outURL done:(AXDoneBlock)done error:(NSError **)err;
 - (void)playTone:(BOOL)on;      // 1 kHz at -20 dBFS on the output pair, for calibration
 - (void)playTone:(BOOL)on dbfs:(float)dbfs;  // same, at a chosen level
 - (void)playTone:(BOOL)on dbfs:(float)dbfs hz:(float)hz;  // chosen level and frequency

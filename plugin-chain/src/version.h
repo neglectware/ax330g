@@ -8,6 +8,6 @@
  * version because the plugin ships to other people. */
 #ifndef AX_VERSION_H
 #define AX_VERSION_H
-#define AX_VERSION "0.8.6"
-#define AX_BUILD 19
+#define AX_VERSION "0.9.0"
+#define AX_BUILD 20
 #endif
