@@ -2,7 +2,7 @@
 import json, os, sys, math
 import numpy as np
 H2 = os.path.dirname(os.path.abspath(__file__))
-ROOT = "/path/to/ax30g"
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # the project root
 m = json.load(open(os.path.join(ROOT, "models", "ax30g-hypr.json")))
 sw = json.load(open(os.path.join(H2, "sweep_fit.json")))["params"]
 sens = json.load(open(os.path.join(H2, "sens_fit.json")))

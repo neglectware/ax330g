@@ -2,7 +2,7 @@
 reference diagnostics. Run under nice with threads=1."""
 import os, sys, json, glob
 import numpy as np
-ROOT = "/path/to/ax30g"
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # the project root
 sys.path.insert(0, ROOT)
 from analysis.util import load_wav, load_layout, seg, cut
 from analysis.run import load_aligned

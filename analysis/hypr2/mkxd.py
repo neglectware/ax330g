@@ -1,5 +1,5 @@
 import sys, os, json, numpy as np
-ROOT="/path/to/ax30g"; sys.path.insert(0,ROOT)
+ROOT=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # the project root; sys.path.insert(0,ROOT)
 from engine.render import load_spec, render_spec
 import engine.effects as EF
 import engine.hypr

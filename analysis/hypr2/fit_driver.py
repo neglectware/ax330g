@@ -134,7 +134,7 @@ def resid(v):
 
 def x_start():
     v = []
-    old = json.load(open("/path/to/ax30g/models/ax30g-hypr.json"))["blocks"]["driver"]["table"]
+    old = json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "models", "ax30g-hypr.json")))["blocks"]["driver"]["table"]
 
     def interp(pts, h):
         pts = sorted(pts)

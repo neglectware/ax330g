@@ -6,7 +6,7 @@ import soundfile as sf
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from q import *
 from pyguard import quiet
-ROOT = "/path/to/ax30g"
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # the project root
 sys.path.insert(0, ROOT)
 from engine.render import load_spec, render_spec
 import engine.hypr  # noqa

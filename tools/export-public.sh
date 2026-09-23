@@ -44,4 +44,11 @@ cp "$HERE/public/README.md" "$HERE/public/LICENSE" "$HERE/public/.gitignore" "$H
 # .github/ tree.
 "${RS[@]}" "$HERE/public/.github/" "$DEST/.github/"
 
+# Refuse to finish if anything private slipped into the export: home paths,
+# the brain folder, people's names, old identifiers, scratch paths.
+if HITS=$(grep -rIl -i -E -f "$HERE/private/export-deny-patterns.txt" "$DEST" --exclude-dir=.git); then
+  echo "export-public.sh: PRIVATE DETAILS FOUND -- do not commit:" >&2
+  echo "$HITS" >&2
+  exit 1
+fi
 echo "exported to $DEST"

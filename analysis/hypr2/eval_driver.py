@@ -7,7 +7,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fit_driver as FD, fit_driver2 as FD2
 from q import *
-ROOT="/path/to/ax30g"; sys.path.insert(0, ROOT)
+ROOT=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # the project root; sys.path.insert(0, ROOT)
 import engine.hypr as EH
 from scipy.signal import stft
 xd = FD.xd; FSD = FD.FSD

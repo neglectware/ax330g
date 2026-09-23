@@ -2,7 +2,7 @@
 in the last 90 s, in which case it sleeps until 90 s pass with no new write. Checks the directory at
 most every 3 s."""
 import os, time
-D = "/path/to/ax30g/captures"
+D = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "captures")
 _last = [0.0]
 def newest():
     m = 0.0
