@@ -28,9 +28,13 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_CURRENT_
 # Deployment floor macOS 10.13 (a known user runs 10.13.6); universal so one
 # .pkg covers Intel and Apple silicon Macs. Cache vars so either can still be overridden on the command line
 # (-DCMAKE_OSX_DEPLOYMENT_TARGET=... / -DCMAKE_OSX_ARCHITECTURES=...). Must
-# be set before project() to take effect.
-set(CMAKE_OSX_DEPLOYMENT_TARGET "10.13" CACHE STRING "Minimum macOS deployment target")
-set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "macOS build architectures")
+# be set before project() to take effect. Apple-only: these variables mean
+# nothing to the other generators (Windows CI uses the Visual Studio
+# generator, x64 chosen with cmake -A).
+if(APPLE)
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.13" CACHE STRING "Minimum macOS deployment target")
+  set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "macOS build architectures")
+endif()
 
 project(AX330G VERSION ${AX_VERSION})
 set(CMAKE_CXX_STANDARD 17)
@@ -39,28 +43,62 @@ if(NOT DEFINED JUCE_DIR)
 endif()
 add_subdirectory(${JUCE_DIR} JUCE)
 
+# AU is a macOS-only plug-in format. Elsewhere the plug-in is VST3 (+
+# Standalone, which costs nothing extra as a CMake target even though only
+# VST3 is actually built in CI on Windows, .github/workflows/build.yml).
+if(APPLE)
+  set(AX_FORMATS AU VST3 Standalone)
+  set(AX_COPY_PLUGIN_AFTER_BUILD_DEFAULT ON)
+  # macOS only: a Core Animation layer (LcdNativeLayer_mac.mm) keeps the LCD
+  # start-up animation on time when the host's main thread is busy (see
+  # src/lcd/LcdNativeLayer.h). Elsewhere LcdNativeLayer_stub.cpp's create()
+  # returns nullptr and LcdDisplay falls back to its juce::Timer + repaint()
+  # path -- already how it behaves on macOS too, when create() fails there.
+  set(AX_LCD_NATIVE_SRC src/lcd/LcdNativeLayer_mac.mm)
+else()
+  set(AX_FORMATS VST3 Standalone)
+  # COPY_PLUGIN_AFTER_BUILD installs into system plug-in folders
+  # (e.g. C:\Program Files\Common Files\VST3 on Windows) -- fine on a
+  # developer's own Mac, not something a CI runner should be doing.
+  set(AX_COPY_PLUGIN_AFTER_BUILD_DEFAULT OFF)
+  set(AX_LCD_NATIVE_SRC src/lcd/LcdNativeLayer_stub.cpp)
+endif()
+# Overridable (-DAX_COPY_PLUGIN_AFTER_BUILD=OFF) so a CI compile-check job on
+# macOS -- .github/workflows/build.yml's macos-latest job -- can skip
+# installing into ~/Library on the runner without changing Mark's own local
+# build, which takes the default above (ON, exactly as before this option
+# existed) and behaves identically.
+option(AX_COPY_PLUGIN_AFTER_BUILD "Install the built plug-in into the system's plug-in folders" ${AX_COPY_PLUGIN_AFTER_BUILD_DEFAULT})
+
 juce_add_plugin(AX330G
   COMPANY_NAME "Neglectware"   # the vendor hosts group plugins under (2026-09-23). Hosts identify the plugin by the codes below, not the bundle ID -- keep Mobr/Ax33 or saved sessions lose it
   PLUGIN_MANUFACTURER_CODE Mobr
   PLUGIN_CODE Ax33
-  FORMATS AU VST3 Standalone
+  FORMATS ${AX_FORMATS}
   PRODUCT_NAME "AX330G"
   BUNDLE_ID com.neglectware.ax330g
   VERSION ${AX_VERSION}
   BUILD_VERSION "${AX_VERSION}.${AX_BUILD}"
   IS_SYNTH FALSE
   NEEDS_MIDI_INPUT FALSE
-  COPY_PLUGIN_AFTER_BUILD TRUE
+  COPY_PLUGIN_AFTER_BUILD ${AX_COPY_PLUGIN_AFTER_BUILD}   # option() above, defaults per-platform
   AU_MAIN_TYPE kAudioUnitType_Effect
   VST3_CATEGORIES Fx Delay)
 
-target_sources(AX330G PRIVATE src/PluginProcessor.cpp src/PluginEditor.cpp src/lcd/LcdDisplay.cpp src/lcd/LcdNativeLayer_mac.mm)
+target_sources(AX330G PRIVATE src/PluginProcessor.cpp src/PluginEditor.cpp src/lcd/LcdDisplay.cpp ${AX_LCD_NATIVE_SRC})
 target_include_directories(AX330G PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
 target_compile_definitions(AX330G PUBLIC
   JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_VST3_CAN_REPLACE_VST2=0 JUCE_DISPLAY_SPLASH_SCREEN=0)
 target_link_libraries(AX330G PRIVATE
   juce::juce_audio_utils juce::juce_dsp
   PUBLIC juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
+
+# The two developer-tool targets below (LCD snapshot verifier, in-process AU
+# host harness) are macOS-only: the harness is Objective-C++ and links
+# CoreAudioKit, and neither is shipped or needed to prove the plug-in itself
+# builds on another platform -- the plugin-only Windows CI job builds just
+# the AX330G_VST3 target.
+if(APPLE)
 
 # AX330GLcdSnapshot: a headless verification tool for the LCD start-up
 # animation (docs/lcd-startup-2026-09-22.md, src/lcd/LcdDisplay.h) -- a
@@ -88,3 +126,5 @@ target_compile_definitions(AX330GHostHarness PRIVATE
 target_link_libraries(AX330GHostHarness PRIVATE
   juce::juce_audio_processors juce::juce_gui_basics "-framework CoreAudioKit"
   PUBLIC juce::juce_recommended_config_flags)
+
+endif()

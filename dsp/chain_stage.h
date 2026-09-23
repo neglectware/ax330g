@@ -34,6 +34,13 @@
 #include <cmath>
 #include <vector>
 
+// M_PI is a POSIX/BSD <cmath> extension, not standard C++ -- MSVC doesn't
+// define it. Same literal value glibc/libc++ use, so this changes no
+// numerics on any platform, on macOS included.
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 namespace ax30g {
 
 class ChainStage {

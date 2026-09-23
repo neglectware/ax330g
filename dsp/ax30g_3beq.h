@@ -74,6 +74,15 @@
 #include <algorithm>
 #include <cmath>
 
+// M_PI is a POSIX/BSD <cmath> extension, not standard C++ -- MSVC doesn't
+// define it (short of _USE_MATH_DEFINES before every <cmath>/<math.h>
+// include anywhere in the translation unit, which this codebase doesn't
+// rely on). Same literal value glibc/libc++ use, so this changes no
+// numerics on any platform, on macOS included.
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 namespace ax30g {
 
 struct Eq3Params {

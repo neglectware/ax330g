@@ -1,6 +1,7 @@
 #include "PluginEditor.h"
 #include "dsp/chain.h"
 #include "version.h"
+#include <algorithm>
 #include <cmath>
 
 using namespace juce;

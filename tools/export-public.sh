@@ -39,5 +39,9 @@ cp "$HERE/Makefile" "$DEST/Makefile"
 # The public README, LICENSE and .gitignore live in public/ here and are
 # copied to the repo root.
 cp "$HERE/public/README.md" "$HERE/public/LICENSE" "$HERE/public/.gitignore" "$DEST/"
+# The GitHub Actions workflow(s) also live under public/ here (CI config is
+# only meaningful in the public repo) and are copied to the repo's own
+# .github/ tree.
+"${RS[@]}" "$HERE/public/.github/" "$DEST/.github/"
 
 echo "exported to $DEST"
