@@ -1,10 +1,11 @@
 AX330G for Windows (VST3, 64-bit)
 =================================
 
-WARNING: Nobody has tested this build on a Windows computer. GitHub Actions
-compiled it on a Windows build server. This shows that it compiles. It does
-not show that it operates correctly. Please tell us what occurs: the plugin
-loads or not, it makes sound or not, a control does the wrong thing.
+NOTE: One tester installed version 0.8.6 on a Windows computer. The plugin
+loaded and its sound was correct. Nobody has tested version 0.9.0 (the new
+editor) on Windows yet. GitHub Actions compiles each build on a Windows build
+server. Please tell us what occurs: the plugin loads or not, it makes sound or
+not, a control does the wrong thing.
 
 The build is not signed. Windows or your host can show a warning when you
 load it for the first time. This warning is expected.

@@ -118,5 +118,5 @@ Version 0.8.6 fixed the routing of the Mod Delay, the Reverb and the Stereo Mod 
 
 These two items are about the platform, not about a difference from the unit.
 
-- The plugin is for macOS only.
+- The Windows version has had one test, of version 0.8.6. See [2.6](02-installation.md#26-windows).
 - Nobody has tested the plugin on macOS 10.13.

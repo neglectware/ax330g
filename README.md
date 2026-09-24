@@ -2,7 +2,7 @@
 
 AX330G is an audio plug-in. It emulates the effects of the Korg Toneworks AX30G and AX300G guitar multi-effects units (1997). It is available for macOS (AU and VST3) and for Windows (VST3, 64-bit).
 
-NOTE: Nobody has tested the Windows version on a Windows computer yet.
+NOTE: One tester installed version 0.8.6 on a Windows computer. The plugin loaded and its sound was correct. Nobody has tested version 0.9.0 (the new editor) on Windows yet.
 
 Each effect was measured on a real AX300G and then modeled. The unit was a "black box": no firmware was read or copied. The models were tested against recordings of the real unit.
 
