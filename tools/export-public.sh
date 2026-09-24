@@ -44,9 +44,12 @@ cp "$HERE/public/README.md" "$HERE/public/LICENSE" "$HERE/public/.gitignore" "$H
 # .github/ tree.
 "${RS[@]}" "$HERE/public/.github/" "$DEST/.github/"
 
-# Refuse to finish if anything private slipped into the export: home paths,
-# the brain folder, people's names, old identifiers, scratch paths.
-if HITS=$(grep -rIl -i -E -f "$HERE/private/export-deny-patterns.txt" "$DEST" --exclude-dir=.git); then
+# Refuse to finish if anything private slipped into the export (home paths,
+# people's names, old identifiers, scratch paths). The patterns live in a
+# file that is never exported, so the list itself stays private.
+DENY="$HERE/private/export-deny-patterns.txt"
+[ -f "$DENY" ] || { echo "export-public.sh: $DENY missing" >&2; exit 1; }
+if HITS=$(grep -rIl -i -E -f "$DENY" "$DEST" --exclude-dir=.git); then
   echo "export-public.sh: PRIVATE DETAILS FOUND -- do not commit:" >&2
   echo "$HITS" >&2
   exit 1

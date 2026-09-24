@@ -17,8 +17,7 @@ endif()
 # stamping the FIRST version.h it ever saw into CFBundleShortVersionString/
 # CFBundleVersion, even though the actual object code rebuilds correctly on
 # every source change. Same bug, same fix, as
-# another project's CMakeLists.txt (2026-09-16
-# build 12) -- found here 2026-09-16 while bumping to 0.5.1/9: the installed
+# another project's CMakeLists.txt (2026-09-16) -- found here 2026-09-16 while bumping to 0.5.1/9: the installed
 # bundle still read 0.4.2/7 after a `make-installer.sh` run that DID pick up
 # a source change and DID name the .pkg 0.5.1.9 correctly (that name comes
 # from make-installer.sh's own `sed` read of version.h, a separate path that
