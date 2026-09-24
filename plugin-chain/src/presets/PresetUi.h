@@ -36,6 +36,8 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 #include "ui/AxUi.h"
 #include "presets/Presets.h"
+#include "UpdateChecker.h"
+#include "UserSettings.h"
 #include <functional>
 #include <memory>
 
@@ -224,6 +226,11 @@ public:
     PresetBar bar;
     PresetBrowser browser;
     PromptSheet sheet;
+    // Update notice (0.11.1): the shared checker backing the "Check for
+    // Updates" item in showMenu() below. The editor's AxMainPanel holds its
+    // own reference (the same process-wide instance) for the notice itself.
+    juce::SharedResourcePointer<axupdate::UpdateChecker> updateChecker;
+    juce::SharedResourcePointer<axprefs::UserSettings> userSettings;   // "Meter Peak Hold" (0.12.0)
 
     const axpresets::FolderInfo* currentFolder() const;   // the current preset's folder, if it still exists
     void syncBank();                // the current preset's bank letter from the library (after a rescan)

@@ -1304,6 +1304,13 @@ void PresetController::showMenu() {
     m.addItem(7, userFolder ? "Delete Bank " + quoted(folder->name) + kEllipsis : "Delete Bank" + kEllipsis, userFolder);
     m.addSeparator();
     m.addItem(8, revealLabel());
+    m.addSeparator();
+    // Update notice (0.11.1): a plain checkmark, default on. Off hides any
+    // notice already showing and stops the daily check (UpdateChecker.h).
+    m.addItem(9, "Check for Updates", true, updateChecker->enabled());
+    // Level meters (0.12.0): the peak-hold tick on the Input/Output rings and the
+    // slot tiles. Per user, not per session (UserSettings.h); default off.
+    m.addItem(10, "Meter Peak Hold", true, userSettings->meterPeakHold());
     auto self = this;
     const auto infoCopy = info != nullptr ? *info : axpresets::PresetInfo();
     const auto folderCopy = folder != nullptr ? *folder : axpresets::FolderInfo();
@@ -1317,6 +1324,8 @@ void PresetController::showMenu() {
             if (r == 6) self->renameFolder(folderCopy);
             if (r == 7) self->deleteFolder(folderCopy);
             if (r == 8) self->reveal(userPreset ? infoCopy.file : (folderCopy.dir.isDirectory() ? folderCopy.dir : self->library.userRoot()));
+            if (r == 9) self->updateChecker->setEnabled(!self->updateChecker->enabled());
+            if (r == 10) self->userSettings->setMeterPeakHold(!self->userSettings->meterPeakHold());
         });
 }
 

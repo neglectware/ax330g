@@ -17,7 +17,14 @@ inline juce::Colour hex(juce::uint32 rgb, float a = 1.0f) { return juce::Colour(
 const juce::uint32 bg = 0x121417, accent = 0x3d7be8, ledRed = 0xff3b24, ledOff = 0x3a1714,
                    textDim = 0x8e99ab, textLabel = 0xc7cfdb, fieldBg = 0x0f1114, fieldBorder = 0x3a3f48,
                    arrow = 0xaab4c3, valueGreen = 0xa6ef6a, groupBlue = 0x6f9bea;
+// Level meters (0.12.0 build 25): green = valueGreen, amber = the "Not available"
+// amber, red = ledRed, so the meters use colours the editor already shows. The
+// ring's unlit track is a dark wash over the blue plate; a tile's unlit cells keep
+// the ridge grey they had before the meters.
+const juce::uint32 meterAmber = 0xf0b44a, meterCellOff = 0x2c2f35;
 }
+// Meter colour for a zone of axmeter::zoneOf(): 0 green, 1 amber, 2 red.
+juce::Colour meterColour(int zone);
 
 // ---- fonts --------------------------------------------------------------------
 enum class Face { Regular, SemiBold, Bold, BlackItalic, NarrowSemi, NarrowBold };
@@ -203,6 +210,29 @@ private:
     bool leftEnd;
 };
 
+// ---- MeterRing (0.12.0 build 25) --------------------------------------------------------
+// The level ring around the Input or Output knob: a thin arc concentric with the
+// knob, following the knob's own 270-degree sweep (7:30 to 4:30), an unlit track
+// plus the lit part, coloured by position (ui/MeterBallistics.h), and an optional
+// peak-hold tick. A separate component BEHIND the knob, sized to the ring
+// (knob bounds expanded by kPad), so a meter frame repaints this rectangle and
+// nothing else; it takes no mouse clicks. Geometry, design units: knob radius 23,
+// 1.0 gap, ring 2.5 thick (centre line kRadius = 25.25, outer edge 26.5). The PEAK
+// label between the knobs is the tight neighbour: its ink spans x 713.7..738.9
+// against ring edges at 711.5 (Input) and 740.5 (Output), about 2 units clear.
+class MeterRing : public juce::Component {
+public:
+    static constexpr float kRadius = 25.25f, kThickness = 2.5f;
+    static constexpr int kPad = 5;   // component bounds = knob bounds expanded by this
+    MeterRing();
+    // Repaints only when the drawn arc or tick moves by a visible amount (returns true then).
+    bool setLevel(float levelDb, float holdDb, bool showHold);
+    void paint(juce::Graphics&) override;
+private:
+    float levelNorm = 0.0f, holdNorm = 0.0f;
+    bool hold = false;
+};
+
 // A footswitch-style slot tile. Click selects the slot; the LED child
 // toggles On. Drag-to-reorder (0.9.1 build 21): a drag of kDragThreshold
 // design units or more turns the press into a reorder drag instead of a
@@ -225,6 +255,16 @@ public:
     void mouseUp(const juce::MouseEvent&) override;
     bool keyPressed(const juce::KeyPress&) override;
     void setDragLook(bool lifted, int shownNumber);   // editor, during a drag; (false, 0) restores
+    // Level meter (0.12.0 build 25): the ridge's 14 cells become an LED bar of the
+    // level leaving this slot, lit from the left on the rings' scale and colours.
+    // active false: dark (an empty slot). dimmed: lit cells at 40 % (an Off block).
+    // Repaints only the meter strip, and only when a cell changes (returns true then).
+    static constexpr int kMeterCells = 14;
+    bool setMeter(float levelDb, float holdDb, bool showHold, bool active, bool dimmed);
+    juce::Rectangle<int> meterArea() const { return { 11, 63, 70, 5 }; }
+    int meterLitCells() const noexcept { return meterLit; }          // for tools/MeterTest.cpp
+    int meterHoldCellIndex() const noexcept { return meterHoldCell; }
+    bool meterIsDimmed() const noexcept { return meterDimmed; }
     void focusFromKeyboard();                        // grab focus and show the ring (after a key move)
     bool isDragging() const noexcept { return dragging; }
     LedButton led;
@@ -243,6 +283,8 @@ private:
     bool lifted = false;
     int shownNumber = 0;   // the position number drawn on the tile; 0 = index + 1
     juce::String unknownBlock;
+    int meterLit = 0, meterHoldCell = -1;   // lit cells from the left; the hold tick's cell (-1 none)
+    bool meterDimmed = false;
     void updateTitle();
 };
 

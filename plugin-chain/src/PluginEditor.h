@@ -4,6 +4,9 @@
 #include "lcd/LcdDisplay.h"
 #include "ui/AxUi.h"
 #include "presets/PresetUi.h"
+#include "UpdateChecker.h"
+#include "UserSettings.h"
+#include "ui/MeterBallistics.h"
 #include <array>
 #include <functional>
 #include <memory>
@@ -25,13 +28,32 @@
 // 1-based). Neither is a host parameter. Parameter IDs and behaviour are
 // unchanged from 0.8.x, so sessions load identically.
 //
+// Level meters (0.12.0 build 25): a thin ring around the Input and Output knobs
+// (axui::MeterRing, behind each knob) and an LED bar in each slot tile's bottom
+// row (axui::SlotTile::setMeter), run from a juce::VBlankAttachment on this
+// panel -- one frame per display refresh (60 or 120 Hz). Each frame takes the
+// processor's max-since-last-read peaks (AX330GChainProcessor::takeMeterPeaks),
+// runs the ballistics (ui/MeterBallistics.h) with the real time since the last
+// frame, and repaints only a ring or a tile's meter strip that visibly changed
+// -- never the LCD, which has its own Core Animation layer on macOS. The meters
+// belong to slot POSITIONS: a tile whose slot changes type (a new block, a move,
+// a preset load) starts from silence; an empty slot's tile stays dark; an Off
+// block's tile shows the level passing through it, dimmed. The dragged tile
+// keeps showing its own slot's meter while it moves. Peak hold is the per-user
+// "Meter Peak Hold" setting (UserSettings.h), read every frame, so every open
+// editor follows a change at once.
+// AX330G_METERLOG=1 prints each meter's repaint rectangle (design units) the first
+// time it repaints, and every 240 frames the frame rate and the cost of the
+// paints since (all paint passes, which with a still editor are the meter ones).
+//
 // AX330G_UILOG=1 in the environment prints every positioned element's bounds
 // in design units (and the scale) on each layout, and each paint's time.
 // AX330G_UIPAINTBENCH=1 forces a full repaint every timer tick (for timing).
 // AX330G_UI_SCALE=<f> opens the editor at scale f instead of the saved one.
 // AX330G_UI_TRIGGER="tile:4,led:2,mode:unit,stereo:stereo" clicks those controls
 // (Button::triggerClick, the same path as a mouse click) 1.5 s after opening;
-// "move:2>5" moves slot 2's block to slot 5 (the same call a tile drag makes).
+// "move:2>5" moves slot 2's block to slot 5 (the same call a tile drag makes);
+// "peakhold:on" / "peakhold:off" sets the per-user Meter Peak Hold setting (0.12.0).
 // Preset triggers (0.10.0): see src/presets/PresetUi.h ("browser", "folder:1",
 // "preset:2", "next", "saveas", "menu", ...). AX330G_UI_TRIGGER2 runs a second
 // list 1.5 s after the first (e.g. open the browser, then a row's menu).
@@ -70,6 +92,7 @@ public:
 
     void poll();                 // editor timer: slot types / on states / host-restored selection
     void setPeakLit(bool lit);
+    void meterFrame(double timestampSec);   // the VBlankAttachment callback (level meters, 0.12.0)
     void logLayout(const juce::String& why, float scale) const;
     void testTrigger(const juce::String& what);   // AX330G_UI_TRIGGER (testing)
 
@@ -94,6 +117,28 @@ private:
         void paintOverChildren(juce::Graphics&) override;
         int preferredWidth() const;
         axui::SegmentButton mono { "Mono", true }, stereo { "Stereo", false };
+    };
+
+    // Update notice (0.11.1 build 24, UpdateChecker.h): one line, bottom-right
+    // of the detail panel, below the block's own knobs -- see layoutDetail()'s
+    // kUpdateNoticeRight/kUpdateNoticeBottom. Hidden (isVisible() false) when
+    // there is nothing to show; setInfo({}) is what hides it.
+    struct UpdateNotice : public juce::Component {
+        UpdateNotice();
+        void setInfo(const axupdate::UpdateInfo&);
+        const axupdate::UpdateInfo& currentInfo() const noexcept { return info_; }
+        int preferredWidth() const;
+        void resized() override;
+        void paint(juce::Graphics&) override;
+        std::function<void()> onDownload, onSkip;
+    private:
+        struct LinkButton : public axui::AxButton {
+            explicit LinkButton(const juce::String& text) : AxButton(text) { setButtonText(text); }
+            void paintButton(juce::Graphics&, bool over, bool down) override;
+        };
+        axupdate::UpdateInfo info_;
+        juce::String label_;   // "AX330G 0.12.0 is available"
+        LinkButton download_ { "Download" }, skip_ { "Skip this version" };
     };
 
     int typeOf(int k) const;
@@ -124,6 +169,7 @@ private:
     const bool uiLog;
 
     // FACE
+    axui::MeterRing inputRing, outputRing;   // behind the knobs (added before them)
     std::unique_ptr<axui::ParamKnob> inputKnob, outputKnob;
     axui::ValueText inputValue { axui::ValueText::Style::Plain }, outputValue { axui::ValueText::Style::Plain };
     axui::ModeButton modeButton;
@@ -143,6 +189,30 @@ private:
     bool hasStereo = false;
     float nameFontPx = 24.0f;
     float effectLabelRight = 0.0f, stereoLabelRight = 0.0f;
+
+    // Update notice (0.11.1 build 24): the process-wide shared checker (one
+    // background check per host process, however many instances that host
+    // has open), and this panel's own notice component -- see the
+    // UpdateNotice struct above and layoutDetail()/paint() for where it
+    // lives on screen.
+    juce::SharedResourcePointer<axupdate::UpdateChecker> updateChecker;
+    UpdateNotice updateNotice;
+    void layoutUpdateNotice();
+
+    // Level meters (0.12.0 build 25): see the class comment. meterType[k] is
+    // the slot type the tile's meter last measured (-2 = none yet); a change
+    // resets it to silence.
+    axmeter::Ballistics inMeter, outMeter;
+    std::array<axmeter::Ballistics, ax30g::N_SLOTS> tileMeters;
+    std::array<int, ax30g::N_SLOTS> meterType;
+    std::array<std::atomic<float>*, ax30g::N_SLOTS> typeParam {}, onParam {};
+    double lastFrameSec = -1.0;
+    juce::SharedResourcePointer<axprefs::UserSettings> userSettings;
+    const bool meterLog;
+    int meterFrames = 0, meterPaints = 0;
+    double meterPaintMs = 0.0, meterPaintMaxMs = 0.0, meterLogStartSec = -1.0;
+    juce::uint32 meterLogged = 0;   // bit per meter: its repaint rectangle has been logged
+    std::unique_ptr<juce::VBlankAttachment> vblank;   // last of the meter members: stops first
 
     // Attachments last: destroyed first.
     std::unique_ptr<juce::ParameterAttachment> modeAttachment, stereoAttachment;

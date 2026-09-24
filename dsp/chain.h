@@ -13,6 +13,7 @@
 #include "blocks_comp.h"
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <functional>
@@ -95,6 +96,22 @@ public:
     // one device-rate sample, in place, run through every enabled slot in order
     void process(double& l, double& r) {
         for (auto& s : slots_) if (s.on && s.block) s.block->process(l, r);
+    }
+
+    // The same, also taking the level LEAVING each slot position (0.12.0 build
+    // 25, the plugin's per-slot tile meters): peak[k] = max(peak[k], |l|, |r|)
+    // after slot k, whether it is on, off or empty -- an off or empty slot's
+    // tap is just the signal passing through it. Amplitude 1.0 is the
+    // emulated converters' full scale (the level ax30g::InputStage hands the
+    // chain), so a caller showing dB gets 0 dB = full scale. The caller owns
+    // and resets peak[]; nothing here allocates.
+    void process(double& l, double& r, double (&peak)[N_SLOTS]) {
+        for (int k = 0; k < N_SLOTS; ++k) {
+            auto& s = slots_[k];
+            if (s.on && s.block) s.block->process(l, r);
+            const double a = std::max(std::fabs(l), std::fabs(r));
+            if (a > peak[k]) peak[k] = a;
+        }
     }
 
     int slotType(int k) const { return (k >= 0 && k < N_SLOTS) ? slots_[k].type : 0; }

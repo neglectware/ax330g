@@ -112,6 +112,12 @@ const Rectangle<float> kDetail(14.0f, 314.0f, 792.0f, 332.0f);
 constexpr float kHeaderCentreY = 353.0f;
 constexpr int kCellTop = 451, kCellX0 = 34, kCellPitch = 94, kCellW = 88;
 constexpr float kKnobRowCentreY = 511.0f;   // centre of y 392..630
+// Update notice (0.11.1 build 24): the strip below the knob row is empty for
+// every block (the tallest cell -- kCellTop 451, height 136 -- ends at 587;
+// the detail panel itself ends at 646) with no block using more than the 8
+// cells that already reach the panel's right padding (786, the same edge the
+// header controls above start from). Right-aligned, bottom-padded to match.
+constexpr float kUpdateNoticeRight = 786.0f, kUpdateNoticeBottom = 630.0f, kUpdateNoticeH = 20.0f;
 
 Rectangle<int> tileBounds(int i) { return { 14 + i * (92 + 8), 226, 92, 78 }; }
 constexpr float kTileLift = 4.0f;                  // a dragged tile rides this far above the row
@@ -203,8 +209,84 @@ void AxMainPanel::StereoInControl::paintOverChildren(Graphics& g) {
     g.drawRoundedRectangle(getLocalBounds().toFloat().reduced(0.5f), 5.5f, 1.0f);
 }
 
+// ---- UpdateNotice (0.11.1 build 24) --------------------------------------------------
+// "● AX330G 0.12.0 is available   Download   Skip this version", drawn from x 0: the
+// dot in the unit's LED red, the label dim, the two actions in accent with a hover
+// underline (LinkButton::paintButton). Hidden entirely (no paint, zero width) when
+// info_.available is false -- setInfo({}) is what layoutUpdateNotice() then collapses to.
+namespace {
+constexpr float kNoticeDot = 8.0f, kNoticeGap = 8.0f, kNoticeBetween = 16.0f;
+}
+
+void AxMainPanel::UpdateNotice::LinkButton::paintButton(Graphics& g, bool over, bool /*down*/) {
+    const auto f = axui::font(Face::SemiBold, 12.5f);
+    const auto r = getLocalBounds().toFloat();
+    const float baseline = axui::baselineCentred(Face::SemiBold, 12.5f, r.getCentreY());
+    axui::drawText(g, getButtonText(), f, hex(axui::col::accent), 0.0f, baseline);
+    if (over || showFocusRing) {
+        g.setColour(hex(axui::col::accent));
+        g.fillRect(0.0f, baseline + 2.0f, axui::textWidth(f, getButtonText()), 1.0f);
+    }
+    if (showFocusRing) {
+        g.setColour(hex(axui::col::accent));
+        g.drawRoundedRectangle(r.reduced(1.0f), 3.0f, 1.0f);
+    }
+}
+
+AxMainPanel::UpdateNotice::UpdateNotice() {
+    addChildComponent(download_);
+    addChildComponent(skip_);
+    download_.setDescription("Opens the release page in your web browser");
+    skip_.setDescription("Hides this notice until a newer version than this one is released");
+    download_.onClick = [this] { if (onDownload) onDownload(); };
+    skip_.onClick = [this] { if (onSkip) onSkip(); };
+}
+
+void AxMainPanel::UpdateNotice::setInfo(const axupdate::UpdateInfo& info) {
+    info_ = info;
+    label_ = info.available ? "AX330G " + info.version + " is available" : String();
+    setVisible(info.available);
+    download_.setVisible(info.available);
+    skip_.setVisible(info.available);
+    setTitle(label_);
+    resized();
+    repaint();
+}
+
+int AxMainPanel::UpdateNotice::preferredWidth() const {
+    if (!info_.available) return 0;
+    const auto lf = axui::font(Face::Regular, 12.5f);
+    const auto bf = axui::font(Face::SemiBold, 12.5f);
+    return roundToInt(kNoticeDot + kNoticeGap + axui::textWidth(lf, label_) + kNoticeBetween
+                      + axui::textWidth(bf, download_.getButtonText()) + kNoticeBetween
+                      + axui::textWidth(bf, skip_.getButtonText()));
+}
+
+void AxMainPanel::UpdateNotice::resized() {
+    if (!info_.available) return;
+    const auto bf = axui::font(Face::SemiBold, 12.5f);
+    const int wSkip = roundToInt(axui::textWidth(bf, skip_.getButtonText()));
+    const int wDownload = roundToInt(axui::textWidth(bf, download_.getButtonText()));
+    int x = getWidth();
+    x -= wSkip;
+    skip_.setBounds(x, 0, wSkip, getHeight());
+    x -= roundToInt(kNoticeBetween) + wDownload;
+    download_.setBounds(x, 0, wDownload, getHeight());
+}
+
+void AxMainPanel::UpdateNotice::paint(Graphics& g) {
+    if (!info_.available) return;
+    const float cy = (float) getHeight() * 0.5f;
+    Path dot;
+    dot.addEllipse(Rectangle<float>(kNoticeDot, kNoticeDot).withCentre({ kNoticeDot * 0.5f, cy }));
+    g.setColour(hex(axui::col::ledRed));
+    g.fillPath(dot);
+    axui::drawText(g, label_, axui::font(Face::Regular, 12.5f), hex(axui::col::textDim), kNoticeDot + kNoticeGap,
+                   axui::baselineCentred(Face::Regular, 12.5f, cy));
+}
+
 AxMainPanel::AxMainPanel(AX330GChainProcessor& p, axlcd::LcdDisplay& l)
-    : proc(p), lcd(l), uiLog(envSet("AX330G_UILOG")) {
+    : proc(p), lcd(l), uiLog(envSet("AX330G_UILOG")), meterLog(envSet("AX330G_METERLOG")) {
     setOpaque(true);
     setTitle("AX330G");
     setDescription("Right-click the background for the window size");
@@ -228,6 +310,11 @@ AxMainPanel::AxMainPanel(AX330GChainProcessor& p, axlcd::LcdDisplay& l)
         addAndMakeVisible(valueText);
         return k;
     };
+    // Level rings (0.12.0): added first, so each sits behind its knob.
+    addAndMakeVisible(inputRing);
+    addAndMakeVisible(outputRing);
+    inputRing.setTitle("Input level meter");
+    outputRing.setTitle("Output level meter");
     inputKnob = makeIoKnob("input_db", inputValue, "Input");
     outputKnob = makeIoKnob("output_db", outputValue, "Output");
 
@@ -292,10 +379,31 @@ AxMainPanel::AxMainPanel(AX330GChainProcessor& p, axlcd::LcdDisplay& l)
     lcd.setTitle("LCD");
     lcd.setDescription("Click to open the preset browser");
     lcd.setMouseCursor(MouseCursor::PointingHandCursor);
+
+    // --- UPDATE NOTICE (0.11.1 build 24) -------------------------------------------
+    addChildComponent(updateNotice);
+    updateNotice.onDownload = [this] { URL(updateNotice.currentInfo().url).launchInDefaultBrowser(); };
+    updateNotice.onSkip = [this] { updateChecker->skipVersion(updateNotice.currentInfo().tag); };
+    updateChecker->addListener(this, [this](const axupdate::UpdateInfo& info) {
+        updateNotice.setInfo(info);
+        layoutUpdateNotice();
+    });
+
+    // --- LEVEL METERS (0.12.0 build 25) -------------------------------------------
+    for (int k = 0; k < ax30g::N_SLOTS; ++k) {
+        typeParam[(size_t) k] = proc.apvts.getRawParameterValue("s" + String(k + 1) + "_type");
+        onParam[(size_t) k] = proc.apvts.getRawParameterValue("s" + String(k + 1) + "_on");
+    }
+    meterType.fill(-2);
+    vblank = std::make_unique<VBlankAttachment>(this, [this](double t) { meterFrame(t); });
+
     poll();
 }
 
-AxMainPanel::~AxMainPanel() = default;
+AxMainPanel::~AxMainPanel() {
+    vblank.reset();
+    updateChecker->removeListener(this);
+}
 
 int AxMainPanel::typeOf(int k) const {
     return int(proc.apvts.getRawParameterValue("s" + String(k + 1) + "_type")->load());
@@ -309,6 +417,8 @@ void AxMainPanel::resized() {
     lcd.setBounds(kLcd);
     inputKnob->setBounds(kInputKnob);
     outputKnob->setBounds(kOutputKnob);
+    inputRing.setBounds(kInputKnob.expanded(axui::MeterRing::kPad));
+    outputRing.setBounds(kOutputKnob.expanded(axui::MeterRing::kPad));
     // Readouts: a 60 x 24 hit area under each label (knob top + 56, as in 0.9.0).
     inputValue.setBounds(kInputKnob.getCentreX() - 30, kIoReadoutY, 60, 24);
     outputValue.setBounds(kOutputKnob.getCentreX() - 30, kIoReadoutY, 60, 24);
@@ -423,13 +533,70 @@ void AxMainPanel::layoutDetail() {
     for (size_t j = 0; j < cells.size(); ++j)
         cells[j]->setBounds(kCellX0 + (int) j * kCellPitch - 3, kCellTop, kCellW + 6, 136);
 
+    layoutUpdateNotice();
     if (uiLog) logLayout("detail", currentScale);
+}
+
+// Update notice (0.11.1 build 24): called from layoutDetail() (a resize) and
+// from the checker's own listener callback (setInfo() may change the width --
+// a longer/shorter version number -- even with no resize at all).
+void AxMainPanel::layoutUpdateNotice() {
+    const int w = updateNotice.preferredWidth();
+    updateNotice.setBounds(roundToInt(kUpdateNoticeRight) - w, roundToInt(kUpdateNoticeBottom - kUpdateNoticeH),
+                           w, roundToInt(kUpdateNoticeH));
 }
 
 void AxMainPanel::setPeakLit(bool lit) {
     if (lit == peakLit) return;
     peakLit = lit;
     repaint(Rectangle<float>(40.0f, 40.0f).withCentre(kPeakCentre).toNearestInt());
+}
+
+// ---- level meters (0.12.0 build 25) ------------------------------------------------------
+// One display frame: take the processor's peaks, run the ballistics on the real
+// time since the last frame, and hand the results to the rings and tiles, which
+// repaint themselves only when something visible changed. See the class comment.
+void AxMainPanel::meterFrame(double t) {
+    const double dt = lastFrameSec < 0.0 ? 0.0 : jlimit(0.0, 1.0, t - lastFrameSec);
+    lastFrameSec = t;
+    AX330GChainProcessor::MeterPeaks peaks;
+    proc.takeMeterPeaks(peaks);
+    const bool hold = userSettings->meterPeakHold();
+    auto logRepaint = [this](int bit, const String& what, Rectangle<int> r) {
+        if (!meterLog || (meterLogged & (1u << bit)) != 0) return;
+        meterLogged |= 1u << bit;
+        std::fprintf(stderr, "METERLOG repaint %-14s x %d y %d w %d h %d (design units)\n", what.toRawUTF8(), r.getX(), r.getY(), r.getWidth(), r.getHeight());
+    };
+    inMeter.update(peaks.in, dt);
+    outMeter.update(peaks.out, dt);
+    if (inputRing.setLevel(inMeter.levelDb(), inMeter.holdDb(), hold)) logRepaint(0, "input ring", inputRing.getBounds());
+    if (outputRing.setLevel(outMeter.levelDb(), outMeter.holdDb(), hold)) logRepaint(1, "output ring", outputRing.getBounds());
+    for (int k = 0; k < ax30g::N_SLOTS; ++k) {
+        const size_t i = (size_t) k;
+        const int type = int(typeParam[i]->load());
+        auto& m = tileMeters[i];
+        if (type != meterType[i]) {   // a new block in this position: start from silence, drop the old block's peak
+            meterType[i] = type;
+            m.reset();
+            m.update(0.0f, dt);
+        } else {
+            m.update(peaks.slot[k], dt);
+        }
+        auto& tile = *tiles[i];
+        if (tile.setMeter(m.levelDb(), m.holdDb(), hold, type > 0, onParam[i]->load() < 0.5f))
+            logRepaint(2 + k, "tile " + String(k + 1) + " meter", getLocalArea(&tile, tile.meterArea()));
+    }
+    if (meterLog) {
+        if (meterLogStartSec < 0.0) meterLogStartSec = t;
+        if (++meterFrames % 240 == 0) {
+            std::fprintf(stderr, "METERLOG %d frames at %.1f Hz; %d paint passes since the last report, mean %.3f ms, max %.3f ms\n",
+                         meterFrames, 240.0 / jmax(1.0e-6, t - meterLogStartSec), meterPaints,
+                         meterPaints > 0 ? meterPaintMs / meterPaints : 0.0, meterPaintMaxMs);
+            meterLogStartSec = t;
+            meterPaints = 0;
+            meterPaintMs = meterPaintMaxMs = 0.0;
+        }
+    }
 }
 
 // ---- painting ----------------------------------------------------------------------
@@ -609,7 +776,9 @@ void AxMainPanel::paint(Graphics& g) {
     }
 
     // Peak LED: 11 px, lit = radial #ff8a7a -> #d11a0e (60%) -> #7a0c05 with a red glow.
-    {
+    // (The clip tests here and below skip work a meter frame's small repaint
+    // rectangles never reach.)
+    if (g.clipRegionIntersects(Rectangle<float>(40.0f, 40.0f).withCentre(kPeakCentre).toNearestInt())) {
         const auto r = Rectangle<float>(11.0f, 11.0f).withCentre(kPeakCentre);
         Path e;
         e.addEllipse(r);
@@ -626,8 +795,12 @@ void AxMainPanel::paint(Graphics& g) {
         g.fillPath(e);
     }
 
-    paintDigits(g);
+    if (g.clipRegionIntersects(kSlotBox.getUnion(kBankBox).toNearestInt().expanded(10))) paintDigits(g);
 
+    if (!g.clipRegionIntersects(kDetail.toNearestInt())) {
+        if (uiLog) std::fprintf(stderr, "UILOG   panel paint: static blit %.3f ms, dynamic %.3f ms\n", tStatic - paintStartMs, Time::getMillisecondCounterHiRes() - tStatic);
+        return;
+    }
     // Detail header texts.
     const String unknownHere = shownType <= 0 ? proc.unknownBlockInSlot(selected) : String();
     const String group = "SLOT " + String(selected + 1) + " " + String::fromUTF8("\xc2\xb7") + " "
@@ -660,6 +833,12 @@ void AxMainPanel::paint(Graphics& g) {
 }
 
 void AxMainPanel::paintOverChildren(Graphics& g) {
+    if (meterLog) {   // this pass, children included (AX330G_METERLOG, see meterFrame())
+        const double ms = Time::getMillisecondCounterHiRes() - paintStartMs;
+        ++meterPaints;
+        meterPaintMs += ms;
+        meterPaintMaxMs = jmax(meterPaintMaxMs, ms);
+    }
     if (!uiLog) return;
     const double ms = Time::getMillisecondCounterHiRes() - paintStartMs;
     const auto clip = g.getClipBounds();
@@ -778,6 +957,11 @@ void AxMainPanel::testTrigger(const String& what) {
             bankOverride = arg.substring(0, 1).toUpperCase();
             poll();
             std::fprintf(stderr, "UITRIGGER %s -> shown\n", item.toRawUTF8());
+            continue;
+        }
+        else if (kind == "peakhold") {   // "peakhold:on" / "peakhold:off" -- the per-user setting (writes settings.json)
+            userSettings->setMeterPeakHold(arg == "on");
+            std::fprintf(stderr, "UITRIGGER %s -> set\n", item.toRawUTF8());
             continue;
         }
         else if (kind == "stereo") b = arg == "stereo" ? static_cast<Button*>(&stereoIn.stereo) : static_cast<Button*>(&stereoIn.mono);

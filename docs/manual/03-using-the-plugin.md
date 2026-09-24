@@ -23,8 +23,8 @@ The editor has these parts, from top to bottom:
 1. **The face.** A blue plate, like the unit's own. The face has these parts:
    - At the left: the AX330G logo, and below it two red LED displays. **SLOT** shows the selected slot. **BANK** shows the bank letter of the current preset (see 3.10).
    - At the center: the LCD, and below it the preset bar (see 3.10).
-   - At the right, as on the unit: the **Input** and **Output** knobs, with the **Peak** LED between them. Below them is the **OPEN MODE** key (see 3.5).
-2. **Signal chain.** Eight tiles, one for each slot. Click a tile to edit that slot in the panel below it.
+   - At the right, as on the unit: the **Input** and **Output** knobs, with the **Peak** LED between them. A ring around each knob is a level meter (see 3.12). Below them is the **OPEN MODE** key (see 3.5).
+2. **Signal chain.** Eight tiles, one for each slot. Click a tile to edit that slot in the panel below it. The row of cells at the bottom of each tile is a level meter (see 3.12).
 3. **The editing panel.** The controls for the slot you selected.
 4. **Size.** The whole editor scales as one piece. See "Change the size" below.
 
@@ -134,6 +134,8 @@ NOTE: At Input 0 dB, a signal below about 0 dBFS in the host does not turn on th
 
 NOTE: The LED shows the level at the input stage only. It shows this level for all slots, also when all slots are off.
 
+NOTE: The ring around the **Input** knob measures the same signal as the LED. The LED comes on at −1 dB on that ring (see 3.12).
+
 ## 3.5 Mode
 
 The **OPEN MODE** key is on the face, below the **Input** and **Output** knobs. Click the key to set Open mode on or off. The legend of the key shows the mode:
@@ -143,7 +145,7 @@ The **OPEN MODE** key is on the face, below the **Input** and **Output** knobs. 
 | Lit red | Open mode on | Each slot can hold any block, in any order. |
 | Dull red | Open mode off: as the unit | Reserved for a future version. |
 
-In version 0.11.0, the mode has no effect on the sound. Both modes give the Open behavior.
+In version 0.12.0, the mode has no effect on the sound. Both modes give the Open behavior.
 
 A future version will use "as the unit" to apply the chain rules of the unit. For example, the unit puts the 3-Band EQ last in Block 1, and it has no Stereo Chorus.
 
@@ -157,6 +159,7 @@ Each of the eight tiles in the signal chain shows:
 - The block's short name, for example "REV". An empty slot shows a dash.
 - The block's full name, for example "Reverb".
 - A red light. The light is on when the block is on.
+- A level meter: the row of cells at the bottom of the tile (see 3.12).
 
 Click a tile to edit that slot in the editing panel. Click a tile's light to turn the block on or off. Drag a tile to move its block to a different slot. See "Move a block" below.
 
@@ -472,7 +475,7 @@ A preset file directly in the `Presets` folder is not in a bank. The browser sho
 
 To see a preset file, click **⋯** and select **Show in Finder** on macOS or **Show in Explorer** on Windows.
 
-The factory presets are in the plugin itself. They are not files on your computer. Version 0.11.0 has no factory presets.
+The factory presets are in the plugin itself. They are not files on your computer. Version 0.12.0 has no factory presets.
 
 ### Share a preset
 
@@ -485,3 +488,97 @@ A preset file is a text file in JSON format. The file shows each value in the un
 A preset from a later version of the plugin can contain a block that this version does not have. The plugin loads that slot as an empty slot. The tile shows the name of the block in gray and "Not available". The editing panel tells you which block it was.
 
 The plugin keeps that block in the preset. When you save the preset, the plugin writes the block back to the file with no change. If you select an effect for that slot, the new effect replaces the block.
+
+## 3.11 Update notice
+
+The plugin can tell you when a newer build is ready. This function checks once a day, at most.
+
+### What the notice shows
+
+When a newer build is ready, the editing panel shows one line at its lower right:
+
+"● AX330G *version* is available    Download    Skip this version"
+
+- Click **Download** to open the release page in your web browser.
+- Click **Skip this version** to hide the notice. The notice stays hidden until a build newer than that one is ready.
+
+When no newer build is ready, the plugin shows nothing in this place.
+
+### Turn the notice off
+
+To turn the update check off, click **⋯** in the preset bar (see 3.10). Clear the check mark next to **Check for Updates**. This also hides a notice that is on screen.
+
+To turn the check on again, select **Check for Updates** in the same menu.
+
+### What the plugin sends
+
+Once a day at most, the plugin sends one request over HTTPS to `api.github.com`. The request asks for the latest build of the plugin. It contains the version number of your plugin, in a standard part of the request called the User-Agent.
+
+The plugin does not send your settings, your presets, or any audio. As with any web request, GitHub can see the IP address of your computer.
+
+When the request fails, for example with no internet connection, the plugin shows no notice. It tries again at the next daily check.
+
+### Where the plugin keeps this information
+
+The plugin keeps the date of the last check, and your Check for Updates setting, in a small file:
+
+- macOS: `Library/Application Support/Neglectware/AX330G/update.json` in your home folder.
+- Windows: `Neglectware\AX330G\update.json` in your `AppData\Roaming` folder.
+
+This file is separate from your presets. All plugin instances in one session of your host share one daily check.
+
+## 3.12 Level meters
+
+The plugin has level meters in two places:
+
+- A ring around the **Input** knob and a ring around the **Output** knob.
+- A row of cells at the bottom of each slot tile.
+
+### The Input and Output rings
+
+A thin ring goes around each of the two knobs. The ring follows the same arc as the knob, from the lower left to the lower right. The lit part of the ring shows the level. The dark part shows the remainder of the scale.
+
+| Ring | What it measures | 0 dB, at the end of the ring |
+|---|---|---|
+| **Input** | The signal after the Input control and the pre-emphasis filter, before the clip | The clip level of the converter |
+| **Output** | The signal after the Output control. This is the signal that the host receives. | 0 dBFS |
+
+The Input ring measures the same signal as the Peak LED (see 3.4). The Peak LED comes on at −1 dB on this ring. When the Input ring is full, the input stage clips.
+
+### The scale and the colors
+
+Each meter shows 48 dB, from −48 dB to 0 dB. Each dB has the same length on the meter. The color changes with the position on the scale:
+
+| Position on the scale | Color |
+|---|---|
+| Below −12 dB | Green |
+| −12 dB to −3 dB | Amber |
+| Above −3 dB | Red |
+
+The meters are peak meters. A meter goes up to a new peak immediately. Then it falls at a rate of 20 dB in 1.7 seconds.
+
+### Peak hold
+
+The meters can show a peak hold mark. On a ring, the mark is a short line of color. On a slot meter, the mark is one lit cell. The mark stays at the highest level for 1.5 seconds. Then it falls at the same rate as the meter.
+
+To turn peak hold on or off, do these steps:
+
+1. Click **⋯** in the preset bar (see 3.10).
+2. Select **Meter Peak Hold**. A check mark shows that peak hold is on.
+
+Peak hold is off by default. The setting applies to all instances of the plugin and to all projects. The plugin keeps it in the file `settings.json`, in the same folder as `update.json` (see 3.11).
+
+### The slot meters
+
+The row of cells at the bottom of a slot tile is a level meter. It shows the signal that leaves that slot. The cells come on from the left.
+
+The signal that leaves a slot contains the effect of all the slots before it. Thus, the meter of a delay shows the dry signal and the echoes. The meter of a reverb after that delay decreases slowly, with the reverb tail.
+
+- An empty slot has a dark meter.
+- A slot with its block off shows the level that goes through it. The lit cells are dim.
+
+The slot meters use the scale, the colors and the fall rate of the rings. On a slot meter, 0 dB is the full scale of the converters of the unit. This is the same reference as the Input ring.
+
+A meter belongs to its slot number, not to the block. When a slot gets a different block, its meter starts again from zero. This occurs when you select an effect, move a block or load a preset.
+
+NOTE: At Output 0 dB, the Output ring shows about 10.6 dB more than the meter of the last slot. The Output control adds this gain after the slots (see 3.3).

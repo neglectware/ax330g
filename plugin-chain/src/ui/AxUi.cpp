@@ -1,4 +1,5 @@
 #include "AxUi.h"
+#include "MeterBallistics.h"
 #include "BinaryData.h"
 #include "dsp/chain.h"
 #include <cmath>
@@ -901,18 +902,97 @@ void SlotTile::paintButton(Graphics& g, bool over, bool down) {
     // Content box: x 11..81, y 10..68 (2 px border + 9/8 px padding), rows laid
     // out as the mockup's space-between column: number/LED row, abbreviation,
     // full name, ridge strip.
-    drawText(g, String(shownNumber > 0 ? shownNumber : index + 1), font(Face::SemiBold, 10.0f), col::hex(col::textDim), 11.0f, 18.78f);
-    const bool unknown = type <= 0 && unknownBlock.isNotEmpty();
-    const auto af = font(Face::NarrowBold, 17.0f, 0.5f);
-    drawText(g, unknown ? ellipsize(af, unknownBlock, 70.0f) : abbrevFor(type), af, type > 0 ? Colours::white : col::hex(0x5b6472), 11.0f, 41.45f);
-    const auto nf = font(Face::Regular, 9.5f);
-    drawText(g, ellipsize(nf, unknown ? String("Not available") : nameFor(type), 70.0f), nf, col::hex(unknown ? 0xf0b44a : col::textDim), 11.0f, 58.05f);
+    // The texts end above y 61; a meter frame repaints only the strip below
+    // (meterArea()), so skip them then.
+    if (g.clipRegionIntersects({ 0, 0, getWidth(), 62 })) {
+        drawText(g, String(shownNumber > 0 ? shownNumber : index + 1), font(Face::SemiBold, 10.0f), col::hex(col::textDim), 11.0f, 18.78f);
+        const bool unknown = type <= 0 && unknownBlock.isNotEmpty();
+        const auto af = font(Face::NarrowBold, 17.0f, 0.5f);
+        drawText(g, unknown ? ellipsize(af, unknownBlock, 70.0f) : abbrevFor(type), af, type > 0 ? Colours::white : col::hex(0x5b6472), 11.0f, 41.45f);
+        const auto nf = font(Face::Regular, 9.5f);
+        drawText(g, ellipsize(nf, unknown ? String("Not available") : nameFor(type), 70.0f), nf, col::hex(unknown ? 0xf0b44a : col::textDim), 11.0f, 58.05f);
+    }
+    // The ridge strip: 14 cells, 3 wide at a 5 pitch, clipped to a 2-radius
+    // rounded strip -- since 0.12.0 the slot's level meter (setMeter()).
     Graphics::ScopedSaveState ss(g);
     Path ridge;
     ridge.addRoundedRectangle(11.0f, 63.0f, 70.0f, 5.0f, 2.0f);
     g.reduceClipRegion(ridge);
-    g.setColour(col::hex(0x2c2f35));
-    for (float x = 11.0f; x < 81.0f; x += 5.0f) g.fillRect(x, 63.0f, 3.0f, 5.0f);
+    for (int i = 0; i < kMeterCells; ++i) {
+        const float x = 11.0f + 5.0f * (float) i;
+        g.setColour(col::hex(col::meterCellOff));
+        g.fillRect(x, 63.0f, 3.0f, 5.0f);
+        if (i < meterLit || i == meterHoldCell) {
+            const float cellCentreDb = axmeter::kFloorDb + ((float) i + 0.5f) * axmeter::kRangeDb / (float) kMeterCells;
+            g.setColour(meterColour(axmeter::zoneOf(cellCentreDb)).withMultipliedAlpha(meterDimmed ? 0.4f : 1.0f));
+            g.fillRect(x, 63.0f, 3.0f, 5.0f);
+        }
+    }
+}
+
+bool SlotTile::setMeter(float levelDb, float holdDb, bool showHold, bool active, bool dimmed) {
+    int lit = 0, holdCell = -1;
+    if (active) {
+        lit = (int) std::ceil(axmeter::norm(levelDb) * (float) kMeterCells - 1.0e-4f);
+        if (showHold && axmeter::norm(holdDb) > 0.0f) {
+            holdCell = jmin(kMeterCells - 1, (int) (axmeter::norm(holdDb) * (float) kMeterCells));
+            if (holdCell < lit) holdCell = -1;   // inside the lit bar already
+        }
+    }
+    dimmed = active && dimmed;
+    if (lit == meterLit && holdCell == meterHoldCell && dimmed == meterDimmed) return false;
+    meterLit = lit;
+    meterHoldCell = holdCell;
+    meterDimmed = dimmed;
+    repaint(meterArea());
+    return true;
+}
+
+// ---- level meters (0.12.0 build 25) ----------------------------------------------------------
+
+Colour meterColour(int zone) {
+    return col::hex(zone >= 2 ? col::ledRed : (zone == 1 ? col::meterAmber : col::valueGreen));
+}
+
+MeterRing::MeterRing() { setInterceptsMouseClicks(false, false); }
+
+bool MeterRing::setLevel(float levelDb, float holdDb, bool showHold) {
+    const float n = axmeter::norm(levelDb), h = showHold ? axmeter::norm(holdDb) : 0.0f;
+    // One step of the arc is kRadius * kArcRange (120 design units) per unit of
+    // norm; below 0.05 units the change is invisible at any editor size.
+    constexpr float kMinStep = 0.05f / (kRadius * kArcRange);
+    const bool holdShown = showHold && h > n;
+    if (std::abs(n - levelNorm) < kMinStep && holdShown == hold && (!holdShown || std::abs(h - holdNorm) < kMinStep)) return false;
+    levelNorm = n;
+    holdNorm = h;
+    hold = holdShown;
+    repaint();
+    return true;
+}
+
+void MeterRing::paint(Graphics& g) {
+    const auto c = getLocalBounds().toFloat().getCentre();
+    const PathStrokeType stroke(kThickness, PathStrokeType::curved, PathStrokeType::butt);
+    auto arc = [&](float n0, float n1, Colour colour) {
+        if (n1 <= n0) return;
+        Path p;
+        p.addCentredArc(c.x, c.y, kRadius, kRadius, 0.0f, kArcStart + kArcRange * n0, kArcStart + kArcRange * n1, true);
+        g.setColour(colour);
+        g.strokePath(p, stroke);
+    };
+    arc(0.0f, 1.0f, Colours::black.withAlpha(0.32f));   // unlit track
+    // Lit: each colour band drawn from its start to the level, over the previous
+    // one, so the bands meet without an antialiasing seam.
+    const float amber = axmeter::norm(axmeter::kAmberDb), red = axmeter::norm(axmeter::kRedDb);
+    arc(0.0f, levelNorm, meterColour(0));
+    arc(amber, levelNorm, meterColour(1));
+    arc(red, levelNorm, meterColour(2));
+    if (hold) {   // a 2-unit tick of arc, centred on the held level
+        const float half = 1.0f / (kRadius * kArcRange);
+        const float t = jlimit(half, 1.0f - half, holdNorm);
+        const float db = axmeter::kFloorDb + holdNorm * axmeter::kRangeDb;
+        arc(t - half, t + half, meterColour(axmeter::zoneOf(db)));
+    }
 }
 
 }  // namespace axui

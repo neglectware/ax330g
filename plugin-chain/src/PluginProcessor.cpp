@@ -258,6 +258,7 @@ AX330GChainProcessor::AX330GChainProcessor()
         seenType[k] = int(pType[k]->load());   // matches the just-constructed parameter's own value (0, Off) --
                                                 // not a "change" the timer needs to act on
     }
+    for (auto& m : meterSlot_) m.store(0.0f, std::memory_order_relaxed);
     pInput = apvts.getRawParameterValue("input_db");
     pOutput = apvts.getRawParameterValue("output_db");
     pMode = apvts.getRawParameterValue("mode");
@@ -489,6 +490,20 @@ void AX330GChainProcessor::updatePeakHold(double peakLinear, double blockSeconds
     peakHoldDb_.store(held, std::memory_order_relaxed);
 }
 
+// Level meters (0.12.0 build 25; PluginProcessor.h, MeterPeaks). Audio thread:
+// raise `a` to v if v is larger (a relaxed compare-exchange loop -- the only
+// other writer is takeMeterPeaks()' exchange with 0, so it settles at once).
+void AX330GChainProcessor::meterMax(std::atomic<float>& a, float v) noexcept {
+    float cur = a.load(std::memory_order_relaxed);
+    while (v > cur && !a.compare_exchange_weak(cur, v, std::memory_order_relaxed)) {}
+}
+
+void AX330GChainProcessor::takeMeterPeaks(MeterPeaks& out) noexcept {
+    out.in = meterIn_.exchange(0.0f, std::memory_order_relaxed);
+    out.out = meterOut_.exchange(0.0f, std::memory_order_relaxed);
+    for (int k = 0; k < ax30g::N_SLOTS; ++k) out.slot[k] = meterSlot_[k].exchange(0.0f, std::memory_order_relaxed);
+}
+
 void AX330GChainProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer&) {
     ScopedNoDenormals noDenormals;
     applyParams();
@@ -541,7 +556,13 @@ void AX330GChainProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer&)
     // kPeakThresholdDb in PluginProcessor.h).
     const double peak = std::max(inputStage_[0].takePostShelfPeak(), inputStage_[1].takePostShelfPeak());
     updatePeakHold(peak, double(n) / hostRate);
-    for (size_t i = 0; i < m; ++i) chain_.process(devL[i], devR[i]);
+    meterMax(meterIn_, float(peak));   // Input ring: the same sample the Peak LED reads, 1.0 = the clip ceiling
+    // The chain, taking the level leaving each slot position for the tile
+    // meters (dsp/chain.h; 1.0 = the converters' full scale, the same
+    // reference as the Input ring).
+    double slotPeak[ax30g::N_SLOTS] = {};
+    for (size_t i = 0; i < m; ++i) chain_.process(devL[i], devR[i], slotPeak);
+    for (int k = 0; k < ax30g::N_SLOTS; ++k) meterMax(meterSlot_[k], float(slotPeak[k]));
     // device -> host, then the converter chain stage (dsp/chain_stage.h) at
     // the host rate, then the output stage gain, into the FIFO
     outL.clear(); outR.clear();
@@ -553,10 +574,13 @@ void AX330GChainProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer&)
     for (double v : outR) fifo[1].push_back(v * outGain);
     float* oL = buffer.getWritePointer(0);
     float* oR = buffer.getWritePointer(1);
+    float outPeak = 0.0f;
     for (int i = 0; i < n; ++i) {
         oL[i] = fifo[0].empty() ? 0.0f : float(fifo[0].front()); if (!fifo[0].empty()) fifo[0].pop_front();
         oR[i] = fifo[1].empty() ? 0.0f : float(fifo[1].front()); if (!fifo[1].empty()) fifo[1].pop_front();
+        outPeak = std::max(outPeak, std::max(std::abs(oL[i]), std::abs(oR[i])));
     }
+    meterMax(meterOut_, outPeak);   // Output ring: what the host receives, 1.0 = 0 dBFS
 }
 
 void AX330GChainProcessor::getStateInformation(MemoryBlock& dest) {

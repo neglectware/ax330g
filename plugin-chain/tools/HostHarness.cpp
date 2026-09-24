@@ -15,6 +15,13 @@
 //                                               apart, up after <hold s>) from design point
 //                                               0 to 1, the cursor warped along (0.9.1, drag-
 //                                               to-reorder of the slot tiles)
+//   HARNESS_TONE="<dBFS>[,<period s>]"          feed the plug-in audio (0.12.0 level meters):
+//                                               a 440 Hz sine at <dBFS> on both channels, run
+//                                               through processBlock() in real time (512-sample
+//                                               blocks at 48 kHz) on a thread of its own; with a
+//                                               period, the tone plays for the first half of each
+//                                               period and is silent for the second (so meters
+//                                               fall and peak-hold ticks show). No audio device.
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <AudioToolbox/AudioToolbox.h>
@@ -112,6 +119,13 @@ public:
                 d->startTimer((int) (parts[0].getDoubleValue() * 1000.0));
             }
         }
+        if (auto* env = std::getenv("HARNESS_TONE")) {
+            auto parts = StringArray::fromTokens(env, ",", "");
+            tone = std::make_unique<ToneFeeder>(*instance, parts[0].getDoubleValue(),
+                                                parts.size() > 1 ? parts[1].getDoubleValue() : 0.0);
+            tone->startThread();
+            std::printf("tone %.1f dBFS%s\n", parts[0].getDoubleValue(), parts.size() > 1 ? (", period " + parts[1] + " s").toRawUTF8() : "");
+        }
         if (auto* env = std::getenv("HARNESS_SET")) {   // groups separated by ';', each "<s>|<assign>|..."
             for (auto& group : StringArray::fromTokens(env, ";", "")) {
                 auto parts = StringArray::fromTokens(group, "|", "");
@@ -132,7 +146,44 @@ public:
             starver.startTimer(starver.periodMs);
         }
     }
-    void shutdown() override { clickers.clear(); draggers.clear(); setters.clear(); window.reset(); instance.reset(); }
+    void shutdown() override {
+        if (tone != nullptr) tone->stopThread(2000);
+        tone.reset();
+        clickers.clear(); draggers.clear(); setters.clear(); window.reset(); instance.reset();
+    }
+
+    // HARNESS_TONE: real-time audio without a device -- processBlock() every
+    // 512 samples' worth of wall-clock time at 48 kHz.
+    struct ToneFeeder : Thread {
+        ToneFeeder(AudioPluginInstance& p, double dbfs, double period)
+            : Thread("harness tone"), inst(p), amp(std::pow(10.0, dbfs / 20.0)), periodSec(period) {}
+        void run() override {
+            constexpr int kBlock = 512;
+            constexpr double kRate = 48000.0;
+            inst.prepareToPlay(kRate, kBlock);
+            juce::AudioBuffer<float> buf(jmax(2, jmax(inst.getTotalNumInputChannels(), inst.getTotalNumOutputChannels())), kBlock);
+            MidiBuffer midi;
+            double phase = 0.0, t = 0.0;
+            const double start = Time::getMillisecondCounterHiRes();
+            for (long b = 0; !threadShouldExit(); ++b) {
+                for (int i = 0; i < kBlock; ++i) {
+                    const bool on = periodSec <= 0.0 || std::fmod(t, periodSec) < 0.5 * periodSec;
+                    const float x = on ? (float) (amp * std::sin(phase)) : 0.0f;
+                    phase += 2.0 * MathConstants<double>::pi * 440.0 / kRate;
+                    t += 1.0 / kRate;
+                    for (int c = 0; c < buf.getNumChannels(); ++c) buf.setSample(c, i, x);
+                }
+                inst.processBlock(buf, midi);
+                const double due = start + 1000.0 * (double) (b + 1) * kBlock / kRate;
+                const double wait = due - Time::getMillisecondCounterHiRes();
+                if (wait > 1.0) Thread::sleep((int) wait);
+            }
+            inst.releaseResources();
+        }
+        AudioPluginInstance& inst;
+        double amp, periodSec;
+    };
+    std::unique_ptr<ToneFeeder> tone;
 
     // Sends a real NSEvent mouse down/up pair through the harness window, so
     // the plug-in's own view receives it exactly as from a user's click.

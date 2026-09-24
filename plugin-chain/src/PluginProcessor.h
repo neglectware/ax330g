@@ -128,6 +128,35 @@ public:
     static constexpr float kPeakThresholdDb = -1.0f;
     float peakHoldDb() const noexcept { return peakHoldDb_.load(std::memory_order_relaxed); }
 
+    // Level meters (0.12.0 build 25): the audio thread keeps, per tap, the
+    // largest |sample| (either channel) since the editor last read it; the
+    // editor's display-refresh callback takes and resets them with
+    // takeMeterPeaks() and runs the ballistics (ui/MeterBallistics.h). No
+    // locks, no allocation: one relaxed compare-exchange max per tap per
+    // processBlock(). Amplitudes, 1.0 = each tap's 0 dB:
+    //   in      the Input ring: the post-Input-gain, post-pre-emphasis,
+    //           PRE-clip level inside ax30g::InputStage -- the very sample the
+    //           Peak LED reads (kPeakThresholdDb) -- relative to the emulated
+    //           ADC's hard-clip ceiling (1.0). A clipping input reads above 1.
+    //   out     the Output ring: the samples written to the host's buffer,
+    //           after the Output gain, relative to 0 dBFS.
+    //   slot[k] the tile meters: the level LEAVING slot position k inside the
+    //           chain at the device rate (ax30g::Chain::process's peak
+    //           overload), whether the slot is on, off or empty, relative to
+    //           the emulated converters' full scale -- the same reference as
+    //           the Input ring, so a dry, flat signal reads about the same on
+    //           the Input ring and every tile. At Output 0 dB the Output ring
+    //           reads kOutputMakeupDb (10.56 dB) above the chain's scale.
+    // After a slot's block is rebuilt (a Type change, a move, a preset load)
+    // its tap simply measures the new block; the editor resets the tile's
+    // meter to silence when it sees the slot's type change.
+    struct MeterPeaks {
+        float in = 0.0f, out = 0.0f;
+        float slot[ax30g::N_SLOTS] = {};
+    };
+    // Message thread (or any single reader): the peaks since the last call, and resets them.
+    void takeMeterPeaks(MeterPeaks& out) noexcept;
+
     // Drag-to-reorder (2026-09-23, 0.9.1 build 21). Message thread only.
     // MOVES the block in slot `from` to slot `to` (0-based) and shifts the
     // slots between them by one, like an insert: moveSlot(1, 4) makes old
@@ -222,6 +251,12 @@ private:
     std::atomic<float>* pMode{};
 
     std::atomic<float> peakHoldDb_{-120.0f};   // see peakHoldDb()/kPeakThresholdDb above
+
+    // Level meters (see MeterPeaks above): max-since-last-read, written by
+    // processBlock() through meterMax(), taken (exchanged with 0) by takeMeterPeaks().
+    std::atomic<float> meterIn_{0.0f}, meterOut_{0.0f};
+    std::atomic<float> meterSlot_[ax30g::N_SLOTS];   // zeroed in the constructor
+    static void meterMax(std::atomic<float>& a, float v) noexcept;
 
     int lastType[ax30g::N_SLOTS];
     std::vector<int> lastNamed[ax30g::N_SLOTS];   // audio thread's last-pushed-to-block value per registry index

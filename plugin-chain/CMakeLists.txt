@@ -86,7 +86,7 @@ juce_add_plugin(AX330G
 
 # The plug-in's own sources, shared with the headless test targets below.
 set(AX_PLUGIN_SOURCES src/PluginProcessor.cpp src/PluginEditor.cpp src/ui/AxUi.cpp src/lcd/LcdDisplay.cpp
-  src/presets/Presets.cpp src/presets/PresetUi.cpp)
+  src/presets/Presets.cpp src/presets/PresetUi.cpp src/UpdateChecker.cpp src/UserSettings.cpp)
 target_sources(AX330G PRIVATE ${AX_PLUGIN_SOURCES} ${AX_LCD_NATIVE_SRC})
 
 # Factory presets (0.10.0 build 22): every presets/factory/<Folder>/<Name>.ax330g in
@@ -200,6 +200,48 @@ target_include_directories(AX330GPresetTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/
 target_compile_definitions(AX330GPresetTest PRIVATE
   JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_MODAL_LOOPS_PERMITTED=1)
 target_link_libraries(AX330GPresetTest PRIVATE
+  AX330GFonts AX330GFactoryPresets juce::juce_audio_utils juce::juce_dsp
+  PUBLIC juce::juce_recommended_config_flags)
+
+# AX330GUpdateCheckTest: headless test of the update-notice logic (0.11.1
+# build 24, tools/UpdateCheckTest.cpp) -- tag parsing/comparison, skip logic,
+# 24 h cache logic with an injected clock, the enabled flag, and a real call
+# against the live GitHub endpoint plus one against an AX330G_UPDATE_URL file
+# fixture. UpdateChecker.h/.cpp are juce_core/juce_events only, so this needs
+# neither juce_audio_processors nor juce_gui_basics. Not shipped.
+juce_add_console_app(AX330GUpdateCheckTest
+  PRODUCT_NAME "AX330GUpdateCheckTest")
+target_sources(AX330GUpdateCheckTest PRIVATE tools/UpdateCheckTest.cpp src/UpdateChecker.cpp)
+target_include_directories(AX330GUpdateCheckTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/.. ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_compile_definitions(AX330GUpdateCheckTest PRIVATE JUCE_USE_CURL=0 JUCE_MODAL_LOOPS_PERMITTED=1)
+target_link_libraries(AX330GUpdateCheckTest PRIVATE
+  juce::juce_core juce::juce_events
+  PUBLIC juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
+
+# AX330GProcessBench: processBlock() timing with all eight slots filled (0.12.0
+# build 25, tools/ProcessBench.cpp) -- public processor API only, so the same
+# file measures a build before and after a change. Not shipped.
+juce_add_console_app(AX330GProcessBench
+  PRODUCT_NAME "AX330GProcessBench")
+target_sources(AX330GProcessBench PRIVATE tools/ProcessBench.cpp ${AX_PLUGIN_SOURCES} src/lcd/LcdNativeLayer_mac.mm)
+target_include_directories(AX330GProcessBench PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/.. ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_compile_definitions(AX330GProcessBench PRIVATE
+  JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_MODAL_LOOPS_PERMITTED=1)
+target_link_libraries(AX330GProcessBench PRIVATE
+  AX330GFonts AX330GFactoryPresets juce::juce_audio_utils juce::juce_dsp
+  PUBLIC juce::juce_recommended_config_flags)
+
+# AX330GMeterTest: headless test of the level meters (0.12.0 build 25,
+# tools/MeterTest.cpp) -- the ballistics maths, the processor's meter taps
+# through a COMP -> SDLY -> REV chain, and the editor tiles' meters across a
+# slot move. Not shipped.
+juce_add_console_app(AX330GMeterTest
+  PRODUCT_NAME "AX330GMeterTest")
+target_sources(AX330GMeterTest PRIVATE tools/MeterTest.cpp ${AX_PLUGIN_SOURCES} src/lcd/LcdNativeLayer_mac.mm)
+target_include_directories(AX330GMeterTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/.. ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_compile_definitions(AX330GMeterTest PRIVATE
+  JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_MODAL_LOOPS_PERMITTED=1)
+target_link_libraries(AX330GMeterTest PRIVATE
   AX330GFonts AX330GFactoryPresets juce::juce_audio_utils juce::juce_dsp
   PUBLIC juce::juce_recommended_config_flags)
 
