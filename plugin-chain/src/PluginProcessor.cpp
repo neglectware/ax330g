@@ -370,6 +370,9 @@ void AX330GChainProcessor::timerCallback() {
 }
 
 void AX330GChainProcessor::applyParams() {
+    // moveSlot() is mid-write on the message thread: keep last block's
+    // settings for this one block rather than rebuild from a half-moved state.
+    if (moveInProgress_.load(std::memory_order_acquire)) return;
     for (int k = 0; k < ax30g::N_SLOTS; ++k) {
         const int type = int(pType[k]->load());
         if (type != lastType[k]) {
@@ -392,6 +395,64 @@ void AX330GChainProcessor::applyParams() {
             }
         }
     }
+}
+
+// Message thread (the editor's tile drag, or Option+Left/Right on a tile).
+// Order of work, and why it is safe against timerCallback():
+//  1. timerCallback() is run first, by hand, so a Type change the user made
+//     in the last 30 ms gets its BlockInfo defaults BEFORE the values are
+//     read -- otherwise step 3 would mark it seen and it would never get them.
+//  2. Every slot's normalised values are read into a snapshot.
+//  3. seenType[] is set to each slot's NEW type. The timer runs on this same
+//     thread, so it cannot fire until this function returns, and by then
+//     every pType[] equals seenType[]: it sees no change and pushes nothing.
+//  4. The values are written, the named parameters and On first and the
+//     Type LAST in each slot, all while moveInProgress_ is set. When the
+//     audio thread then sees a slot's new type, applyParams() rebuilds the
+//     block and its lastNamed[] reset re-pushes values that are already the
+//     moved ones. A slot whose type did not change (two SDLYs trading
+//     places) keeps its block and buffers and only takes the new values.
+void AX330GChainProcessor::moveSlot(int from, int to) {
+    constexpr int n = ax30g::N_SLOTS;
+    if (from < 0 || from >= n || to < 0 || to >= n || from == to) return;
+    timerCallback();
+
+    // params[k]: slot k's parameters in one fixed order (type, on, then the
+    // registry's names), so index j means the same parameter in every slot.
+    const auto& reg = ax30g::ParamRegistry::entries();
+    std::vector<RangedAudioParameter*> params[n];
+    std::vector<float> values[n];
+    for (int k = 0; k < n; ++k) {
+        const String ks(k + 1);
+        params[k].push_back(apvts.getParameter("s" + ks + "_type"));
+        params[k].push_back(apvts.getParameter("s" + ks + "_on"));
+        for (const auto& np : reg) params[k].push_back(apvts.getParameter("s" + ks + "_" + ax30gParamIdFor(np.name)));
+        for (auto* p : params[k]) values[k].push_back(p != nullptr ? p->getValue() : 0.0f);
+    }
+
+    // src[k]: the OLD slot whose contents land in slot k.
+    std::vector<int> src(n);
+    for (int k = 0; k < n; ++k) src[size_t(k)] = k;
+    src.erase(src.begin() + from);
+    src.insert(src.begin() + to, from);
+
+    for (int k = 0; k < n; ++k)
+        seenType[k] = int(pType[src[size_t(k)]]->load());
+
+    moveInProgress_.store(true, std::memory_order_release);
+    auto write = [](RangedAudioParameter* p, float v) {
+        if (p == nullptr || p->getValue() == v) return;
+        p->beginChangeGesture();
+        p->setValueNotifyingHost(v);
+        p->endChangeGesture();
+    };
+    for (int k = 0; k < n; ++k) {
+        const int s = src[size_t(k)];
+        if (s == k) continue;
+        for (size_t j = 1; j < params[k].size(); ++j) write(params[k][j], values[s][j]);
+        write(params[k][0], values[s][0]);
+    }
+    moveInProgress_.store(false, std::memory_order_release);
 }
 
 // Audio thread. peakLinear: the largest |sample| seen this block at the

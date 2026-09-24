@@ -105,6 +105,8 @@ constexpr int kCellTop = 451, kCellX0 = 34, kCellPitch = 94, kCellW = 88;
 constexpr float kKnobRowCentreY = 511.0f;   // centre of y 392..630
 
 Rectangle<int> tileBounds(int i) { return { 14 + i * (92 + 8), 226, 92, 78 }; }
+constexpr float kTileLift = 4.0f;                  // a dragged tile rides this far above the row
+const Rectangle<int> kChainRowArea(0, 198, 820, 116);   // the row plus the lifted tile's shadow, above the detail panel
 
 // Baselines of the static texts (CSS line-box model, see axui::baselineFromTop).
 const float kLogoBaseline = 26.0f + (30.0f - 1.088f * 34.0f) * 0.5f + 0.878f * 34.0f;   // "AX330", line-height 30
@@ -238,6 +240,15 @@ AxMainPanel::AxMainPanel(AX330GChainProcessor& p, axlcd::LcdDisplay& l)
         auto& t = *tiles[(size_t) k];
         addAndMakeVisible(t);
         t.onClick = [this, k] { selectSlot(k, true); };
+        t.onDragStart = [this](int i, const MouseEvent& e) { beginTileDrag(i, e); };
+        t.onDragMove = [this](int i, const MouseEvent& e) { moveTileDrag(i, e); };
+        t.onDragEnd = [this](int i, bool commit) { endTileDrag(i, commit); };
+        t.onMoveKey = [this](int i, int delta) {
+            const int to = jlimit(0, ax30g::N_SLOTS - 1, i + delta);
+            if (to == i) return;
+            moveBlock(i, to);
+            tiles[(size_t) to]->focusFromKeyboard();
+        };
         t.led.onClick = [this, k] {
             if (auto* prm = proc.apvts.getParameter("s" + String(k + 1) + "_on")) {
                 prm->beginChangeGesture();
@@ -285,7 +296,8 @@ void AxMainPanel::resized() {
     outputValue.setBounds(kOutputKnob.getCentreX() - 30, 150, 60, 24);
     openPill.setBounds(kOpenPill);
     unitPill.setBounds(kUnitPill);
-    for (int i = 0; i < ax30g::N_SLOTS; ++i) tiles[(size_t) i]->setBounds(tileBounds(i));
+    if (drag.from >= 0) layoutDragTiles(false);
+    else for (int i = 0; i < ax30g::N_SLOTS; ++i) tiles[(size_t) i]->setBounds(tileBounds(i));
     layoutDetail();
     staticImage = {};
 }
@@ -482,7 +494,7 @@ void AxMainPanel::paintStatic(Graphics& g) const {
     {
         const float base = 208.0f + 1.035f * 11.0f;   // shared baseline (the narrow line box is the taller)
         drawText(g, "SIGNAL CHAIN", font(Face::NarrowBold, 11.0f, 1.4f), hex(col::textDim), 14.0f, base);
-        drawText(g, "Click a slot to edit it. Click its light to turn it on or off.", font(Face::Regular, 11.0f),
+        drawText(g, "Click a slot to edit it. Click its light to turn it on or off. Drag a slot to move it.", font(Face::Regular, 11.0f),
                  hex(col::textDim), 806.0f, base, Justification::right);
         for (int i = 0; i < ax30g::N_SLOTS; ++i) {
             Path t;
@@ -564,6 +576,23 @@ void AxMainPanel::paint(Graphics& g) {
     g.drawImageTransformed(staticImage, AffineTransform::scale(1.0f / staticScale));
     const double tStatic = Time::getMillisecondCounterHiRes();
 
+    // Drag-to-reorder: a dark well where the dragged block will land, and
+    // the lifted tile's shadow (the tile itself is a child, painted above).
+    if (drag.from >= 0) {
+        Path well;
+        well.addRoundedRectangle(tileBounds(drag.target).toFloat().reduced(1.0f), 7.0f);
+        g.setColour(Colours::black.withAlpha(0.3f));
+        g.fillPath(well);
+        Path dashed;
+        const float dashes[] = { 5.0f, 4.0f };
+        PathStrokeType(1.5f).createDashedStroke(dashed, well, dashes, 2);
+        g.setColour(hex(axui::col::accent, 0.7f));
+        g.fillPath(dashed);
+        Path lifted;
+        lifted.addRoundedRectangle(tiles[(size_t) drag.from]->getBounds().toFloat(), 8.0f);
+        axui::cachedDropShadow(g, "tileLift", lifted, Colours::black.withAlpha(0.85f), 8, 4.0f);
+    }
+
     // Peak LED: 11 px, lit = radial #ff8a7a -> #d11a0e (60%) -> #7a0c05 with a red glow.
     {
         const auto r = Rectangle<float>(11.0f, 11.0f).withCentre(kPeakCentre);
@@ -612,6 +641,83 @@ void AxMainPanel::paintOverChildren(Graphics& g) {
                  full && benchCount % 20 == 0 ? (" mean of " + String(benchCount) + " full paints: " + String(benchSum / benchCount, 3) + " ms").toRawUTF8() : "");
 }
 
+// ---- drag-to-reorder (0.9.1 build 21) -------------------------------------------------
+// The tiles are fixed components, one per POSITION (tile i always shows slot
+// i + 1). A drag only moves them around for the preview; the drop commits
+// the move in the processor, puts every tile back at its home position and
+// lets each show its slot's new contents. All coordinates are panel (design)
+// units, so the drag behaves the same at every editor scale.
+
+int AxMainPanel::previewPos(int i) const {
+    const int f = drag.from, t = drag.target;
+    if (i == f) return t;
+    if (f < t && i > f && i <= t) return i - 1;
+    if (t < f && i >= t && i < f) return i + 1;
+    return i;
+}
+
+void AxMainPanel::layoutDragTiles(bool animate) {
+    auto& animator = Desktop::getInstance().getAnimator();
+    for (int i = 0; i < ax30g::N_SLOTS; ++i) {
+        auto& t = *tiles[(size_t) i];
+        if (i == drag.from) {
+            t.setBounds(roundToInt(drag.x), tileBounds(0).getY() - roundToInt(kTileLift), 92, 78);
+            t.setDragLook(true, drag.target + 1);
+            continue;
+        }
+        const auto home = tileBounds(previewPos(i));
+        t.setDragLook(false, previewPos(i) + 1);
+        if (!animate) { animator.cancelAnimation(&t, false); t.setBounds(home); }
+        else if (t.getBounds() != home) animator.animateComponent(&t, home, 1.0f, 120, false, 0.0, 0.0);
+    }
+}
+
+void AxMainPanel::beginTileDrag(int k, const MouseEvent& e) {
+    const auto home = tileBounds(k).toFloat();
+    drag.from = drag.target = k;
+    drag.grabDx = e.getEventRelativeTo(this).getMouseDownPosition().x - home.getX();
+    drag.x = home.getX();
+    tiles[(size_t) k]->toFront(false);
+    moveTileDrag(k, e);
+}
+
+void AxMainPanel::moveTileDrag(int k, const MouseEvent& e) {
+    if (drag.from != k) return;
+    const auto pe = e.getEventRelativeTo(this).position;
+    const float minX = (float) tileBounds(0).getX(), maxX = (float) tileBounds(ax30g::N_SLOTS - 1).getX();
+    drag.x = jlimit(minX, maxX, pe.x - drag.grabDx);
+    const float rowCentre = (float) tileBounds(0).getCentreY();
+    const int target = std::abs(pe.y - rowCentre) > kDragCancelDy
+                           ? drag.from   // far off the row: the drop would cancel, so show everything at home
+                           : jlimit(0, ax30g::N_SLOTS - 1, roundToInt((drag.x - minX) / 100.0f));
+    const bool targetChanged = target != drag.target;
+    drag.target = target;
+    layoutDragTiles(targetChanged);
+    repaint(kChainRowArea);
+}
+
+void AxMainPanel::endTileDrag(int k, bool commit) {
+    if (drag.from != k) return;
+    const int from = drag.from, to = drag.target;
+    drag = {};
+    auto& animator = Desktop::getInstance().getAnimator();
+    for (int i = 0; i < ax30g::N_SLOTS; ++i) {
+        auto& t = *tiles[(size_t) i];
+        animator.cancelAnimation(&t, false);
+        t.setDragLook(false, 0);
+        t.setBounds(tileBounds(i));
+    }
+    repaint(kChainRowArea);
+    if (commit && to != from) moveBlock(from, to);
+}
+
+void AxMainPanel::moveBlock(int from, int to) {
+    proc.moveSlot(from, to);
+    shownType = -1;   // the detail panel must rebuild even when the selected index does not change
+    selectSlot(to, true);
+    if (onChainChanged) onChainChanged();
+}
+
 // ---- right-click Size menu -----------------------------------------------------------
 
 void AxMainPanel::mouseDown(const MouseEvent& e) {
@@ -640,6 +746,12 @@ void AxMainPanel::testTrigger(const String& what) {
         else if (kind == "led") b = &tiles[(size_t) jlimit(0, 7, arg.getIntValue() - 1)]->led;
         else if (kind == "mode") b = arg == "unit" ? static_cast<Button*>(&unitPill) : static_cast<Button*>(&openPill);
         else if (kind == "stereo") b = arg == "stereo" ? static_cast<Button*>(&stereoIn.stereo) : static_cast<Button*>(&stereoIn.mono);
+        else if (kind == "move") {   // "move:2>5", 1-based
+            const int f = arg.upToFirstOccurrenceOf(">", false, false).getIntValue() - 1, t = arg.fromFirstOccurrenceOf(">", false, false).getIntValue() - 1;
+            moveBlock(jlimit(0, 7, f), jlimit(0, 7, t));
+            std::fprintf(stderr, "UITRIGGER %s -> moved\n", item.toRawUTF8());
+            continue;
+        }
         if (b != nullptr && b->isShowing()) b->triggerClick();
         std::fprintf(stderr, "UITRIGGER %s -> %s\n", item.toRawUTF8(), b != nullptr && b->isShowing() ? "clicked" : "not found/hidden");
     }
@@ -709,6 +821,7 @@ AX330GChainEditor::AX330GChainEditor(AX330GChainProcessor& p)
     updatePlayPage();
 
     panel.onScaleChosen = [this](float s) { setUiScale(s); };
+    panel.onChainChanged = [this] { updatePlayPage(); };
 
     // Fixed 820:660 aspect, 70 % .. 200 %; the scale persists in the state.
     // AX330G_UI_SCALE (testing): open at that scale instead of the saved one.

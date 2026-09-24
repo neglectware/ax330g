@@ -9,6 +9,12 @@
 //                                               editor at design-unit point (x, y) -- the
 //                                               820x660 design, scaled by the editor's
 //                                               current width / 820 (0.9.0 editor, 2026-09-23)
+//   HARNESS_DRAG="<s>|<x0>,<y0>|<x1>,<y1>|<steps>|<hold s>;..."
+//                                               at <s> seconds, a real left-button drag
+//                                               (NSEvent down, <steps> dragged events 16 ms
+//                                               apart, up after <hold s>) from design point
+//                                               0 to 1, the cursor warped along (0.9.1, drag-
+//                                               to-reorder of the slot tiles)
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <AudioToolbox/AudioToolbox.h>
@@ -93,6 +99,19 @@ public:
                 c->startTimer((int) (parts[0].getDoubleValue() * 1000.0));
             }
         }
+        if (auto* env = std::getenv("HARNESS_DRAG")) {
+            for (auto& group : StringArray::fromTokens(env, ";", "")) {
+                auto parts = StringArray::fromTokens(group, "|", "");
+                auto a = StringArray::fromTokens(parts[1], ",", ""), b = StringArray::fromTokens(parts[2], ",", "");
+                auto* d = draggers.add(new Dragger());
+                d->content = ed;
+                d->x0 = a[0].getFloatValue(); d->y0 = a[1].getFloatValue();
+                d->x1 = b[0].getFloatValue(); d->y1 = b[1].getFloatValue();
+                d->steps = jmax(1, parts[3].getIntValue());
+                d->holdMs = (int) (parts[4].getDoubleValue() * 1000.0);
+                d->startTimer((int) (parts[0].getDoubleValue() * 1000.0));
+            }
+        }
         if (auto* env = std::getenv("HARNESS_SET")) {   // groups separated by ';', each "<s>|<assign>|..."
             for (auto& group : StringArray::fromTokens(env, ";", "")) {
                 auto parts = StringArray::fromTokens(group, "|", "");
@@ -113,7 +132,7 @@ public:
             starver.startTimer(starver.periodMs);
         }
     }
-    void shutdown() override { clickers.clear(); setters.clear(); window.reset(); instance.reset(); }
+    void shutdown() override { clickers.clear(); draggers.clear(); setters.clear(); window.reset(); instance.reset(); }
 
     // Sends a real NSEvent mouse down/up pair through the harness window, so
     // the plug-in's own view receives it exactly as from a user's click.
@@ -156,6 +175,61 @@ public:
         }
     };
     OwnedArray<Clicker> clickers;
+
+    // A real left-button drag, one NSEvent per timer tick: down, <steps>
+    // dragged events on a straight line, then up after holdMs (so a
+    // screencapture can be taken mid-drag).
+    struct Dragger : Timer {
+        juce::Component* content = nullptr;
+        float x0 = 0, y0 = 0, x1 = 0, y1 = 0;
+        int steps = 10, holdMs = 0, step = -1;
+        NSEvent* make(NSEventType type, float dx, float dy, NSWindow*& winOut) {
+            auto* peer = content->getPeer();
+            NSView* view = (NSView*) peer->getNativeHandle();
+            NSWindow* win = [view window];
+            winOut = win;
+            const float s = (float) content->getWidth() / 820.0f;
+            const auto p = peer->getComponent().getLocalPoint(content, juce::Point<float>(dx * s, dy * s));
+            NSPoint vp = NSMakePoint(p.x, [view isFlipped] ? p.y : view.bounds.size.height - p.y);
+            NSPoint loc = [view convertPoint: vp toView: nil];
+            const NSPoint sp = [win convertPointToScreen: loc];
+            const CGFloat primaryH = NSScreen.screens.firstObject.frame.size.height;
+            CGWarpMouseCursorPosition(CGPointMake(sp.x, primaryH - sp.y));
+            return [NSEvent mouseEventWithType: type location: loc modifierFlags: 0
+                                     timestamp: [[NSProcessInfo processInfo] systemUptime]
+                                  windowNumber: win.windowNumber context: nil eventNumber: 0
+                                    clickCount: 1 pressure: type == NSEventTypeLeftMouseUp ? 0.0f : 1.0f];
+        }
+        void timerCallback() override {
+            if (content->getPeer() == nullptr) { stopTimer(); return; }
+            NSWindow* win = nil;
+            if (step < 0) {
+                [NSApp activateIgnoringOtherApps: YES];
+                NSEvent* e = make(NSEventTypeLeftMouseDown, x0, y0, win);
+                [win makeKeyAndOrderFront: nil];
+                [win sendEvent: e];
+                std::printf("drag down at design (%.1f, %.1f)\n", x0, y0);
+                step = 0;
+                startTimer(16);
+            } else if (step < steps) {
+                ++step;
+                const float t = (float) step / (float) steps;
+                NSEvent* e = make(NSEventTypeLeftMouseDragged, x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, win);
+                [win sendEvent: e];
+                if (step == steps) {
+                    std::printf("drag at design (%.1f, %.1f), holding %d ms\n", x1, y1, holdMs);
+                    startTimer(jmax(1, holdMs));
+                }
+            } else {
+                stopTimer();
+                NSEvent* e = make(NSEventTypeLeftMouseUp, x1, y1, win);
+                [win sendEvent: e];
+                std::printf("drag up at design (%.1f, %.1f)\n", x1, y1);
+            }
+            std::fflush(stdout);
+        }
+    };
+    OwnedArray<Dragger> draggers;
     void timerCallback() override { stopTimer(); quit(); }
 
     // HARNESS_SET="<seconds>|<param name>=<normalised value>|...[;<seconds>|...]" sets host

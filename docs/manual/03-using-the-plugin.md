@@ -140,7 +140,7 @@ The **Mode** keys are two buttons on the face: **OPEN** and **AS THE UNIT**. A l
 | Open | Each slot can hold any block, in any order. |
 | As the unit | Reserved for a future version. |
 
-In version 0.9.0, the Mode keys have no effect on the sound. Both keys give the Open behavior.
+In version 0.9.1, the Mode keys have no effect on the sound. Both keys give the Open behavior.
 
 A future version will use "As the unit" to apply the chain rules of the unit. For example, the unit puts the 3-Band EQ last in Block 1, and it has no Stereo Chorus.
 
@@ -155,7 +155,42 @@ Each of the eight tiles in the signal chain shows:
 - The block's full name, for example "Reverb".
 - A red light. The light is on when the block is on.
 
-Click a tile to edit that slot in the editing panel. Click a tile's light to turn the block on or off.
+Click a tile to edit that slot in the editing panel. Click a tile's light to turn the block on or off. Drag a tile to move its block to a different slot. See "Move a block" below.
+
+### Move a block
+
+You can change the order of the blocks in the chain. The plugin moves a block with all of its settings.
+
+To move a block with the mouse:
+
+1. Put the pointer on the tile of the block. Do not put it on the light.
+2. Push and hold the mouse button.
+3. Drag the tile to the left or to the right.
+4. Release the mouse button when the dashed outline is at the new slot.
+
+While you drag, the other tiles move to show the new order. The dashed outline shows the slot that the block goes to.
+
+To cancel the move, push the Escape key before you release the mouse button. You can also drag the tile far above or below the row, and then release it.
+
+To move a block with the keyboard, push the Tab key until the tile has focus. Then hold the Option key and push the Left Arrow or the Right Arrow. The block moves by one slot.
+
+A move inserts the block. It does not exchange two blocks. For example, move the block in slot 2 to slot 5. The blocks in slots 3, 4 and 5 then go to slots 2, 3 and 4.
+
+These items move with the block:
+
+- The block type.
+- The on or off state.
+- All the parameter values.
+
+Empty slots move in the same way as blocks.
+
+The slot numbers stay in their positions. After the move, the editor selects the block at its new slot.
+
+A move can reset the sound in the delay lines of the blocks that move. The echoes and the reverb tail that are playing can stop.
+
+CAUTION: Host automation stays with the slot number, not with the block. For example, automation for "2: L Dly" always controls slot 2. After you move a block from slot 2, this automation controls the block that is now in slot 2. Move the automation lanes in the host if necessary.
+
+NOTE: The host records a move as changes to many parameters. The host undo function cannot undo a move in one step.
 
 ### The editing panel
 
@@ -201,6 +236,7 @@ The Effect menu has these items:
 - You can put the same block in more than one slot.
 - When you change the Effect of a slot, its parameters go to the default values of the new block.
 - When you open a saved project, the slots keep their saved values.
+- When you move a block, it keeps its values. See "Move a block" above.
 
 ### Mono and stereo blocks
 

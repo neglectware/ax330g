@@ -76,7 +76,7 @@ NOTE: Versions before 0.8.6 used the manufacturer name "Mark O'Brien". From vers
 
 A Windows version is available in the VST3 format, for 64-bit Windows. GitHub Actions compiles it on a Windows build server.
 
-NOTE: One tester installed version 0.8.6 on a Windows computer. The plugin loaded and its sound was correct. Nobody has tested version 0.9.0 (the new editor) on Windows yet. Please report the results to the project.
+NOTE: One tester installed version 0.8.6 on a Windows computer. The plugin loaded and its sound was correct. Nobody has tested version 0.9.0 or later on Windows yet. Please report the results to the project.
 
 To install the Windows version:
 

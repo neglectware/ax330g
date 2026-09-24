@@ -172,19 +172,42 @@ private:
     bool leftEnd;
 };
 
+// A footswitch-style slot tile. Click selects the slot; the LED child
+// toggles On. Drag-to-reorder (0.9.1 build 21): a drag of kDragThreshold
+// design units or more turns the press into a reorder drag instead of a
+// click -- the tile reports it through onDragStart/onDragMove/onDragEnd and
+// the editor (AxMainPanel) moves the tiles and commits the move. Escape
+// during a drag cancels it (onDragEnd with commit = false). Option/Alt +
+// Left/Right on a focused tile asks for a one-slot move (onMoveKey).
 class SlotTile : public AxButton {
 public:
+    static constexpr float kDragThreshold = 4.0f;   // design units, so it scales with the editor
     explicit SlotTile(int index);   // 0-based
     void setState(bool selected, int type, bool on);   // repaints if anything changed
     void paintButton(juce::Graphics&, bool over, bool down) override;
     void resized() override;
+    void mouseDown(const juce::MouseEvent&) override;
+    void mouseDrag(const juce::MouseEvent&) override;
+    void mouseUp(const juce::MouseEvent&) override;
+    bool keyPressed(const juce::KeyPress&) override;
+    void setDragLook(bool lifted, int shownNumber);   // editor, during a drag; (false, 0) restores
+    void focusFromKeyboard();                        // grab focus and show the ring (after a key move)
+    bool isDragging() const noexcept { return dragging; }
     LedButton led;
     const int index;
     bool selected = false, on = false;
     int type = -1;
+    std::function<void(int index, const juce::MouseEvent&)> onDragStart, onDragMove;
+    std::function<void(int index, bool commit)> onDragEnd;
+    std::function<void(int index, int delta)> onMoveKey;
     // Block abbreviation / full name for a BlockFactory type index (0 = Off).
     static juce::String abbrevFor(int type);
     static juce::String nameFor(int type);
+private:
+    void finishDrag(bool commit);
+    bool dragging = false, dragCancelled = false, hadFocusBeforeDrag = false;
+    bool lifted = false;
+    int shownNumber = 0;   // the position number drawn on the tile; 0 = index + 1
 };
 
 }  // namespace axui

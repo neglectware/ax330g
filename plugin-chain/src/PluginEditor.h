@@ -29,7 +29,18 @@
 // AX330G_UIPAINTBENCH=1 forces a full repaint every timer tick (for timing).
 // AX330G_UI_SCALE=<f> opens the editor at scale f instead of the saved one.
 // AX330G_UI_TRIGGER="tile:4,led:2,mode:unit,stereo:stereo" clicks those controls
-// (Button::triggerClick, the same path as a mouse click) 1.5 s after opening.
+// (Button::triggerClick, the same path as a mouse click) 1.5 s after opening;
+// "move:2>5" moves slot 2's block to slot 5 (the same call a tile drag makes).
+//
+// Drag-to-reorder (0.9.1 build 21): drag a tile left or right to MOVE its
+// block to another slot (an insert, not a swap). While dragging, the tile
+// follows the mouse along the row, lifted with a shadow; the other tiles
+// slide to where they will land and a dark well marks the drop slot. Tile
+// numbers belong to positions, so a sliding tile shows the number of the
+// slot it is sliding to. Dropping calls AX330GChainProcessor::moveSlot() and
+// selects the moved block. Escape, or dragging more than kDragCancelDy
+// above or below the row, cancels. Option/Alt + Left/Right on a focused
+// tile moves its block one slot.
 class AxMainPanel : public juce::Component {
 public:
     static constexpr int kW = 820, kH = 660;
@@ -48,6 +59,7 @@ public:
     void testTrigger(const juce::String& what);   // AX330G_UI_TRIGGER (testing)
 
     std::function<void(float)> onScaleChosen;   // right-click Size menu
+    std::function<void()> onChainChanged;        // after a slot move: the editor refreshes the LCD play page
     float currentScale = 1.0f;
 
 private:
@@ -76,6 +88,20 @@ private:
     void paintStatic(juce::Graphics&) const;
     void paintSlotDigit(juce::Graphics&) const;
     void showSizeMenu();
+
+    // Drag-to-reorder: see the class comment above.
+    static constexpr float kDragCancelDy = 110.0f;   // design units from the row's centre line
+    void beginTileDrag(int k, const juce::MouseEvent&);
+    void moveTileDrag(int k, const juce::MouseEvent&);
+    void endTileDrag(int k, bool commit);
+    void moveBlock(int from, int to);   // commits a move and selects the moved block
+    int previewPos(int i) const;        // where tile i sits while a drag is aimed at drag.target
+    void layoutDragTiles(bool animate);
+    struct DragState {
+        int from = -1, target = -1;   // tile indices, 0-based; from < 0: no drag
+        float grabDx = 0.0f;          // mouse x minus the tile's left edge at the press
+        float x = 0.0f;               // the dragged tile's current left edge
+    } drag;
 
     AX330GChainProcessor& proc;
     axlcd::LcdDisplay& lcd;

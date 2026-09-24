@@ -126,6 +126,20 @@ public:
     static constexpr float kPeakThresholdDb = -1.0f;
     float peakHoldDb() const noexcept { return peakHoldDb_.load(std::memory_order_relaxed); }
 
+    // Drag-to-reorder (2026-09-23, 0.9.1 build 21). Message thread only.
+    // MOVES the block in slot `from` to slot `to` (0-based) and shifts the
+    // slots between them by one, like an insert: moveSlot(1, 4) makes old
+    // 3,4,5 the new 2,3,4 and old 2 the new 5. Everything a slot owns moves
+    // with its block -- s<k>_type, s<k>_on and every s<k>_<name> parameter,
+    // copied as normalised values (every slot has the identical parameter
+    // set). Each changed parameter is written as its own host gesture, so
+    // hosts record the move; it is not one undo step. Host automation stays
+    // with the slot POSITION (the parameter IDs are s<k>_*), not the block.
+    // The Type-defaults timer is made to see the new types as already seen
+    // (seenType[]) inside this same call, so it cannot push BlockInfo
+    // defaults over the moved values; see the definition for the ordering.
+    void moveSlot(int from, int to);
+
 private:
     static constexpr double kDeviceRate = 39062.5;
     // Resampler half-length multiplier (dsp/resampler.h): 100 is flat to
@@ -171,6 +185,10 @@ private:
     int lastType[ax30g::N_SLOTS];
     std::vector<int> lastNamed[ax30g::N_SLOTS];   // audio thread's last-pushed-to-block value per registry index
     int seenType[ax30g::N_SLOTS];   // timerCallback's own last-seen Type, separate from lastType
+    // Set by moveSlot() around its parameter writes; applyParams() skips a
+    // block while it is set, so the audio thread does not rebuild a slot from
+    // a half-written move (it catches up on the next block).
+    std::atomic<bool> moveInProgress_{false};
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AX330GChainProcessor)
 };

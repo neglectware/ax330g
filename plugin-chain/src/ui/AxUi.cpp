@@ -560,7 +560,74 @@ void SegmentButton::paintButton(Graphics& g, bool over, bool down) {
 
 SlotTile::SlotTile(int i) : AxButton("Slot " + String(i + 1)), index(i) {
     addAndMakeVisible(led);
-    setDescription("Select this slot to edit it");
+    setDescription("Select this slot to edit it. Drag it, or press Option and an arrow key, to move its block.");
+}
+
+// ---- drag-to-reorder (0.9.1 build 21) ----------------------------------------
+// Below the threshold the tile is an ordinary Button (the press highlights,
+// the release clicks). Past it, the Button is put back to normal so its
+// mouseUp cannot click, and the events go to the editor instead.
+
+void SlotTile::mouseDown(const MouseEvent& e) {
+    dragging = dragCancelled = false;
+    AxButton::mouseDown(e);
+}
+
+void SlotTile::mouseDrag(const MouseEvent& e) {
+    if (dragCancelled) return;
+    if (!dragging && !e.mods.isPopupMenu() && e.getDistanceFromDragStart() >= kDragThreshold) {
+        dragging = true;
+        Button::setState(buttonNormal);
+        setMouseCursor(MouseCursor::DraggingHandCursor);
+        hadFocusBeforeDrag = hasKeyboardFocus(false);
+        if (!hadFocusBeforeDrag) grabKeyboardFocus();   // for Escape; the ring stays off (not a Tab focus)
+        if (onDragStart) onDragStart(index, e);
+    }
+    if (dragging) {
+        if (onDragMove) onDragMove(index, e);
+        return;
+    }
+    AxButton::mouseDrag(e);
+}
+
+void SlotTile::mouseUp(const MouseEvent& e) {
+    if (dragging) { finishDrag(true); return; }
+    if (dragCancelled) { dragCancelled = false; Button::setState(buttonNormal); return; }
+    AxButton::mouseUp(e);
+}
+
+void SlotTile::finishDrag(bool commit) {
+    dragging = false;
+    Button::setState(buttonNormal);
+    setMouseCursor(MouseCursor::NormalCursor);
+    if (!hadFocusBeforeDrag && hasKeyboardFocus(false)) giveAwayKeyboardFocus();
+    if (onDragEnd) onDragEnd(index, commit);
+}
+
+bool SlotTile::keyPressed(const KeyPress& k) {
+    if (dragging && k.getKeyCode() == KeyPress::escapeKey) {
+        dragCancelled = true;   // ignore the rest of this press, up to mouseUp
+        finishDrag(false);
+        return true;
+    }
+    if (k.getModifiers().isAltDown() && (k.getKeyCode() == KeyPress::leftKey || k.getKeyCode() == KeyPress::rightKey)) {
+        if (onMoveKey) onMoveKey(index, k.getKeyCode() == KeyPress::leftKey ? -1 : 1);
+        return true;
+    }
+    return AxButton::keyPressed(k);
+}
+
+void SlotTile::setDragLook(bool isLifted, int number) {
+    if (isLifted == lifted && number == shownNumber) return;
+    lifted = isLifted;
+    shownNumber = number;
+    repaint();
+}
+
+void SlotTile::focusFromKeyboard() {
+    grabKeyboardFocus();
+    showFocusRing = true;
+    repaint();
 }
 
 void SlotTile::resized() { led.setBounds(64, 3, 24, 24); }   // LED centre (76.5, 15.45) in the tile
@@ -604,13 +671,14 @@ void SlotTile::paintButton(Graphics& g, bool over, bool down) {
     rr.addRoundedRectangle(r, 8.0f);
     Colour top = selected ? col::hex(0x2f3440) : col::hex(0x26292f);
     Colour bottom = selected ? col::hex(0x23272f) : col::hex(0x1a1c20);
-    if (!selected && (over || down)) { top = top.brighter(0.05f); bottom = bottom.brighter(0.05f); }
+    if (lifted) { top = top.brighter(0.12f); bottom = bottom.brighter(0.08f); }   // picked up (the editor draws its shadow)
+    else if (!selected && (over || down)) { top = top.brighter(0.05f); bottom = bottom.brighter(0.05f); }
     g.setGradientFill(ColourGradient(top, 0.0f, 0.0f, bottom, 0.0f, r.getHeight(), false));
     g.fillPath(rr);
     Path pad;
     pad.addRoundedRectangle(r.reduced(2.0f), 6.0f);
     insetEdge(g, pad, 1.0f, Colours::white.withAlpha(0.08f));
-    g.setColour(selected ? col::hex(col::accent) : (over ? col::hex(0x353941) : col::hex(0x2a2d33)));
+    g.setColour(selected ? col::hex(col::accent) : (lifted ? col::hex(0x4a505c) : (over ? col::hex(0x353941) : col::hex(0x2a2d33))));
     g.drawRoundedRectangle(r.reduced(1.0f), 7.0f, 2.0f);
     if (showFocusRing) {
         g.setColour(col::hex(col::groupBlue, 0.9f));
@@ -619,7 +687,7 @@ void SlotTile::paintButton(Graphics& g, bool over, bool down) {
     // Content box: x 11..81, y 10..68 (2 px border + 9/8 px padding), rows laid
     // out as the mockup's space-between column: number/LED row, abbreviation,
     // full name, ridge strip.
-    drawText(g, String(index + 1), font(Face::SemiBold, 10.0f), col::hex(col::textDim), 11.0f, 18.78f);
+    drawText(g, String(shownNumber > 0 ? shownNumber : index + 1), font(Face::SemiBold, 10.0f), col::hex(col::textDim), 11.0f, 18.78f);
     drawText(g, abbrevFor(type), font(Face::NarrowBold, 17.0f, 0.5f), type > 0 ? Colours::white : col::hex(0x5b6472), 11.0f, 41.45f);
     const auto nf = font(Face::Regular, 9.5f);
     drawText(g, ellipsize(nf, nameFor(type), 70.0f), nf, col::hex(col::textDim), 11.0f, 58.05f);

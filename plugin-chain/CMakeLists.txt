@@ -133,4 +133,19 @@ target_link_libraries(AX330GHostHarness PRIVATE
   juce::juce_audio_processors juce::juce_gui_basics "-framework CoreAudioKit"
   PUBLIC juce::juce_recommended_config_flags)
 
+# AX330GMoveSlotTest: headless test of drag-to-reorder (0.9.1 build 21,
+# tools/MoveSlotTest.cpp) -- builds the processor and editor from src/
+# directly, drives moveSlot() and synthetic tile drags, runs audio through
+# the moves and writes editor snapshots. Not shipped.
+juce_add_console_app(AX330GMoveSlotTest
+  PRODUCT_NAME "AX330GMoveSlotTest")
+target_sources(AX330GMoveSlotTest PRIVATE tools/MoveSlotTest.cpp
+  src/PluginProcessor.cpp src/PluginEditor.cpp src/ui/AxUi.cpp src/lcd/LcdDisplay.cpp src/lcd/LcdNativeLayer_mac.mm)
+target_include_directories(AX330GMoveSlotTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
+target_compile_definitions(AX330GMoveSlotTest PRIVATE
+  JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_MODAL_LOOPS_PERMITTED=1)
+target_link_libraries(AX330GMoveSlotTest PRIVATE
+  AX330GFonts juce::juce_audio_utils juce::juce_dsp
+  PUBLIC juce::juce_recommended_config_flags)
+
 endif()
