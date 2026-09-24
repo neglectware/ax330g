@@ -3,6 +3,7 @@
 #include "PluginProcessor.h"
 #include "lcd/LcdDisplay.h"
 #include "ui/AxUi.h"
+#include "presets/PresetUi.h"
 #include <array>
 #include <functional>
 #include <memory>
@@ -31,6 +32,13 @@
 // AX330G_UI_TRIGGER="tile:4,led:2,mode:unit,stereo:stereo" clicks those controls
 // (Button::triggerClick, the same path as a mouse click) 1.5 s after opening;
 // "move:2>5" moves slot 2's block to slot 5 (the same call a tile drag makes).
+// Preset triggers (0.10.0): see src/presets/PresetUi.h ("browser", "folder:1",
+// "preset:2", "next", "saveas", "menu", ...). AX330G_UI_TRIGGER2 runs a second
+// list 1.5 s after the first (e.g. open the browser, then a row's menu).
+//
+// Presets (0.10.0 build 22): the LCD moved up to y 39 (its top now lines up with
+// the slot digit box) and the preset bar sits under it at (272,156,340,26), its
+// bottom on the AS THE UNIT pill's; see src/presets/PresetUi.h.
 //
 // Drag-to-reorder (0.9.1 build 21): drag a tile left or right to MOVE its
 // block to another slot (an insert, not a swap). While dragging, the tile
@@ -59,8 +67,9 @@ public:
     void testTrigger(const juce::String& what);   // AX330G_UI_TRIGGER (testing)
 
     std::function<void(float)> onScaleChosen;   // right-click Size menu
-    std::function<void()> onChainChanged;        // after a slot move: the editor refreshes the LCD play page
+    std::function<void()> onChainChanged;        // after a slot move or a preset load: the editor refreshes the LCD play page
     float currentScale = 1.0f;
+    std::unique_ptr<axpresetui::PresetController> presets;
 
 private:
     struct ParamCell : public juce::Component {
@@ -153,14 +162,16 @@ public:
 private:
     void timerCallback() override;
 
-    // LCD play page (docs/lcd-startup-2026-09-22.md): row 0 is "--- " + the
-    // program name (apvts.state property "programName", no editor UI for it
-    // yet); row 1 is the chain string, one 4-char block abbreviation per
+    // LCD play page (docs/lcd-startup-2026-09-22.md): row 0 is the preset's
+    // number and name (programLine(), 0.10.0); row 1 is the chain string, one 4-char block abbreviation per
     // active slot in slot order, joined with "-", upper/lowercase for
     // on/off. buildChainString() reads the raw parameter values directly --
     // it does not cache anything, so it can be called from the timer freely.
     juce::String buildChainString() const;
     void updatePlayPage();
+public:
+    static juce::String programLine(const AX330GChainProcessor::PresetRef&, bool modified);   // LCD row 0
+private:
 
     AX330GChainProcessor& proc;
     axui::AxLookAndFeel laf;   // declared first: outlives every component using it

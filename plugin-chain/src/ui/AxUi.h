@@ -184,6 +184,9 @@ public:
     static constexpr float kDragThreshold = 4.0f;   // design units, so it scales with the editor
     explicit SlotTile(int index);   // 0-based
     void setState(bool selected, int type, bool on);   // repaints if anything changed
+    // A loaded preset's block this version does not have (0.10.0): an empty tile
+    // then shows its short name dimmed and "Not available" in amber. "" = none.
+    void setUnknownBlock(const juce::String& shortName);
     void paintButton(juce::Graphics&, bool over, bool down) override;
     void resized() override;
     void mouseDown(const juce::MouseEvent&) override;
@@ -208,6 +211,8 @@ private:
     bool dragging = false, dragCancelled = false, hadFocusBeforeDrag = false;
     bool lifted = false;
     int shownNumber = 0;   // the position number drawn on the tile; 0 = index + 1
+    juce::String unknownBlock;
+    void updateTitle();
 };
 
 }  // namespace axui

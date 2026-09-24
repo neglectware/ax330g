@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include <juce_gui_basics/juce_gui_basics.h>
 #include "Hd44780RomA00.h"
 #include "AxStartupStrip.h"
@@ -86,6 +87,11 @@ public:
     void visibilityChanged() override { updateNativeLayer(); }
     void mouseWheelMove(const juce::MouseEvent&, const juce::MouseWheelDetails&) override;
     void mouseDoubleClick(const juce::MouseEvent&) override;
+    void mouseUp(const juce::MouseEvent&) override;
+
+    // 0.10.0: a single click opens the preset browser (the editor sets onClick);
+    // a double click still replays the start-up sequence, after onDoubleClick.
+    std::function<void()> onClick, onDoubleClick;
 
 private:
     void timerCallback() override;   // no layer: real-clock tick(now) then repaint(); with a layer: 2 Hz frame/scale check

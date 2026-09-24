@@ -71,6 +71,7 @@ This glossary tells what each technical name in this manual means.
 | Input stage | The model of the analog input circuit and the analog-to-digital converter of the unit. |
 | Interpolation | The calculation of a value between two known values. Linear interpolation uses a straight line. |
 | IPE | A library of preset effect variations in the unit. |
+| JSON | A text format for data. A preset file uses it. |
 | Knee | The region where a compressor or a clip starts to act. |
 | Latency | The delay between the input and the output of the plugin. |
 | LCD | Liquid crystal display. |
@@ -104,6 +105,7 @@ This glossary tells what each technical name in this manual means.
 | Pole | A value that sets the response of a filter. In a one-pole low-pass filter, a pole near 1 gives a low corner frequency. |
 | Pre-delay | The time between the input signal and the start of the reverb. |
 | Pre-emphasis | A filter that increases the treble before a converter. The unit uses it to decrease the noise at high frequencies. |
+| Preset | A file that holds the blocks, the parameter values and the Mode of the eight slots. The plugin equivalent of a program on the unit. |
 | Program | A stored set of chain and parameter values on the unit. |
 | Q | A number that shows how narrow the peak of a filter is. A high Q gives a narrow, high peak. |
 | Quantizer | A function that rounds a signal to a fixed word length. |

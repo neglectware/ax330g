@@ -84,7 +84,38 @@ juce_add_plugin(AX330G
   AU_MAIN_TYPE kAudioUnitType_Effect
   VST3_CATEGORIES Fx Delay)
 
-target_sources(AX330G PRIVATE src/PluginProcessor.cpp src/PluginEditor.cpp src/ui/AxUi.cpp src/lcd/LcdDisplay.cpp ${AX_LCD_NATIVE_SRC})
+# The plug-in's own sources, shared with the headless test targets below.
+set(AX_PLUGIN_SOURCES src/PluginProcessor.cpp src/PluginEditor.cpp src/ui/AxUi.cpp src/lcd/LcdDisplay.cpp
+  src/presets/Presets.cpp src/presets/PresetUi.cpp)
+target_sources(AX330G PRIVATE ${AX_PLUGIN_SOURCES} ${AX_LCD_NATIVE_SRC})
+
+# Factory presets (0.10.0 build 22): every presets/factory/<Folder>/<Name>.ax330g in
+# the repository, read-only in the plug-in. They are bundled at configure time into
+# ONE text resource, factory-presets.txt ("AX330G-FACTORY-BUNDLE 1", then per preset
+# "@@PRESET <Folder>/<File>" and the file's contents), so folder names survive (the
+# binary-data builder keeps only a file's base name) and zero presets -- the state
+# as shipped in 0.10.0 -- is still a valid, non-empty resource. src/presets/
+# Presets.cpp reads it (Library::parseFactoryBundle). CONFIGURE_DEPENDS re-globs at
+# build time, and every preset file is a configure dependency, so adding, removing
+# or editing a preset rebuilds the bundle; configure_file(COPYONLY) only touches the
+# output when its contents changed.
+set(AX_FACTORY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../presets/factory")
+file(GLOB_RECURSE AX_FACTORY_PRESETS CONFIGURE_DEPENDS "${AX_FACTORY_DIR}/*.ax330g")
+list(SORT AX_FACTORY_PRESETS)
+set(AX_FACTORY_BUNDLE "AX330G-FACTORY-BUNDLE 1\n")
+foreach(preset IN LISTS AX_FACTORY_PRESETS)
+  file(RELATIVE_PATH preset_rel "${AX_FACTORY_DIR}" "${preset}")
+  file(READ "${preset}" preset_text)
+  string(APPEND AX_FACTORY_BUNDLE "@@PRESET ${preset_rel}\n${preset_text}\n")
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${preset}")
+endforeach()
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/factory/factory-presets.txt.new" "${AX_FACTORY_BUNDLE}")
+configure_file("${CMAKE_CURRENT_BINARY_DIR}/factory/factory-presets.txt.new"
+               "${CMAKE_CURRENT_BINARY_DIR}/factory/factory-presets.txt" COPYONLY)
+list(LENGTH AX_FACTORY_PRESETS AX_FACTORY_COUNT)
+message(STATUS "AX330G factory presets: ${AX_FACTORY_COUNT}")
+juce_add_binary_data(AX330GFactoryPresets NAMESPACE AxFactoryData HEADER_NAME AxFactoryData.h
+  SOURCES "${CMAKE_CURRENT_BINARY_DIR}/factory/factory-presets.txt")
 
 # The editor's fonts (2026-09-23, 0.9.0): Archivo and Archivo Narrow static
 # TTFs, SIL Open Font License 1.1 (fonts/OFL.txt), embedded so the UI looks
@@ -92,11 +123,11 @@ target_sources(AX330G PRIVATE src/PluginProcessor.cpp src/PluginEditor.cpp src/u
 juce_add_binary_data(AX330GFonts SOURCES
   fonts/Archivo-Regular.ttf fonts/Archivo-SemiBold.ttf fonts/Archivo-Bold.ttf fonts/Archivo-BlackItalic.ttf
   fonts/ArchivoNarrow-SemiBold.ttf fonts/ArchivoNarrow-Bold.ttf)
-target_include_directories(AX330G PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
+target_include_directories(AX330G PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/.. ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_compile_definitions(AX330G PUBLIC
   JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_VST3_CAN_REPLACE_VST2=0 JUCE_DISPLAY_SPLASH_SCREEN=0)
 target_link_libraries(AX330G PRIVATE
-  AX330GFonts juce::juce_audio_utils juce::juce_dsp
+  AX330GFonts AX330GFactoryPresets juce::juce_audio_utils juce::juce_dsp
   PUBLIC juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
 
 # The two developer-tool targets below (LCD snapshot verifier, in-process AU
@@ -139,13 +170,26 @@ target_link_libraries(AX330GHostHarness PRIVATE
 # the moves and writes editor snapshots. Not shipped.
 juce_add_console_app(AX330GMoveSlotTest
   PRODUCT_NAME "AX330GMoveSlotTest")
-target_sources(AX330GMoveSlotTest PRIVATE tools/MoveSlotTest.cpp
-  src/PluginProcessor.cpp src/PluginEditor.cpp src/ui/AxUi.cpp src/lcd/LcdDisplay.cpp src/lcd/LcdNativeLayer_mac.mm)
-target_include_directories(AX330GMoveSlotTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
+target_sources(AX330GMoveSlotTest PRIVATE tools/MoveSlotTest.cpp ${AX_PLUGIN_SOURCES} src/lcd/LcdNativeLayer_mac.mm)
+target_include_directories(AX330GMoveSlotTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/.. ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_compile_definitions(AX330GMoveSlotTest PRIVATE
   JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_MODAL_LOOPS_PERMITTED=1)
 target_link_libraries(AX330GMoveSlotTest PRIVATE
-  AX330GFonts juce::juce_audio_utils juce::juce_dsp
+  AX330GFonts AX330GFactoryPresets juce::juce_audio_utils juce::juce_dsp
+  PUBLIC juce::juce_recommended_config_flags)
+
+# AX330GPresetTest: headless test of the preset system (0.10.0 build 22,
+# tools/PresetTest.cpp) -- file round trips for every block, unknown blocks,
+# tolerant reading, folder operations in a temporary root, the factory bundle,
+# session state and loading while audio runs, plus editor snapshots. Not shipped.
+juce_add_console_app(AX330GPresetTest
+  PRODUCT_NAME "AX330GPresetTest")
+target_sources(AX330GPresetTest PRIVATE tools/PresetTest.cpp ${AX_PLUGIN_SOURCES} src/lcd/LcdNativeLayer_mac.mm)
+target_include_directories(AX330GPresetTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/.. ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_compile_definitions(AX330GPresetTest PRIVATE
+  JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_MODAL_LOOPS_PERMITTED=1)
+target_link_libraries(AX330GPresetTest PRIVATE
+  AX330GFonts AX330GFactoryPresets juce::juce_audio_utils juce::juce_dsp
   PUBLIC juce::juce_recommended_config_flags)
 
 endif()

@@ -657,11 +657,25 @@ void SlotTile::setState(bool sel, int t, bool isOn) {
     selected = sel; type = t; on = isOn;
     led.lit = on && type > 0;
     led.setToggleState(on, dontSendNotification);
+    updateTitle();
     const String n = "Slot " + String(index + 1);
-    setTitle(n + ": " + nameFor(type) + (type > 0 ? (on ? ", on" : ", off") : String()) + (selected ? ", selected" : String()));
     led.setTitle(n + " on");
     led.setDescription("Turns slot " + String(index + 1) + " on or off");
     led.repaint();
+    repaint();
+}
+
+void SlotTile::updateTitle() {
+    const String n = "Slot " + String(index + 1);
+    const bool unknown = type <= 0 && unknownBlock.isNotEmpty();
+    setTitle(n + ": " + (unknown ? unknownBlock + ", not in this version" : nameFor(type)) + (type > 0 ? (on ? ", on" : ", off") : String())
+             + (selected ? ", selected" : String()));
+}
+
+void SlotTile::setUnknownBlock(const String& s) {
+    if (s == unknownBlock) return;
+    unknownBlock = s;
+    updateTitle();
     repaint();
 }
 
@@ -688,9 +702,11 @@ void SlotTile::paintButton(Graphics& g, bool over, bool down) {
     // out as the mockup's space-between column: number/LED row, abbreviation,
     // full name, ridge strip.
     drawText(g, String(shownNumber > 0 ? shownNumber : index + 1), font(Face::SemiBold, 10.0f), col::hex(col::textDim), 11.0f, 18.78f);
-    drawText(g, abbrevFor(type), font(Face::NarrowBold, 17.0f, 0.5f), type > 0 ? Colours::white : col::hex(0x5b6472), 11.0f, 41.45f);
+    const bool unknown = type <= 0 && unknownBlock.isNotEmpty();
+    const auto af = font(Face::NarrowBold, 17.0f, 0.5f);
+    drawText(g, unknown ? ellipsize(af, unknownBlock, 70.0f) : abbrevFor(type), af, type > 0 ? Colours::white : col::hex(0x5b6472), 11.0f, 41.45f);
     const auto nf = font(Face::Regular, 9.5f);
-    drawText(g, ellipsize(nf, nameFor(type), 70.0f), nf, col::hex(col::textDim), 11.0f, 58.05f);
+    drawText(g, ellipsize(nf, unknown ? String("Not available") : nameFor(type), 70.0f), nf, col::hex(unknown ? 0xf0b44a : col::textDim), 11.0f, 58.05f);
     Graphics::ScopedSaveState ss(g);
     Path ridge;
     ridge.addRoundedRectangle(11.0f, 63.0f, 70.0f, 5.0f, 2.0f);

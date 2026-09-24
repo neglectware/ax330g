@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "version.h"
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -260,11 +261,18 @@ AX330GChainProcessor::AX330GChainProcessor()
     pInput = apvts.getRawParameterValue("input_db");
     pOutput = apvts.getRawParameterValue("output_db");
     pMode = apvts.getRawParameterValue("mode");
+    // Any parameter change except Input/Output (host gain staging, not part of a
+    // preset) marks the current preset modified.
+    for (auto* p : getParameters())
+        if (auto* rp = dynamic_cast<RangedAudioParameter*>(p); rp != nullptr && rp->paramID != "input_db" && rp->paramID != "output_db")
+            apvts.addParameterListener(rp->paramID, this);
     startTimer(30);   // message-thread poll for slot Type changes -> BlockInfo defaults (never from processBlock)
 }
 
 AX330GChainProcessor::~AX330GChainProcessor() {
     stopTimer();
+    for (auto* p : getParameters())
+        if (auto* rp = dynamic_cast<RangedAudioParameter*>(p)) apvts.removeParameterListener(rp->paramID, this);
 }
 
 juce::AudioProcessorEditor* AX330GChainProcessor::createEditor() {
@@ -356,6 +364,9 @@ void AX330GChainProcessor::timerCallback() {
         const int type = int(pType[k]->load());
         if (type == seenType[k]) continue;
         seenType[k] = type;
+        // A block chosen for a slot that held a block this version does not know
+        // (a loaded preset's DST1, say): Save no longer writes the old one back.
+        if (type > 0) apvts.state.removeProperty("presetUnknown" + String(k + 1), nullptr);
         auto block = ax30g::BlockFactory::create(type);   // fs doesn't matter -- only .info() is used
         if (!block) continue;
         const ax30g::BlockInfo& bi = block->info();
@@ -438,6 +449,17 @@ void AX330GChainProcessor::moveSlot(int from, int to) {
 
     for (int k = 0; k < n; ++k)
         seenType[k] = int(pType[src[size_t(k)]]->load());
+
+    // A preset's kept unknown-block slots move with their slots (message thread).
+    {
+        var unknown[n];
+        for (int k = 0; k < n; ++k) unknown[k] = apvts.state.getProperty("presetUnknown" + String(k + 1));
+        for (int k = 0; k < n; ++k) {
+            const Identifier id("presetUnknown" + String(k + 1));
+            if (unknown[src[size_t(k)]].isVoid()) apvts.state.removeProperty(id, nullptr);
+            else apvts.state.setProperty(id, unknown[src[size_t(k)]], nullptr);
+        }
+    }
 
     moveInProgress_.store(true, std::memory_order_release);
     auto write = [](RangedAudioParameter* p, float v) {
@@ -538,14 +560,224 @@ void AX330GChainProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer&)
 }
 
 void AX330GChainProcessor::getStateInformation(MemoryBlock& dest) {
-    if (auto xml = apvts.copyState().createXml()) copyXmlToBinary(*xml, dest);
+    auto state = apvts.copyState();
+    state.setProperty("presetModified", isPresetModified(), nullptr);
+    if (auto xml = state.createXml()) copyXmlToBinary(*xml, dest);
 }
 void AX330GChainProcessor::setStateInformation(const void* data, int size) {
+    // The session's parameter values are not an edit of its preset: the modified
+    // flag comes from the session ("presetModified"), and the preset file is not read.
+    suppressModified_.store(true);
     if (auto xml = getXmlFromBinary(data, size)) apvts.replaceState(ValueTree::fromXml(*xml));
+    suppressModified_.store(false);
+    presetModified_.store((bool) apvts.state.getProperty("presetModified", false));
     // Resync the timer's change-tracker to the just-loaded state so the next
     // timerCallback() doesn't mistake a restored Type for a fresh change and
     // overwrite the project's own (possibly non-default) values.
     for (int k = 0; k < ax30g::N_SLOTS; ++k) seenType[k] = int(pType[k]->load());
+}
+
+// ---- presets (0.10.0 build 22) ------------------------------------------------------
+// Values in a preset file are in the units the editor shows (src/presets/Presets.h):
+// numbers for numeric controls, Hz for Mid Freq, the item text for list controls.
+
+void AX330GChainProcessor::parameterChanged(const String&, float) {
+    if (!suppressModified_.load(std::memory_order_relaxed)) presetModified_.store(true, std::memory_order_relaxed);
+}
+
+String AX330GChainProcessor::pluginVersionString() { return String(AX_VERSION) + " build " + String(AX_BUILD); }
+
+namespace {
+// The host parameter's current value as a preset file value.
+var fileValueFor(const String& pname, RangedAudioParameter& p) {
+    const float v = p.convertFrom0to1(p.getValue());
+    if (pname == "Mid Freq") return kMidFreqSteps[jlimit(0, 12, (int) std::lround(v))];
+    if (auto* c = dynamic_cast<AudioParameterChoice*>(&p)) return c->choices[jlimit(0, c->choices.size() - 1, c->getIndex())];
+    if (auto* i = dynamic_cast<AudioParameterInt*>(&p)) return i->get();
+    const double r = std::round((double) v * 100.0) / 100.0;   // every float control steps by 0.01 or coarser
+    if (r == std::floor(r)) return (int) r;
+    return r;
+}
+
+// A preset file value -> the host parameter's normalised value. `note` gets a
+// message when the value was clamped or not understood (then the block default).
+float normFromFileValue(const String& pname, RangedAudioParameter& p, const var& v, float defaultNorm, String& note) {
+    auto numberOf = [](const var& x, double& out) {
+        if (x.isInt() || x.isInt64() || x.isDouble()) { out = (double) x; return true; }
+        if (x.isBool()) { out = (bool) x ? 1.0 : 0.0; return true; }
+        if (x.isString() && x.toString().containsAnyOf("0123456789")) {
+            const String t = x.toString().trim().replace(String::fromUTF8("\xe2\x88\x92"), "-");
+            out = t.getDoubleValue();
+            if (t.containsIgnoreCase("k")) out *= 1000.0;   // "1.25 kHz"
+            return true;
+        }
+        return false;
+    };
+    if (pname == "Mid Freq") {
+        double hz = 0.0;
+        if (!numberOf(v, hz) || hz <= 0.0) { note = "not a frequency"; return defaultNorm; }
+        int best = 0;
+        for (int i = 1; i < 13; ++i)
+            if (std::abs(std::log(kMidFreqSteps[i] / hz)) < std::abs(std::log(kMidFreqSteps[best] / hz))) best = i;
+        if (hz < kMidFreqSteps[0] * 0.97 || hz > kMidFreqSteps[12] * 1.03 || std::abs(kMidFreqSteps[best] - hz) > 0.5)
+            note = "set to the nearest step, " + String(kMidFreqSteps[best]) + " Hz";
+        return p.convertTo0to1((float) best);
+    }
+    if (auto* c = dynamic_cast<AudioParameterChoice*>(&p)) {
+        if (v.isString()) {
+            const String t = v.toString().trim();
+            for (int i = 0; i < c->choices.size(); ++i)
+                if (c->choices[i].equalsIgnoreCase(t)) return p.convertTo0to1((float) i);
+            for (int i = 0; i < c->choices.size(); ++i)
+                if (t.length() >= 2 && c->choices[i].startsWithIgnoreCase(t)) return p.convertTo0to1((float) i);
+            note = "\"" + t + "\" is not an item";
+            return defaultNorm;
+        }
+        double idx = 0.0;
+        if (!numberOf(v, idx)) { note = "not understood"; return defaultNorm; }
+        const int i = jlimit(0, c->choices.size() - 1, (int) std::lround(idx));
+        if (i != (int) std::lround(idx)) note = "out of range, clamped";
+        return p.convertTo0to1((float) i);
+    }
+    double x = 0.0;
+    if (!numberOf(v, x)) { note = "not a number"; return defaultNorm; }
+    const auto& r = p.getNormalisableRange();
+    if (x < r.start || x > r.end) note = "out of range, clamped";
+    return p.convertTo0to1(jlimit(r.start, r.end, (float) x));
+}
+}  // namespace
+
+AX330GChainProcessor::PresetRef AX330GChainProcessor::currentPreset() const {
+    PresetRef r;
+    const auto& st = apvts.state;
+    const String kind = st.getProperty("presetKind").toString();
+    if (kind != "factory" && kind != "user") return r;
+    r.valid = true;
+    r.factory = kind == "factory";
+    r.folder = st.getProperty("presetFolder").toString();
+    r.fileName = st.getProperty("presetFile").toString();
+    r.name = st.getProperty("presetName").toString();
+    r.number = (int) st.getProperty("presetNumber", -1);
+    return r;
+}
+
+void AX330GChainProcessor::setCurrentPreset(const PresetRef& r, bool modified) {
+    auto& st = apvts.state;
+    if (!r.valid) {
+        for (auto id : { "presetKind", "presetFolder", "presetFile", "presetName", "presetNumber" }) st.removeProperty(id, nullptr);
+    } else {
+        st.setProperty("presetKind", r.factory ? "factory" : "user", nullptr);
+        st.setProperty("presetFolder", r.folder, nullptr);
+        st.setProperty("presetFile", r.fileName, nullptr);
+        st.setProperty("presetName", r.name, nullptr);
+        st.setProperty("presetNumber", r.number, nullptr);
+    }
+    presetModified_.store(modified);
+}
+
+void AX330GChainProcessor::clearCurrentPreset() {
+    setCurrentPreset({});
+    for (int k = 1; k <= ax30g::N_SLOTS; ++k) apvts.state.removeProperty("presetUnknown" + String(k), nullptr);
+}
+
+String AX330GChainProcessor::unknownBlockInSlot(int k) const {
+    const String json = apvts.state.getProperty("presetUnknown" + String(k + 1)).toString();
+    if (json.isEmpty()) return {};
+    return JSON::parse(json)["block"].toString();
+}
+
+axpresets::PresetData AX330GChainProcessor::capturePreset(const String& name, int number) const {
+    axpresets::PresetData d;
+    d.name = name;
+    d.number = number;
+    d.mode = pMode->load() >= 0.5f ? "As the unit" : "Open";
+    for (int k = 0; k < ax30g::N_SLOTS; ++k) {
+        auto& s = d.slots[(size_t) k];
+        const String ks(k + 1);
+        const int type = int(pType[k]->load());
+        auto block = ax30g::BlockFactory::create(type);
+        if (!block) {
+            const String json = apvts.state.getProperty("presetUnknown" + ks).toString();
+            if (json.isNotEmpty()) s.original = JSON::parse(json);
+            continue;
+        }
+        s.block = axpresets::blockShortName(type);
+        s.on = pOn[k]->load() > 0.5f;
+        const ax30g::BlockInfo& bi = block->info();
+        for (int i = 0; i < bi.nParams; ++i)
+            if (auto* p = apvts.getParameter("s" + ks + "_" + ax30gParamIdFor(bi.pname[i])))
+                s.params.set(bi.pname[i], fileValueFor(bi.pname[i], *p));
+    }
+    return d;
+}
+
+StringArray AX330GChainProcessor::loadPreset(const axpresets::PresetData& d, const PresetRef& ref) {
+    JUCE_ASSERT_MESSAGE_THREAD
+    constexpr int n = ax30g::N_SLOTS;
+    StringArray warnings;
+    struct Write { RangedAudioParameter* p; float v; };
+    std::vector<Write> slotWrites[n];
+    int newType[n];
+    for (int k = 0; k < n; ++k) {
+        const auto& s = d.slots[(size_t) k];
+        const String ks(k + 1);
+        int t = axpresets::blockTypeForShortName(s.block);
+        if (t < 0) t = 0;   // fromJson() has already moved an unknown block into s.original
+        newType[k] = t;
+        if (auto block = ax30g::BlockFactory::create(t)) {
+            const ax30g::BlockInfo& bi = block->info();
+            for (int i = 0; i < bi.nParams; ++i) {
+                const String pname(bi.pname[i]);
+                auto* p = apvts.getParameter("s" + ks + "_" + ax30gParamIdFor(bi.pname[i]));
+                if (p == nullptr) continue;
+                const float def = p->convertTo0to1(hostFromBlock(pname, bi.pdef[i]));
+                float v = def;
+                if (s.params.contains(pname)) {
+                    String note;
+                    v = normFromFileValue(pname, *p, s.params[Identifier(pname)], def, note);
+                    if (note.isNotEmpty()) warnings.add("Slot " + ks + " " + s.block + " " + pname + ": " + note + ".");
+                }
+                slotWrites[k].push_back({ p, v });
+            }
+            for (int i = 0; i < s.params.size(); ++i) {
+                bool known = false;
+                for (int j = 0; j < bi.nParams && !known; ++j) known = s.params.getName(i).toString() == bi.pname[j];
+                if (!known) warnings.add("Slot " + ks + " " + s.block + ": \"" + s.params.getName(i).toString() + "\" is not one of its controls; ignored.");
+            }
+        }
+        auto* on = apvts.getParameter("s" + ks + "_on");
+        slotWrites[k].push_back({ on, t > 0 && s.on ? 1.0f : 0.0f });
+        auto* type = apvts.getParameter("s" + ks + "_type");
+        slotWrites[k].push_back({ type, type->convertTo0to1((float) t) });   // Type LAST in each slot
+    }
+
+    // Same guard as moveSlot(): the timer runs on this thread, so it cannot fire
+    // before this function returns, and by then every pType[] equals seenType[].
+    suppressModified_.store(true);
+    for (int k = 0; k < n; ++k) seenType[k] = newType[k];
+    moveInProgress_.store(true, std::memory_order_release);
+    auto write = [](RangedAudioParameter* p, float v) {
+        if (p == nullptr || p->getValue() == v) return;
+        p->beginChangeGesture();
+        p->setValueNotifyingHost(v);
+        p->endChangeGesture();
+    };
+    for (int k = 0; k < n; ++k)
+        for (auto& w : slotWrites[k]) write(w.p, w.v);
+    if (auto* mode = apvts.getParameter("mode")) write(mode, d.mode == "As the unit" ? 1.0f : 0.0f);
+    moveInProgress_.store(false, std::memory_order_release);
+    suppressModified_.store(false);
+
+    for (int k = 0; k < n; ++k) {
+        const Identifier id("presetUnknown" + String(k + 1));
+        const auto& orig = d.slots[(size_t) k].original;
+        if (orig.getDynamicObject() != nullptr) apvts.state.setProperty(id, axpresets::writeJson(orig), nullptr);   // fromJson() already warned
+        else {
+            apvts.state.removeProperty(id, nullptr);
+        }
+    }
+    setCurrentPreset(ref);   // also clears the modified flag
+    return warnings;
 }
 
 AudioProcessor* JUCE_CALLTYPE createPluginFilter() { return new AX330GChainProcessor(); }

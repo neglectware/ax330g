@@ -94,7 +94,7 @@ String groupFor(int type) {
 
 // ---- fixed design coordinates (the approved mockup, 820 x 660) ----------------
 const Rectangle<float> kPlate(14.0f, 12.0f, 792.0f, 183.0f);   // bottom at 195, the face's 1 px black line
-const Rectangle<int> kLcd(272, 50, 340, 107);
+const Rectangle<int> kLcd(272, 39, 340, 107);   // 0.10.0: up from y 50, top aligned with the slot digit box, for the preset bar
 const Rectangle<int> kInputKnob(30, 94, 46, 46), kOutputKnob(94, 94, 46, 46);
 const Point<float> kPeakCentre(170.0f, 141.0f);
 const Rectangle<float> kDigitBox(750.0f, 39.0f, 40.0f, 54.0f);
@@ -273,6 +273,19 @@ AxMainPanel::AxMainPanel(AX330GChainProcessor& p, axlcd::LcdDisplay& l)
     selected = jlimit(0, ax30g::N_SLOTS - 1, saved - 1);
     setSize(kW, kH);
     rebuildDetail(true);
+
+    // --- PRESETS (0.10.0) ----------------------------------------------------------
+    presets = std::make_unique<axpresetui::PresetController>(proc, *this, kLcd);
+    presets->onPresetLoaded = [this] {
+        shownType = -1;   // rebuild the detail panel even if the selected slot's type did not change
+        poll();
+        if (onChainChanged) onChainChanged();
+    };
+    lcd.onClick = [this] { presets->toggleBrowser(); };
+    lcd.onDoubleClick = [this] { presets->closeBrowser(); };
+    lcd.setTitle("LCD");
+    lcd.setDescription("Click to open the preset browser");
+    lcd.setMouseCursor(MouseCursor::PointingHandCursor);
     poll();
 }
 
@@ -299,11 +312,19 @@ void AxMainPanel::resized() {
     if (drag.from >= 0) layoutDragTiles(false);
     else for (int i = 0; i < ax30g::N_SLOTS; ++i) tiles[(size_t) i]->setBounds(tileBounds(i));
     layoutDetail();
+    if (presets != nullptr) {
+        presets->browser.setBounds(getLocalBounds());
+        presets->sheet.setBounds(getLocalBounds());
+    }
     staticImage = {};
 }
 
 void AxMainPanel::poll() {
-    for (int k = 0; k < ax30g::N_SLOTS; ++k) tiles[(size_t) k]->setState(k == selected, typeOf(k), onOf(k));
+    for (int k = 0; k < ax30g::N_SLOTS; ++k) {
+        tiles[(size_t) k]->setState(k == selected, typeOf(k), onOf(k));
+        tiles[(size_t) k]->setUnknownBlock(typeOf(k) == 0 ? proc.unknownBlockInSlot(k) : String());
+    }
+    if (presets != nullptr) presets->refresh();
     // A restored session (setStateInformation) may carry another selection.
     const int saved = jlimit(1, ax30g::N_SLOTS, (int) proc.apvts.state.getProperty("uiSelectedSlot", selected + 1));
     if (saved - 1 != selected) selectSlot(saved - 1, false);
@@ -358,6 +379,11 @@ void AxMainPanel::rebuildDetail(bool slotChanged) {
     }
     shownType = type;
     stereoIn.setVisible(hasStereo);
+    // New cells are added on top; the preset browser and dialog must stay above them.
+    if (presets != nullptr) {
+        presets->browser.toFront(false);
+        presets->sheet.toFront(false);
+    }
     layoutDetail();
     repaint(kDetail.toNearestInt());
 }
@@ -489,6 +515,20 @@ void AxMainPanel::paintStatic(Graphics& g) const {
         pill.addRoundedRectangle(pr.toFloat(), 13.0f);
         dropShadow(g, pill, Colours::black.withAlpha(0.6f), 2, 2.0f);
     }
+    // Preset bar (0.10.0): the keys' shadows, as the Mode pills'; the name field's
+    // bezel highlight, as the LCD's (1 px of white 18 % under it).
+    {
+        const auto bar = axpresetui::PresetBar::frameInPanel();
+        for (auto kr : { Rectangle<int>(0, 0, 26, 26), Rectangle<int>(206, 0, 26, 26), Rectangle<int>(240, 0, 66, 26), Rectangle<int>(314, 0, 26, 26) }) {
+            Path key;
+            key.addRoundedRectangle(kr.translated(bar.getX(), bar.getY()).toFloat(), 13.0f);
+            dropShadow(g, key, Colours::black.withAlpha(0.6f), 2, 2.0f);
+        }
+        Path field;
+        field.addRoundedRectangle(Rectangle<int>(32, 0, 168, 26).translated(bar.getX(), bar.getY()).toFloat(), 5.0f);
+        g.setColour(Colours::white.withAlpha(0.18f));
+        g.fillPath(field, AffineTransform::translation(0.0f, 1.0f));
+    }
 
     // CHAIN header and tile shadows.
     {
@@ -614,19 +654,33 @@ void AxMainPanel::paint(Graphics& g) {
     paintSlotDigit(g);
 
     // Detail header texts.
-    const String group = "SLOT " + String(selected + 1) + " " + String::fromUTF8("\xc2\xb7") + " " + groupFor(shownType);
+    const String unknownHere = shownType <= 0 ? proc.unknownBlockInSlot(selected) : String();
+    const String group = "SLOT " + String(selected + 1) + " " + String::fromUTF8("\xc2\xb7") + " "
+                       + (unknownHere.isNotEmpty() ? String("NOT AVAILABLE") : groupFor(shownType));
     axui::drawText(g, group, axui::font(Face::NarrowBold, 11.0f, 1.4f), hex(axui::col::groupBlue), 34.0f,
                    axui::baselineFromTop(Face::NarrowBold, 11.0f, 330.0f));
     const float nameTop = 330.0f + axui::lineEm(Face::NarrowBold) * 11.0f + 2.0f;
-    axui::drawText(g, axui::SlotTile::nameFor(shownType), axui::font(Face::Bold, nameFontPx), Colours::white, 34.0f,
+    axui::drawText(g, unknownHere.isNotEmpty() ? unknownHere : axui::SlotTile::nameFor(shownType), axui::font(Face::Bold, nameFontPx),
+                   unknownHere.isNotEmpty() ? hex(0x8e99ab) : Colours::white, 34.0f,
                    axui::baselineFromTop(Face::Bold, nameFontPx, nameTop));
     const auto lf = axui::font(Face::Regular, 13.0f);
     const float lb = axui::baselineCentred(Face::Regular, 13.0f, kHeaderCentreY);
     axui::drawText(g, "Effect", lf, hex(axui::col::textLabel), effectLabelRight, lb, Justification::right);
     if (hasStereo) axui::drawText(g, "Stereo In", lf, hex(axui::col::textLabel), stereoLabelRight, lb, Justification::right);
-    if (shownType <= 0)
-        axui::drawText(g, "Choose an effect for this slot.", axui::font(Face::Regular, 14.0f), hex(axui::col::textDim),
-                       410.0f, axui::baselineCentred(Face::Regular, 14.0f, kKnobRowCentreY), Justification::horizontallyCentred);
+    if (shownType <= 0) {
+        const String unknown = proc.unknownBlockInSlot(selected);
+        if (unknown.isNotEmpty()) {
+            axui::drawText(g, "This preset has " + unknown + " in this slot. This version does not have " + unknown + " yet.",
+                           axui::font(Face::Regular, 14.0f), hex(axui::col::textLabel), 410.0f,
+                           axui::baselineCentred(Face::Regular, 14.0f, kKnobRowCentreY - 11.0f), Justification::horizontallyCentred);
+            axui::drawText(g, "Saving the preset keeps it. Choosing an effect here replaces it.", axui::font(Face::Regular, 14.0f),
+                           hex(axui::col::textDim), 410.0f, axui::baselineCentred(Face::Regular, 14.0f, kKnobRowCentreY + 11.0f),
+                           Justification::horizontallyCentred);
+        } else {
+            axui::drawText(g, "Choose an effect for this slot.", axui::font(Face::Regular, 14.0f), hex(axui::col::textDim),
+                           410.0f, axui::baselineCentred(Face::Regular, 14.0f, kKnobRowCentreY), Justification::horizontallyCentred);
+        }
+    }
     if (uiLog) std::fprintf(stderr, "UILOG   panel paint: static blit %.3f ms, dynamic %.3f ms\n", tStatic - paintStartMs, Time::getMillisecondCounterHiRes() - tStatic);
 }
 
@@ -746,6 +800,10 @@ void AxMainPanel::testTrigger(const String& what) {
         else if (kind == "led") b = &tiles[(size_t) jlimit(0, 7, arg.getIntValue() - 1)]->led;
         else if (kind == "mode") b = arg == "unit" ? static_cast<Button*>(&unitPill) : static_cast<Button*>(&openPill);
         else if (kind == "stereo") b = arg == "stereo" ? static_cast<Button*>(&stereoIn.stereo) : static_cast<Button*>(&stereoIn.mono);
+        else if (presets != nullptr && presets->testTrigger(kind, arg)) {
+            std::fprintf(stderr, "UITRIGGER %s -> done\n", item.toRawUTF8());
+            continue;
+        }
         else if (kind == "move") {   // "move:2>5", 1-based
             const int f = arg.upToFirstOccurrenceOf(">", false, false).getIntValue() - 1, t = arg.fromFirstOccurrenceOf(">", false, false).getIntValue() - 1;
             moveBlock(jlimit(0, 7, f), jlimit(0, 7, t));
@@ -782,6 +840,13 @@ void AxMainPanel::logLayout(const String& why, float scale) const {
     line("paint peak LED", Rectangle<float>(11.0f, 11.0f).withCentre(kPeakCentre));
     line("paint slot digit box", kDigitBox);
     line("paint detail panel", kDetail);
+    line("preset bar", axpresetui::PresetBar::frameInPanel().toFloat());
+    if (presets != nullptr) {
+        for (auto* c : std::initializer_list<Component*>{ &presets->bar.prev, &presets->bar.field, &presets->bar.next, &presets->bar.save, &presets->bar.more })
+            line("  " + c->getTitle(), getLocalArea(c, c->getLocalBounds().toFloat()));
+        line("preset browser card", axpresetui::PresetBrowser::cardInPanel().toFloat());
+        if (presets->sheet.isVisible()) line("preset sheet card", presets->sheet.cardBounds().toFloat());
+    }
     for (int i = 0; i < ax30g::N_SLOTS; ++i) line("paint tile shadow " + String(i + 1), tileBounds(i).toFloat());
     std::fprintf(stderr, "UILOG   baselines: logo %.2f, sublines %.2f/%.2f/%.2f, INPUT/OUTPUT %.2f, readouts (centre) %.2f, PEAK %.2f, SLOT %.2f, MODE %.2f, chain header %.2f\n",
                  kLogoBaseline, axui::baselineFromTop(Face::NarrowBold, 9.0f, 61.0f, 10.0f), axui::baselineFromTop(Face::NarrowBold, 9.0f, 71.0f, 10.0f),
@@ -882,6 +947,8 @@ void AX330GChainEditor::timerCallback() {
     if (paintBench) panel.repaint();
     if (++ticks == 30)
         if (const char* t = std::getenv("AX330G_UI_TRIGGER")) panel.testTrigger(t);
+    if (ticks == 60)
+        if (const char* t = std::getenv("AX330G_UI_TRIGGER2")) panel.testTrigger(t);
 }
 
 // Row 1: one 4-char abbreviation per active slot (type > 0), in slot order,
@@ -911,11 +978,27 @@ juce::String AX330GChainEditor::buildChainString() const {
     return parts.joinIntoString("-");
 }
 
-// Row 0 is "--- " + the program name; apvts.state is the same ValueTree
-// getStateInformation()/setStateInformation() (de)serialise, so this
-// survives a save/reload even though there's no editor UI yet to change it
-// (docs/lcd-startup-2026-09-22.md).
+// Row 0 is the program line (0.10.0). The unit shows a program as its number
+// field then the name -- "U11 HOSTILE", "A11 AX-ZONE", "P 1 HOSTILE"
+// (docs/chain-rules-2026-09-17.md 6.3 and 8) -- so a preset shows as its number
+// in three digits ("012 ETHERBUNNY"), or "---" when it has none, then a space and
+// the name, cut at 16 characters. With no preset: "--- INIT". The unit has no
+// documented edited mark in play mode; while the preset is modified the last
+// character shown is "*" (right after the name, or in column 16). Characters
+// outside the LCD's ROM (0x20-0x7D) show as "?".
+juce::String AX330GChainEditor::programLine(const AX330GChainProcessor::PresetRef& ref, bool modified) {
+    if (!ref.valid) return "--- INIT";
+    String name;
+    for (auto p = ref.name.getCharPointer(); !p.isEmpty();) {
+        const juce_wchar c = p.getAndAdvance();
+        name << ((c >= 0x20 && c <= 0x7d) ? String::charToString(c) : String("?"));
+    }
+    String line = (ref.number >= 0 ? String(ref.number).paddedLeft('0', 3) : String("---")) + " " + name;
+    line = line.substring(0, modified ? 15 : 16);
+    return modified ? line + "*" : line;
+}
+
 void AX330GChainEditor::updatePlayPage() {
-    const String programName = proc.apvts.state.getProperty("programName", "INIT").toString();
-    lcd.setPlayPage("--- " + programName, buildChainString());
+    const auto ref = proc.currentPreset();
+    lcd.setPlayPage(programLine(ref, ref.valid && proc.isPresetModified()), buildChainString());
 }

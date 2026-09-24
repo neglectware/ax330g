@@ -5,6 +5,7 @@
 #include "dsp/chain_stage.h"
 #include "dsp/input_stage.h"
 #include "dsp/resampler.h"
+#include "presets/Presets.h"
 #include <deque>
 #include <climits>
 #include <string>
@@ -45,7 +46,8 @@
 // thread's chain-rebuild tracker), and is resynced in setStateInformation()
 // so loading a saved project never looks like a fresh Type change and
 // clobbers restored values.
-class AX330GChainProcessor : public juce::AudioProcessor, private juce::Timer {
+class AX330GChainProcessor : public juce::AudioProcessor, private juce::Timer,
+                             private juce::AudioProcessorValueTreeState::Listener {
 public:
     AX330GChainProcessor();
     ~AX330GChainProcessor() override;
@@ -140,7 +142,44 @@ public:
     // defaults over the moved values; see the definition for the ordering.
     void moveSlot(int from, int to);
 
+    // ---- presets (0.10.0 build 22; src/presets/Presets.h has the file format) ----
+    // The current preset is kept in apvts.state (so it is saved with the session and
+    // a reopened project shows the same name without reading the file again):
+    // "presetKind" ("factory"/"user"; absent = no preset, the LCD shows INIT),
+    // "presetFolder" ("" = Unfiled), "presetFile", "presetName", "presetNumber" (-1
+    // none), and "presetUnknown<k>" (k 1..8): the JSON of a slot whose block this
+    // version does not know, written back on Save while that slot stays empty; it
+    // moves with moveSlot() and is dropped when a block is chosen for the slot. The
+    // modified flag is presetModified_, written into the saved state as
+    // "presetModified" by getStateInformation().
+    struct PresetRef {
+        bool valid = false, factory = false;
+        juce::String folder, fileName, name;
+        int number = -1;
+    };
+    PresetRef currentPreset() const;
+    bool isPresetModified() const noexcept { return presetModified_.load(std::memory_order_relaxed); }
+    // Message thread. Writes every slot (type, on, and every parameter the block
+    // uses -- missing ones get the block's BlockInfo default) and Mode, with the
+    // same guard moveSlot() uses: seenType[] is set to the new types first, so the
+    // Type-defaults timer cannot push defaults over the loaded values, and
+    // moveInProgress_ keeps applyParams() off the half-written chain. Per slot the
+    // parameters and On are written before the Type, each as a host gesture.
+    // Input/Output are not touched. Clears the modified flag. Returns warnings
+    // (values clamped, unknown controls, blocks not in this version).
+    juce::StringArray loadPreset(const axpresets::PresetData&, const PresetRef&);
+    // The current settings as a preset (the unknown-block slots kept, see above).
+    axpresets::PresetData capturePreset(const juce::String& name, int number) const;
+    // After a Save / Save As (modified = false) or a rename (keeps the flag).
+    void setCurrentPreset(const PresetRef&, bool modified = false);
+    void clearCurrentPreset();   // back to "INIT" (no preset)
+    // The short name of the unknown block kept for slot k (0-based), or "".
+    juce::String unknownBlockInSlot(int k) const;
+    axpresets::Library& presetLibrary() noexcept { return library_; }
+    static juce::String pluginVersionString();   // "0.10.0 build 22"
+
 private:
+    void parameterChanged(const juce::String& id, float) override;   // any thread: marks the preset modified
     static constexpr double kDeviceRate = 39062.5;
     // Resampler half-length multiplier (dsp/resampler.h): 100 is flat to
     // 19 kHz round-trip, matching the measured converter chain's own
@@ -189,6 +228,10 @@ private:
     // block while it is set, so the audio thread does not rebuild a slot from
     // a half-written move (it catches up on the next block).
     std::atomic<bool> moveInProgress_{false};
+
+    axpresets::Library library_;
+    std::atomic<bool> presetModified_{false};
+    std::atomic<bool> suppressModified_{false};   // set while loadPreset()/setStateInformation() write parameters
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AX330GChainProcessor)
 };

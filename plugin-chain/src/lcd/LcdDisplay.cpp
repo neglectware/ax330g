@@ -363,7 +363,12 @@ void LcdDisplay::mouseWheelMove(const MouseEvent&, const MouseWheelDetails& whee
     if (!bootRunning_) applyPlayPageToDdram();
 }
 
+void LcdDisplay::mouseUp(const MouseEvent& e) {
+    if (e.mouseWasClicked() && e.getNumberOfClicks() == 1 && !e.mods.isPopupMenu() && onClick) onClick();
+}
+
 void LcdDisplay::mouseDoubleClick(const MouseEvent&) {
+    if (onDoubleClick) onDoubleClick();
     startBootSequence(Time::getMillisecondCounterHiRes() / 1000.0);
 }
 

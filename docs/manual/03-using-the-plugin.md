@@ -20,7 +20,7 @@ The plugin sends the audio through these stages, in this order:
 
 The editor has these parts, from top to bottom:
 
-1. **The face.** A blue plate, like the unit's own. It holds the AX330G logo, the **Input** and **Output** knobs, the **Peak** LED, and the LCD. It also holds a red digit that shows the selected slot, and the **Mode** keys.
+1. **The face.** A blue plate, like the unit's own. It holds the AX330G logo, the **Input** and **Output** knobs, the **Peak** LED, and the LCD. Below the LCD is the preset bar (see 3.10). The face also holds a red digit that shows the selected slot, and the **Mode** keys.
 2. **Signal chain.** Eight tiles, one for each slot. Click a tile to edit that slot in the panel below it.
 3. **The editing panel.** The controls for the slot you selected.
 4. **Size.** The whole editor scales as one piece. See "Change the size" below.
@@ -140,7 +140,7 @@ The **Mode** keys are two buttons on the face: **OPEN** and **AS THE UNIT**. A l
 | Open | Each slot can hold any block, in any order. |
 | As the unit | Reserved for a future version. |
 
-In version 0.9.1, the Mode keys have no effect on the sound. Both keys give the Open behavior.
+In version 0.10.0, the Mode keys have no effect on the sound. Both keys give the Open behavior.
 
 A future version will use "As the unit" to apply the chain rules of the unit. For example, the unit puts the 3-Band EQ last in Block 1, and it has no Stereo Chorus.
 
@@ -301,13 +301,14 @@ The start-up sequence plays when the editor opens for the first time in a plugin
 
 The sequence does not play again when you close the editor and open it again.
 
-To play the sequence again, double-click the LCD.
+To play the sequence again, double-click the LCD. A single click on the LCD opens the preset browser (see 3.10).
 
 ### The play page
 
 The play page has two lines:
 
-- Line 1 shows "--- INIT". This line is a placeholder. A future version with programs will show the program number and name here, as the unit does.
+- Line 1 shows the preset: a 3-digit number, a space, and the name, for example "012 ETHERBUNNY". The unit shows its programs in the same way, for example "A11 AX-ZONE". A preset without a number shows "---" in place of the number. With no preset, line 1 shows "--- INIT".
+- If you changed the preset after you loaded or saved it, the last character of line 1 is "*". The unit does not have this mark.
 - Line 2 shows the chain line.
 
 The chain line shows one 4-character abbreviation for each slot that holds a block, in slot order. A hyphen separates the abbreviations. An empty slot does not show. If all slots are empty, the line shows "(EMPTY CHAIN)".
@@ -340,6 +341,112 @@ The plugin tells the host that its tail is 10 s long. The tail is the time that 
 
 ## 3.9 Save your work
 
-The plugin saves all parameter values in the host project. The host saves them when you save the project.
+The plugin saves all parameter values in the host project. The host saves them when you save the project. The project also keeps the name of the current preset and its changed state. When you open the project again, the editor shows the same preset name. The plugin does not read the preset file again. The settings come from the project.
 
-The plugin has no program library in this version. Use the preset function of the host to save and load complete plugin states.
+To keep settings for use in other projects, save a preset (see 3.10). The preset function of the host also operates.
+
+## 3.10 Presets
+
+A preset is a set of settings for the eight slots. The plugin keeps each preset in its own file.
+
+### What a preset contains
+
+A preset contains:
+
+- The block in each slot, and its on or off state.
+- The value of each parameter of each block.
+- The Mode.
+- A name, and an optional number from 0 to 999.
+
+A preset does not contain the **Input** and **Output** values. These controls set the level between the host and the plugin. They are not part of a program on the unit. A preset also does not contain the editor size or the selected slot.
+
+### The preset bar
+
+The preset bar is below the LCD. It has these controls, from left to right:
+
+- **◀** loads the preceding preset in the current folder.
+- The name field shows the folder and the name of the current preset. A lock shows a factory preset. If the name is long, the field shows only the name. Click the field to open the browser.
+- **▶** loads the next preset in the current folder. After the last preset, it loads the first preset again. The program keys of the unit move through its programs in the same way.
+- **SAVE** saves the current preset. Its light comes on when you change the preset.
+- **⋯** opens a menu with more preset functions.
+
+### The browser
+
+To open the browser, click the name field or the LCD. The browser has two columns:
+
+- The left column shows the folders. The factory folders come first, with a lock. Your folders come next, in alphabetical order. The last folder is "Unfiled".
+- The right column shows the presets in the selected folder. Presets with a number come first, in number order. The other presets come after them, in alphabetical order.
+
+To use the browser, do one of these steps:
+
+- Click a preset to load it. The browser stays open, so you can listen to more presets.
+- Double-click a preset to load it and close the browser.
+- Push the Up Arrow or the Down Arrow to load the preceding or the next preset. Push the Return key to close the browser.
+- Right-click a folder or a preset for more functions.
+
+To close the browser, push the Escape key, click **Close**, or click outside the browser.
+
+If you changed the current preset, the browser shows "edited" next to its name. Click the preset again to go back to its saved settings.
+
+If the plugin changed a value in a preset file, the browser shows a message at its bottom. For example, the plugin decreases a value that is more than the maximum of its parameter.
+
+### Save a preset
+
+To save changes to the current preset, click **SAVE**. The light of **SAVE** goes off.
+
+To save a new preset, do these steps:
+
+1. Click **⋯** and select **Save As**. Or click **Save As** in the browser.
+2. Type a name.
+3. If you want a number, type it in the **Number** field. The number is optional.
+4. Select a folder. To make a new folder, select **New Folder** in the folder list.
+5. Click **Save**.
+
+If a preset with the same name is in that folder, the plugin asks before it replaces the file.
+
+You cannot change a factory preset. If you click **SAVE** with a factory preset loaded, the plugin opens **Save As**. Save your changes in one of your folders.
+
+### Folders
+
+You can make, rename and delete your own folders. You cannot change the factory folders. A folder can hold presets only; a folder in a folder does not show.
+
+To make a folder, click **New Folder** in the browser, or click **⋯** and select **New Folder**.
+
+To rename or delete a folder, right-click it in the browser. The **⋯** menu also has these functions for the folder of the current preset.
+
+If one of your folders has the same name as a factory folder, the browser shows both. The lock shows which one is the factory folder.
+
+### Rename, duplicate and delete a preset
+
+Right-click a preset in the browser, or use the **⋯** menu for the current preset:
+
+- **Rename** changes the name and the file name.
+- **Duplicate** makes a copy with "copy" added to its name, in the same folder. A copy of a factory preset goes to "Unfiled".
+- **Delete** moves the file to the Trash on macOS, or to the Recycle Bin on Windows. You can get it back from there.
+
+CAUTION: The plugin does not ask before it loads a preset. If you changed the current preset, save it before you load a different preset. If you do not, you lose the changes.
+
+### Where the files are
+
+Your presets are files with the extension `.ax330g`, in this folder:
+
+- macOS: `Documents/Neglectware/AX330G/Presets` in your home folder.
+- Windows: `Documents\Neglectware\AX330G\Presets`.
+
+The plugin makes this folder when it first needs it. Each folder in it is a folder in the browser. A preset file directly in it shows in "Unfiled".
+
+To see a preset file, click **⋯** and select **Show in Finder** on macOS or **Show in Explorer** on Windows.
+
+The factory presets are in the plugin itself. They are not files on your computer. Version 0.10.0 has no factory presets.
+
+### Share a preset
+
+To give a preset to a different person, send the `.ax330g` file. The other person puts the file in a folder in the presets folder. The browser reads the folders again each time it opens.
+
+A preset file is a text file in JSON format. The file shows each value in the units that the editor shows, for example `"L Dly": 123` for 123 ms. You can read the file in a text editor.
+
+### Blocks that are not in this version
+
+A preset from a later version of the plugin can contain a block that this version does not have. The plugin loads that slot as an empty slot. The tile shows the name of the block in gray and "Not available". The editing panel tells you which block it was.
+
+The plugin keeps that block in the preset. When you save the preset, the plugin writes the block back to the file with no change. If you select an effect for that slot, the new effect replaces the block.

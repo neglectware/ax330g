@@ -1,6 +1,6 @@
 # AX330G User Manual
 
-This manual is for AX330G **version 0.9.1, build 21**. The editor's right-click menu shows the version and the build number.
+This manual is for AX330G **version 0.10.0, build 22**. The editor's right-click menu shows the version and the build number.
 
 This manual uses ASD-STE100 Simplified Technical English.
 
@@ -11,6 +11,7 @@ Directed by Mark O'Brien. Written by Claude (Anthropic). Published by Neglectwar
 1. [Introduction](01-introduction.md)
 2. [Installation](02-installation.md)
 3. [Use the plugin](03-using-the-plugin.md)
+   - [Presets](03-using-the-plugin.md#310-presets)
 4. [The effect blocks](04-blocks/README.md)
    - [Stereo Delay (SDLY)](04-blocks/stereo-delay.md)
    - [Mod Delay (MODD)](04-blocks/mod-delay.md)

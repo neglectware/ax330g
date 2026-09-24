@@ -36,6 +36,8 @@ RS=(rsync -a --delete --prune-empty-dirs
 cp "$HERE/tools/make-installer.sh" "$HERE/tools/export-public.sh" "$DEST/tools/"
 cp "$HERE/Makefile" "$DEST/Makefile"
 "${RS[@]}" "$HERE/docs/manual/" "$DEST/docs/manual/"
+# Factory presets (0.10.0): plugin-chain/CMakeLists.txt bundles presets/factory/*/*.ax330g.
+"${RS[@]}" "$HERE/presets/" "$DEST/presets/"
 # The public README, LICENSE, .gitignore and the Windows build's install
 # note live in public/ here and are copied to the repo root.
 cp "$HERE/public/README.md" "$HERE/public/LICENSE" "$HERE/public/.gitignore" "$HERE/public/INSTALL-Windows.txt" "$DEST/"

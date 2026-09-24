@@ -50,11 +50,13 @@ NOTE: The Distortion 1 of the unit uses an analog diode clip circuit outside the
 
 **Not in the plugin yet**, for every item below.
 
-- Programs: the user programs, the preset programs, the program names, and program write and compare.
+- The unit's own programs. The plugin has presets and folders (see [3.10](03-using-the-plugin.md#310-presets)), but the preset programs and user programs of the unit are not in the plugin yet. The factory folders are empty in this version.
+- Program compare. The plugin marks a changed preset, but it cannot compare the changed values with the saved values.
+- The rules of the unit for program names: a maximum of 10 characters from the character set of the display. The plugin accepts longer names and other characters. The LCD shows the first characters only, and shows "?" for a character that its font does not have.
 - The chain rules of the unit. The plugin lets any block go in any slot, in any order. The Mode menu item "As the unit" does not apply these rules yet.
-- The pressure pedal and the expression pedal input, and the pedal assignment of parameters.
+- The pressure pedal and the expression pedal input, and the pedal assignment of parameters. A preset does not store a pedal assignment.
 - The IPE variation library of the unit.
-- Total Level, the per-program output level.
+- Total Level, the per-program output level. A preset does not store it.
 - The Individual on/off function of the program switches.
 - The tuner.
 - The AUX input and the headphone output.
@@ -111,7 +113,8 @@ Version 0.8.6 fixed the routing of the Mod Delay, the Reverb and the Stereo Mod 
 
 ## 6.9 The LCD
 
-- **Not in the plugin yet.** Line 1 of the play page is a placeholder, "--- INIT". The unit shows the program number and the program name here; the plugin has no program library yet.
+- **Deliberate difference.** Line 1 of the play page shows a preset number with three digits, for example "012". The unit uses a bank letter and two digits, for example "A11" or "U11", or "P" and a number for its preset programs. The plugin's presets are not in banks.
+- **Deliberate difference.** Line 1 shows "*" at its end when the preset has changes. The manuals of the unit do not show such a mark in the play page.
 - **Not in the plugin yet.** The LCD shows only the play page. The edit pages of the unit are not in the plugin.
 
 ## 6.10 Operating systems
