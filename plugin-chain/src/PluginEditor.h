@@ -36,6 +36,13 @@
 // "preset:2", "next", "saveas", "menu", ...). AX330G_UI_TRIGGER2 runs a second
 // list 1.5 s after the first (e.g. open the browser, then a row's menu).
 //
+// 0.11.0 build 23: banks and numbers (see src/presets/Presets.h). The face follows
+// the unit: Input / Output on the right with the Peak LED between them, on the line
+// through the knobs' top edges; one OPEN MODE key under them (lit red legend = Open,
+// washed-out = as the unit); on the left under the logo, SLOT (7-segment) and BANK
+// (14-segment, the current preset's bank letter) displays. The logo's G is an outline.
+// AX330G_UI_TRIGGER gains "bankshow:<c>" (show <c> on the BANK display, testing).
+//
 // Presets (0.10.0 build 22): the LCD moved up to y 39 (its top now lines up with
 // the slot digit box) and the preset bar sits under it at (272,156,340,26), its
 // bottom on the AS THE UNIT pill's; see src/presets/PresetUi.h.
@@ -95,7 +102,7 @@ private:
     void rebuildDetail(bool slotChanged);
     void layoutDetail();
     void paintStatic(juce::Graphics&) const;
-    void paintSlotDigit(juce::Graphics&) const;
+    void paintDigits(juce::Graphics&) const;
     void showSizeMenu();
 
     // Drag-to-reorder: see the class comment above.
@@ -119,8 +126,10 @@ private:
     // FACE
     std::unique_ptr<axui::ParamKnob> inputKnob, outputKnob;
     axui::ValueText inputValue { axui::ValueText::Style::Plain }, outputValue { axui::ValueText::Style::Plain };
-    axui::ModePill openPill { "OPEN" }, unitPill { "AS THE UNIT" };
+    axui::ModeButton modeButton;
     bool peakLit = false;
+    juce::String shownBank;      // the BANK display's letter, "" = "-"
+    juce::String bankOverride;   // test hook ("bankshow:R")
 
     // CHAIN
     std::array<std::unique_ptr<axui::SlotTile>, ax30g::N_SLOTS> tiles;

@@ -20,7 +20,10 @@ The plugin sends the audio through these stages, in this order:
 
 The editor has these parts, from top to bottom:
 
-1. **The face.** A blue plate, like the unit's own. It holds the AX330G logo, the **Input** and **Output** knobs, the **Peak** LED, and the LCD. Below the LCD is the preset bar (see 3.10). The face also holds a red digit that shows the selected slot, and the **Mode** keys.
+1. **The face.** A blue plate, like the unit's own. The face has these parts:
+   - At the left: the AX330G logo, and below it two red LED displays. **SLOT** shows the selected slot. **BANK** shows the bank letter of the current preset (see 3.10).
+   - At the center: the LCD, and below it the preset bar (see 3.10).
+   - At the right, as on the unit: the **Input** and **Output** knobs, with the **Peak** LED between them. Below them is the **OPEN MODE** key (see 3.5).
 2. **Signal chain.** Eight tiles, one for each slot. Click a tile to edit that slot in the panel below it.
 3. **The editing panel.** The controls for the slot you selected.
 4. **Size.** The whole editor scales as one piece. See "Change the size" below.
@@ -108,7 +111,7 @@ WARNING: A high Input value with a high Output value can make a very loud output
 
 ## 3.4 The Peak LED
 
-The **Peak** LED is a model of the Peak LED of the unit. On the unit, the converter's overload flag drives this LED.
+The **Peak** LED is a model of the Peak LED of the unit. On the unit, the converter's overload flag drives this LED. The LED is between the **Input** and **Output** knobs, level with the top of the knobs.
 
 The LED comes on when the signal after the pre-emphasis filter reaches a level 1 dB below the full scale of the converter. The LED stays on for 300 ms after the last peak at or above this level.
 
@@ -133,16 +136,16 @@ NOTE: The LED shows the level at the input stage only. It shows this level for a
 
 ## 3.5 Mode
 
-The **Mode** keys are two buttons on the face: **OPEN** and **AS THE UNIT**. A lit dot shows the current mode.
+The **OPEN MODE** key is on the face, below the **Input** and **Output** knobs. Click the key to set Open mode on or off. The legend of the key shows the mode:
 
-| Key | Function |
-|---|---|
-| Open | Each slot can hold any block, in any order. |
-| As the unit | Reserved for a future version. |
+| Legend | Mode | Function |
+|---|---|---|
+| Lit red | Open mode on | Each slot can hold any block, in any order. |
+| Dull red | Open mode off: as the unit | Reserved for a future version. |
 
-In version 0.10.0, the Mode keys have no effect on the sound. Both keys give the Open behavior.
+In version 0.11.0, the mode has no effect on the sound. Both modes give the Open behavior.
 
-A future version will use "As the unit" to apply the chain rules of the unit. For example, the unit puts the 3-Band EQ last in Block 1, and it has no Stereo Chorus.
+A future version will use "as the unit" to apply the chain rules of the unit. For example, the unit puts the 3-Band EQ last in Block 1, and it has no Stereo Chorus.
 
 ## 3.6 The slots
 
@@ -271,7 +274,7 @@ With a mono source, Stereo and Mono give the same output. Claude checked this: t
 
 Put a stereo block early in the chain to keep a wide sound through later blocks. For example, put the Stereo Chorus in Stereo before a Reverb in Stereo.
 
-NOTE: Stereo In fits the spirit of the "Open" mode only. The Mode keys do not enforce this yet.
+NOTE: Stereo In fits the spirit of Open mode only. The **OPEN MODE** key does not enforce this yet.
 
 ### Host automation
 
@@ -307,7 +310,8 @@ To play the sequence again, double-click the LCD. A single click on the LCD open
 
 The play page has two lines:
 
-- Line 1 shows the preset: a 3-digit number, a space, and the name, for example "012 ETHERBUNNY". The unit shows its programs in the same way, for example "A11 AX-ZONE". A preset without a number shows "---" in place of the number. With no preset, line 1 shows "--- INIT".
+- Line 1 shows the preset: the bank letter, a 3-digit number, a space, and the name. For example, the first preset in bank A shows "A001 CLEAN ROOM". The unit shows its programs in the same way, for example "A11 AX-ZONE". The plugin has one more digit, for up to 999 presets in a bank.
+- A preset in a bank without a number shows "A---". A preset that is not in a bank shows "----". With no preset, line 1 shows "---- INIT".
 - If you changed the preset after you loaded or saved it, the last character of line 1 is "*". The unit does not have this mark.
 - Line 2 shows the chain line.
 
@@ -355,34 +359,48 @@ A preset contains:
 
 - The block in each slot, and its on or off state.
 - The value of each parameter of each block.
-- The Mode.
-- A name, and an optional number from 0 to 999.
+- The mode (see 3.5).
+- A name, and a number from 1 to 999.
 
 A preset does not contain the **Input** and **Output** values. These controls set the level between the host and the plugin. They are not part of a program on the unit. A preset also does not contain the editor size or the selected slot.
+
+### Banks and numbers
+
+The plugin keeps presets in banks, as the unit keeps its programs in banks. A bank is a folder of presets with a letter from A to Z.
+
+- Each bank has a different letter. Thus, the plugin can have 26 banks.
+- Each preset in a bank has a number from 001 to 999. Two presets in the same bank cannot have the same number.
+- The bank letter and the number together identify a preset. For example, A003 is preset number 3 in bank A.
+
+The **BANK** display on the face shows the letter of the current preset. It is a 14-segment LED display, so that each letter has a different shape. It shows a dash when no preset is loaded, or when the preset is not in a bank.
+
+The LCD shows the letter and the number before the name (see 3.7).
 
 ### The preset bar
 
 The preset bar is below the LCD. It has these controls, from left to right:
 
-- **◀** loads the preceding preset in the current folder.
-- The name field shows the folder and the name of the current preset. A lock shows a factory preset. If the name is long, the field shows only the name. Click the field to open the browser.
-- **▶** loads the next preset in the current folder. After the last preset, it loads the first preset again. The program keys of the unit move through its programs in the same way.
+- **◀** loads the preceding preset.
+- The name field shows the bank letter, the bank name and the name of the current preset. A lock shows a factory preset. If the name is long, the field shows only the name. Click the field to open the browser.
+- **▶** loads the next preset.
 - **SAVE** saves the current preset. Its light comes on when you change the preset.
 - **⋯** opens a menu with more preset functions.
+
+**◀** and **▶** move through the presets in number order. After the last preset of a bank, **▶** loads the first preset of the next bank. After the last bank, it loads the first preset of bank A. **◀** moves in the opposite direction. The program keys of the unit move through its programs in the same way.
 
 ### The browser
 
 To open the browser, click the name field or the LCD. The browser has two columns:
 
-- The left column shows the folders. The factory folders come first, with a lock. Your folders come next, in alphabetical order. The last folder is "Unfiled".
-- The right column shows the presets in the selected folder. Presets with a number come first, in number order. The other presets come after them, in alphabetical order.
+- The left column shows the banks, in the order of their letters. A factory bank has a lock.
+- The right column shows the presets in the selected bank, in number order. Each preset shows its number. A preset without a number shows "---".
 
 To use the browser, do one of these steps:
 
 - Click a preset to load it. The browser stays open, so you can listen to more presets.
 - Double-click a preset to load it and close the browser.
 - Push the Up Arrow or the Down Arrow to load the preceding or the next preset. Push the Return key to close the browser.
-- Right-click a folder or a preset for more functions.
+- Right-click a bank or a preset for more functions.
 
 To close the browser, push the Escape key, click **Close**, or click outside the browser.
 
@@ -392,36 +410,51 @@ If the plugin changed a value in a preset file, the browser shows a message at i
 
 ### Save a preset
 
-To save changes to the current preset, click **SAVE**. The light of **SAVE** goes off.
+To save changes to the current preset, click **SAVE**. The light of **SAVE** goes off. If the preset has no number, the plugin gives it the next free number in its bank.
 
 To save a new preset, do these steps:
 
 1. Click **⋯** and select **Save As**. Or click **Save As** in the browser.
 2. Type a name.
-3. If you want a number, type it in the **Number** field. The number is optional.
-4. Select a folder. To make a new folder, select **New Folder** in the folder list.
+3. Select a bank. To make a new bank, select **New Bank** in the bank list.
+4. Examine the **Number** field. It shows the first free number in the bank. Type a different number if necessary.
 5. Click **Save**.
 
-If a preset with the same name is in that folder, the plugin asks before it replaces the file.
+The number must be from 1 to 999. If a different preset in the bank has the number, the plugin asks before it replaces that preset. If you click **Replace**, the other preset goes to the Trash or the Recycle Bin.
 
-You cannot change a factory preset. If you click **SAVE** with a factory preset loaded, the plugin opens **Save As**. Save your changes in one of your folders.
+If a preset with the same name is in the bank, the plugin asks before it replaces the file.
 
-### Folders
+You cannot change a factory preset. If you click **SAVE** with a factory preset loaded, the plugin opens **Save As**. Save your changes in one of your banks.
 
-You can make, rename and delete your own folders. You cannot change the factory folders. A folder can hold presets only; a folder in a folder does not show.
+If you have no bank yet, **Save As** first asks you to make a bank.
 
-To make a folder, click **New Folder** in the browser, or click **⋯** and select **New Folder**.
+### Banks
 
-To rename or delete a folder, right-click it in the browser. The **⋯** menu also has these functions for the folder of the current preset.
+You can make, rename and delete your own banks. You cannot change the factory banks. A bank can hold presets only; a folder in a bank does not show.
 
-If one of your folders has the same name as a factory folder, the browser shows both. The lock shows which one is the factory folder.
+To make a bank, do these steps:
+
+1. Click **New Bank** in the browser, or click **⋯** and select **New Bank**.
+2. Type a name.
+3. Select a letter. The list shows only the letters that no other bank uses. The first free letter is the default.
+4. Click **Create**.
+
+When all 26 letters are in use, you cannot make a bank. Delete a bank to make its letter free.
+
+To rename a bank, or to change its letter, right-click the bank in the browser and select **Rename Bank**. The **⋯** menu also has this function for the bank of the current preset.
+
+To delete a bank, right-click it and select **Delete Bank**. The bank goes to the Trash or the Recycle Bin, with its presets.
+
+A factory bank always keeps its letter. If one of your banks has the same letter as a factory bank, the browser shows "?" for your bank, in amber. Its presets show "----" on the LCD. Rename the bank and select a different letter.
+
+NOTE: Banks from version 0.10.0 get a letter the first time the plugin reads them. The plugin writes the letter in the file `bank.json` in the folder of the bank.
 
 ### Rename, duplicate and delete a preset
 
 Right-click a preset in the browser, or use the **⋯** menu for the current preset:
 
-- **Rename** changes the name and the file name.
-- **Duplicate** makes a copy with "copy" added to its name, in the same folder. A copy of a factory preset goes to "Unfiled".
+- **Rename** changes the name and the file name. You can also change the number. The number must be free in the bank.
+- **Duplicate** makes a copy with "copy" added to its name, in the same bank. The copy gets the first free number in the bank. A copy of a factory preset goes to your first bank. If you have no bank, the plugin makes the bank "User Presets".
 - **Delete** moves the file to the Trash on macOS, or to the Recycle Bin on Windows. You can get it back from there.
 
 CAUTION: The plugin does not ask before it loads a preset. If you changed the current preset, save it before you load a different preset. If you do not, you lose the changes.
@@ -433,15 +466,17 @@ Your presets are files with the extension `.ax330g`, in this folder:
 - macOS: `Documents/Neglectware/AX330G/Presets` in your home folder.
 - Windows: `Documents\Neglectware\AX330G\Presets`.
 
-The plugin makes this folder when it first needs it. Each folder in it is a folder in the browser. A preset file directly in it shows in "Unfiled".
+The plugin makes this folder when it first needs it. Each folder in it is a bank. The letter of the bank is in the file `bank.json` in that folder.
+
+A preset file directly in the `Presets` folder is not in a bank. The browser shows such files in "Unfiled", after the banks. They have no letter and no number. When you save one of them, **Save As** opens, and the plugin moves the preset into the bank that you select. The old file goes to the Trash or the Recycle Bin.
 
 To see a preset file, click **⋯** and select **Show in Finder** on macOS or **Show in Explorer** on Windows.
 
-The factory presets are in the plugin itself. They are not files on your computer. Version 0.10.0 has no factory presets.
+The factory presets are in the plugin itself. They are not files on your computer. Version 0.11.0 has no factory presets.
 
 ### Share a preset
 
-To give a preset to a different person, send the `.ax330g` file. The other person puts the file in a folder in the presets folder. The browser reads the folders again each time it opens.
+To give a preset to a different person, send the `.ax330g` file. The other person puts the file in one of their banks. The browser reads the banks again each time it opens. If the number of the preset is already in use in that bank, both presets show in the browser. Rename one of them and give it a free number.
 
 A preset file is a text file in JSON format. The file shows each value in the units that the editor shows, for example `"L Dly": 123` for 123 ms. You can read the file in a text editor.
 

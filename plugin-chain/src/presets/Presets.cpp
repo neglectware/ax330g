@@ -12,6 +12,29 @@ namespace axpresets {
 
 const char* const kExtension = ".ax330g";
 const char* const kUnfiledName = "Unfiled";
+const char* const kBankFile = "bank.json";
+const char* const Library::kDefaultUserBank = "User Presets";
+
+String normaliseLetter(const String& s) {
+    const String t = s.trim().toUpperCase();
+    return t.length() == 1 && t[0] >= 'A' && t[0] <= 'Z' ? t : String();
+}
+
+String presetCode(const String& bank, int number) {
+    if (bank.isEmpty()) return "----";
+    return bank + (number >= 0 ? String(number).paddedLeft('0', 3) : String("---"));
+}
+
+int FolderInfo::nextFreeNumber(int from) const {
+    for (int n = jmax(1, from); n <= kMaxNumber; ++n)
+        if (presetWithNumber(n) == nullptr) return n;
+    return -1;
+}
+
+const PresetInfo* FolderInfo::presetWithNumber(int number) const {
+    for (auto& p : presets) if (p.number == number) return &p;
+    return nullptr;
+}
 
 namespace {
 // BlockFactory entry name -> the unit's short name (the tile / LCD abbreviation).
@@ -211,6 +234,15 @@ String Library::bundleFromDirectory(const File& dir) {
     for (auto& f : files) rel.push_back(f.getRelativePathFrom(dir).replaceCharacter('\\', '/'));
     std::sort(rel.begin(), rel.end());
     for (auto& r : rel) out << "@@PRESET " << r << "\n" << dir.getChildFile(r).loadFileAsString() << "\n";
+    // Bank letters (0.11.0): <Folder>/bank.json, or bank.json at the top for "Factory".
+    std::vector<String> banks;
+    for (auto& f : dir.findChildFiles(File::findFiles, true, kBankFile)) {
+        const String r = f.getRelativePathFrom(dir).replaceCharacter('\\', '/');
+        if (r.containsChar('/') && r.upToFirstOccurrenceOf("/", false, false) + "/" + kBankFile != r) continue;   // one level only
+        banks.push_back(r);
+    }
+    std::sort(banks.begin(), banks.end());
+    for (auto& r : banks) out << "@@BANK " << r << "\n" << dir.getChildFile(r).loadFileAsString() << "\n";
     return out;
 }
 
@@ -240,9 +272,18 @@ void sortFolders(std::vector<FolderInfo>& v) {
 
 void Library::parseFactoryBundle() {
     factoryFolders_.clear();
+    factoryLetters_.clear();
     String path, body;
+    bool isBank = false;
     auto flush = [&] {
         if (path.isEmpty()) return;
+        if (isBank) {
+            const String folder = path.containsChar('/') ? path.upToFirstOccurrenceOf("/", false, false) : String("Factory");
+            factoryLetters_[folder] = normaliseLetter(JSON::parse(body)["letter"].toString());
+            path = {};
+            body = {};
+            return;
+        }
         PresetInfo info;
         info.factory = true;
         info.folder = path.containsChar('/') ? path.upToFirstOccurrenceOf("/", false, false) : String("Factory");
@@ -262,7 +303,8 @@ void Library::parseFactoryBundle() {
         body = {};
     };
     for (auto& line : StringArray::fromLines(factoryBundle_)) {
-        if (line.startsWith("@@PRESET ")) { flush(); path = line.substring(9).trim(); }
+        if (line.startsWith("@@PRESET ")) { flush(); path = line.substring(9).trim(); isBank = false; }
+        else if (line.startsWith("@@BANK ")) { flush(); path = line.substring(7).trim(); isBank = true; }
         else if (path.isNotEmpty()) body << line << "\n";
     }
     flush();
@@ -270,8 +312,22 @@ void Library::parseFactoryBundle() {
     sortFolders(factoryFolders_);
 }
 
+String Library::readBankLetter(const File& dir) {
+    const File f = dir.getChildFile(kBankFile);
+    if (!f.existsAsFile()) return {};
+    var v;
+    if (JSON::parse(f.loadFileAsString(), v).failed()) return {};
+    return normaliseLetter(v["letter"].toString());
+}
+
+bool Library::writeBankLetter(const File& dir, const String& letter) {
+    auto* o = new DynamicObject();
+    var v(o);
+    o->setProperty("letter", normaliseLetter(letter));
+    return dir.getChildFile(kBankFile).replaceWithText(writeJson(v) + "\n", false, false, "\n");
+}
+
 void Library::rescan() {
-    folders_ = factoryFolders_;
     root_.createDirectory();
     auto scanDir = [](FolderInfo& f) {
         for (auto& file : f.dir.findChildFiles(File::findFiles, false, String("*") + kExtension)) {
@@ -285,6 +341,28 @@ void Library::rescan() {
         }
         sortPresets(f.presets);
     };
+
+    std::map<String, String> holder;   // letter -> folder name holding it
+    auto firstFree = [&holder]() -> String {
+        for (char c = 'A'; c <= 'Z'; ++c) if (holder.count(String::charToString(c)) == 0) return String::charToString(c);
+        return {};
+    };
+
+    // 1-2. factory folders (sorted by name already): explicit letters, then the rest.
+    std::vector<FolderInfo> factory = factoryFolders_;
+    for (auto& f : factory) {
+        auto it = factoryLetters_.find(f.name);
+        const String want = it != factoryLetters_.end() ? it->second : String();
+        if (want.isNotEmpty() && holder.count(want) == 0) { f.letter = want; holder[want] = f.name; }
+    }
+    for (auto& f : factory)
+        if (f.letter.isEmpty()) {
+            f.letter = firstFree();
+            if (f.letter.isNotEmpty()) holder[f.letter] = f.name;
+            else f.conflict = true;
+        }
+
+    // 3-5. user folders in name order.
     std::vector<FolderInfo> user;
     for (auto& d : root_.findChildFiles(File::findDirectories, false)) {
         if (d.getFileName().startsWithChar('.')) continue;
@@ -295,13 +373,72 @@ void Library::rescan() {
         user.push_back(f);
     }
     sortFolders(user);
-    for (auto& f : user) folders_.push_back(f);
+    std::vector<bool> legacy(user.size(), false);
+    for (size_t i = 0; i < user.size(); ++i) {
+        auto& f = user[i];
+        const bool hasFile = f.dir.getChildFile(kBankFile).existsAsFile();
+        const String want = readBankLetter(f.dir);
+        if (!hasFile || want.isEmpty()) { legacy[i] = true; continue; }   // none, or not a letter: assign one
+        if (holder.count(want) == 0) { f.letter = want; holder[want] = f.name; }
+        else { f.conflict = true; f.wantedLetter = want; f.heldBy = holder[want]; }
+    }
+    for (size_t i = 0; i < user.size(); ++i) {
+        if (!legacy[i]) continue;
+        auto& f = user[i];
+        f.letter = firstFree();
+        if (f.letter.isEmpty()) { f.conflict = true; continue; }
+        holder[f.letter] = f.name;
+        writeBankLetter(f.dir, f.letter);   // user space only
+    }
+
+    std::vector<FolderInfo> all;
+    for (auto& f : factory) all.push_back(f);
+    for (auto& f : user) all.push_back(f);
+    std::stable_sort(all.begin(), all.end(), [](const FolderInfo& a, const FolderInfo& b) {
+        const bool al = a.isBank(), bl = b.isBank();
+        if (al != bl) return al;
+        if (al) return a.letter < b.letter;
+        if (a.factory != b.factory) return a.factory;
+        return a.name.compareNatural(b.name, false) < 0;
+    });
+    for (auto& f : all)
+        for (auto& p : f.presets) p.bank = f.letter;
+
     FolderInfo unfiled;
     unfiled.unfiled = true;
     unfiled.name = kUnfiledName;
     unfiled.dir = root_;
     scanDir(unfiled);
-    folders_.push_back(unfiled);
+    if (!unfiled.presets.empty()) all.push_back(unfiled);
+    folders_ = std::move(all);
+}
+
+const FolderInfo* Library::findBank(const String& letter) const {
+    const String l = normaliseLetter(letter);
+    if (l.isEmpty()) return nullptr;
+    for (auto& f : folders_) if (f.letter == l) return &f;
+    return nullptr;
+}
+
+StringArray Library::freeLetters(const String& keep) const {
+    StringArray out;
+    const String k = normaliseLetter(keep);
+    for (char c = 'A'; c <= 'Z'; ++c) {
+        const String l = String::charToString(c);
+        if (l == k || findBank(l) == nullptr) out.add(l);
+    }
+    return out;
+}
+
+std::vector<const PresetInfo*> Library::sequence() const {
+    std::vector<const PresetInfo*> v;
+    for (auto& f : folders_) for (auto& p : f.presets) v.push_back(&p);
+    return v;
+}
+
+String Library::duplicateTarget() const {
+    for (auto& f : folders_) if (!f.factory && f.isBank()) return f.name;
+    return {};
 }
 
 const FolderInfo* Library::findFolder(bool factory, const String& name) const {
@@ -351,6 +488,22 @@ Result checkName(const String& legal, const char* what) {
     return Result::ok();
 }
 
+// Sets (n >= 0) or removes (n < 0) "number" in a parsed preset, keeping toJson()'s key
+// order: "number" right after "name".
+void setNumberKey(var& v, int n) {
+    auto* o = v.getDynamicObject();
+    if (o == nullptr) return;
+    auto& props = o->getProperties();
+    NamedValueSet ordered;
+    for (int i = 0; i < props.size(); ++i) {
+        if (props.getName(i) == Identifier("number")) continue;
+        ordered.set(props.getName(i), props.getValueAt(i));
+        if (n >= 0 && props.getName(i) == Identifier("name")) ordered.set("number", n);
+    }
+    if (n >= 0 && !ordered.contains("number")) ordered.set("number", n);
+    props = ordered;
+}
+
 // Moves a -> b, also when only the letter case changes on a case-insensitive disk.
 bool moveAllowingCaseChange(const File& a, const File& b) {
     if (a.getFullPathName() == b.getFullPathName()) return true;
@@ -362,53 +515,83 @@ bool moveAllowingCaseChange(const File& a, const File& b) {
 }
 }  // namespace
 
-Result Library::createFolder(const String& name) {
+Result Library::createFolder(const String& name, const String& letterIn) {
+    rescan();   // letters as they are on disk now
     const String n = legalName(name);
-    if (auto r = checkName(n, "folder"); r.failed()) return r;
-    if (n.equalsIgnoreCase(kUnfiledName)) return Result::fail(String("\"") + kUnfiledName + "\" is kept for presets that are not in a folder.");
+    if (auto r = checkName(n, "bank"); r.failed()) return r;
+    if (n.equalsIgnoreCase(kUnfiledName)) return Result::fail(String("\"") + kUnfiledName + "\" is kept for presets that are not in a bank.");
     const File d = root_.getChildFile(n);
-    if (d.exists()) return Result::fail("A folder with the name \"" + n + "\" exists.");
+    if (d.exists()) return Result::fail("A bank with the name \"" + n + "\" exists.");
+    const auto free = freeLetters();
+    if (free.isEmpty()) return Result::fail("All 26 bank letters are in use.");
+    String letter = normaliseLetter(letterIn);
+    if (letterIn.trim().isNotEmpty() && letter.isEmpty()) return Result::fail("A bank letter is one letter from A to Z.");
+    if (letter.isEmpty()) letter = free[0];
+    if (!free.contains(letter)) return Result::fail("Bank " + letter + " is in use.");
     const auto r = d.createDirectory();
+    if (r.wasOk() && !writeBankLetter(d, letter)) { rescan(); return Result::fail("Cannot write " + d.getChildFile(kBankFile).getFullPathName()); }
     rescan();
     return r;
 }
 
-Result Library::renameFolder(const String& oldName, const String& newName) {
-    const String n = legalName(newName);
-    if (auto r = checkName(n, "folder"); r.failed()) return r;
-    if (n.equalsIgnoreCase(kUnfiledName)) return Result::fail(String("\"") + kUnfiledName + "\" is kept for presets that are not in a folder.");
-    const File from = root_.getChildFile(oldName), to = root_.getChildFile(n);
-    if (!from.isDirectory()) return Result::fail("The folder \"" + oldName + "\" is gone.");
-    if (to.exists() && !(to == from)) return Result::fail("A folder with the name \"" + n + "\" exists.");
-    const bool ok = moveAllowingCaseChange(from, to);
+Result Library::renameFolder(const String& oldName, const String& newName, const String& newLetterIn) {
     rescan();
-    return ok ? Result::ok() : Result::fail("Cannot rename the folder.");
+    const String n = legalName(newName);
+    if (auto r = checkName(n, "bank"); r.failed()) return r;
+    if (n.equalsIgnoreCase(kUnfiledName)) return Result::fail(String("\"") + kUnfiledName + "\" is kept for presets that are not in a bank.");
+    const File from = root_.getChildFile(oldName), to = root_.getChildFile(n);
+    if (!from.isDirectory()) return Result::fail("The bank \"" + oldName + "\" is gone.");
+    if (to.exists() && !(to == from)) return Result::fail("A bank with the name \"" + n + "\" exists.");
+    const String newLetter = normaliseLetter(newLetterIn);
+    if (newLetterIn.trim().isNotEmpty() && newLetter.isEmpty()) return Result::fail("A bank letter is one letter from A to Z.");
+    if (newLetter.isNotEmpty()) {
+        const auto* f = findFolder(false, oldName);
+        if (!freeLetters(f != nullptr ? f->letter : String()).contains(newLetter)) return Result::fail("Bank " + newLetter + " is in use.");
+    }
+    const bool ok = moveAllowingCaseChange(from, to);
+    if (ok && newLetter.isNotEmpty() && !writeBankLetter(to, newLetter)) { rescan(); return Result::fail("Cannot write the bank letter."); }
+    rescan();
+    return ok ? Result::ok() : Result::fail("Cannot rename the bank.");
 }
 
 Result Library::deleteFolder(const String& name) {
     const File d = root_.getChildFile(name);
-    if (name.isEmpty() || !d.isDirectory()) return Result::fail("The folder \"" + name + "\" is gone.");
+    if (name.isEmpty() || !d.isDirectory()) return Result::fail("The bank \"" + name + "\" is gone.");
     const bool ok = d.moveToTrash();
     rescan();
-    return ok ? Result::ok() : Result::fail("Cannot move the folder to the Trash.");
+    return ok ? Result::ok() : Result::fail("Cannot move the bank to the Trash.");
 }
 
-Result Library::renamePreset(const PresetInfo& info, const String& newName, const String&) {
+Result Library::renamePreset(const PresetInfo& infoIn, const String& newName, const String&, int newNumber) {
+    const PresetInfo info = infoIn;   // a copy: infoIn may point into folders_, which rescan() rebuilds
     if (info.factory) return Result::fail("Factory presets cannot be renamed.");
+    rescan();
     const String n = newName.trim();
     if (auto r = checkName(legalName(n), "preset"); r.failed()) return r;
+    if (newNumber != kKeepNumber && newNumber != -1 && (newNumber < 1 || newNumber > kMaxNumber))
+        return Result::fail("A number is from 1 to 999.");
+    if (newNumber >= 1)
+        if (const auto* f = findFolder(false, info.folder))
+            if (const auto* h = f->presetWithNumber(newNumber); h != nullptr && h->fileName != info.fileName)
+                return Result::fail("Number " + String(newNumber).paddedLeft('0', 3) + " is \"" + h->name + "\" in this bank.");
     var v;
     if (JSON::parse(info.file.loadFileAsString(), v).failed() || v.getDynamicObject() == nullptr) return Result::fail("Cannot read " + info.file.getFullPathName());
     const File to = fileFor(info.folder, n);
-    if (to.exists() && !(to == info.file)) return Result::fail("A preset file with the name \"" + to.getFileName() + "\" exists in this folder.");
+    if (to.exists() && !(to == info.file)) return Result::fail("A preset file with the name \"" + to.getFileName() + "\" exists in this bank.");
     v.getDynamicObject()->setProperty("name", n);
+    if (newNumber >= 1) {   // keep the key order of toJson(): "number" right after "name"
+        setNumberKey(v, newNumber);
+    } else if (newNumber == -1) {
+        setNumberKey(v, -1);
+    }
     if (!info.file.replaceWithText(writeJson(v) + "\n", false, false, "\n")) return Result::fail("Cannot write " + info.file.getFullPathName());
     const bool ok = moveAllowingCaseChange(info.file, to);
     rescan();
     return ok ? Result::ok() : Result::fail("Cannot rename the file.");
 }
 
-Result Library::deletePreset(const PresetInfo& info) {
+Result Library::deletePreset(const PresetInfo& infoIn) {
+    const PresetInfo info = infoIn;
     if (info.factory) return Result::fail("Factory presets cannot be deleted.");
     if (!info.file.existsAsFile()) { rescan(); return Result::fail("The file is gone."); }
     const bool ok = info.file.moveToTrash();
@@ -416,11 +599,25 @@ Result Library::deletePreset(const PresetInfo& info) {
     return ok ? Result::ok() : Result::fail("Cannot move the file to the Trash.");
 }
 
-Result Library::duplicatePreset(const PresetInfo& info, const String&, String* newFileName) {
+Result Library::duplicatePreset(const PresetInfo& infoIn, const String&, String* newFileName, String* newFolder) {
+    const PresetInfo info = infoIn;   // a copy: infoIn may point into folders_, which rescan() rebuilds
+    rescan();
     var v;
     const String text = info.factory ? info.factoryText : info.file.loadFileAsString();
     if (JSON::parse(text, v).failed() || v.getDynamicObject() == nullptr) return Result::fail("Cannot read the preset.");
-    const String folder = info.factory ? String() : info.folder;   // a factory preset's copy goes to Unfiled
+    String folder = info.factory ? duplicateTarget() : info.folder;
+    if (info.factory && folder.isEmpty()) {   // no user bank yet: make one
+        folder = kDefaultUserBank;
+        for (int i = 2; root_.getChildFile(folder).exists() && i < 1000; ++i) folder = String(kDefaultUserBank) + " " + String(i);
+        if (auto r = createFolder(folder); r.failed()) return r;
+    }
+    const auto* dest = findFolder(false, folder);
+    if (dest != nullptr && dest->isBank()) {
+        const int n = dest->nextFreeNumber();
+        if (n < 0) return Result::fail("The bank is full (999 presets).");
+        setNumberKey(v, n);
+    }
+    if (newFolder != nullptr) *newFolder = folder;
     String name = info.name + " copy";
     for (int i = 2; fileFor(folder, name).exists() && i < 1000; ++i) name = info.name + " copy " + String(i);
     const File to = fileFor(folder, name);

@@ -199,6 +199,188 @@ void drawKnobBody(Graphics& g, Rectangle<float> r, Colour c1, Colour c2, float s
     g.fillPath(ptr);
 }
 
+// ---- LED digit displays ----------------------------------------------------------------
+
+namespace {
+constexpr juce::uint16 A_ = 1 << 0, B_ = 1 << 1, C_ = 1 << 2, D_ = 1 << 3, E_ = 1 << 4, F_ = 1 << 5, G1 = 1 << 6, G2 = 1 << 7,
+                       H_ = 1 << 8, I_ = 1 << 9, J_ = 1 << 10, K_ = 1 << 11, L_ = 1 << 12, M_ = 1 << 13;
+constexpr juce::uint16 kAlpha[26] = {
+    A_ | B_ | C_ | E_ | F_ | G1 | G2,   // A
+    A_ | B_ | C_ | D_ | G2 | I_ | L_,   // B
+    A_ | D_ | E_ | F_,                  // C
+    A_ | B_ | C_ | D_ | I_ | L_,        // D
+    A_ | D_ | E_ | F_ | G1,             // E
+    A_ | E_ | F_ | G1,                  // F
+    A_ | C_ | D_ | E_ | F_ | G2,        // G
+    B_ | C_ | E_ | F_ | G1 | G2,        // H
+    A_ | D_ | I_ | L_,                  // I
+    B_ | C_ | D_ | E_,                  // J
+    E_ | F_ | G1 | J_ | M_,             // K
+    D_ | E_ | F_,                       // L
+    B_ | C_ | E_ | F_ | H_ | J_,        // M
+    B_ | C_ | E_ | F_ | H_ | M_,        // N
+    A_ | B_ | C_ | D_ | E_ | F_,        // O
+    A_ | B_ | E_ | F_ | G1 | G2,        // P
+    A_ | B_ | C_ | D_ | E_ | F_ | M_,   // Q
+    A_ | B_ | E_ | F_ | G1 | G2 | M_,   // R
+    A_ | C_ | D_ | F_ | G1 | G2,        // S
+    A_ | I_ | L_,                       // T
+    B_ | C_ | D_ | E_ | F_,             // U
+    E_ | F_ | J_ | K_,                  // V
+    B_ | C_ | E_ | F_ | K_ | M_,        // W
+    H_ | J_ | K_ | M_,                  // X
+    H_ | J_ | L_,                       // Y
+    A_ | D_ | J_ | K_,                  // Z
+};
+constexpr juce::uint16 kDigits[10] = {
+    A_ | B_ | C_ | D_ | E_ | F_ | J_ | K_,   // 0 (slashed)
+    B_ | C_ | J_,                            // 1
+    A_ | B_ | D_ | E_ | G1 | G2,             // 2
+    A_ | B_ | C_ | D_ | G2,                  // 3
+    B_ | C_ | F_ | G1 | G2,                  // 4
+    A_ | D_ | F_ | G1 | M_,                  // 5
+    A_ | C_ | D_ | E_ | F_ | G1 | G2,        // 6
+    A_ | B_ | C_,                            // 7
+    A_ | B_ | C_ | D_ | E_ | F_ | G1 | G2,   // 8
+    A_ | B_ | C_ | D_ | F_ | G1 | G2,        // 9
+};
+
+const juce::uint32 kSegUnlit = 0x2a0d0a;
+
+// An outer segment: a hexagon between (xa, ya) and (xb, yb) along one axis.
+Path hSeg(float yc, float xa, float xb, float t) {
+    Path p;
+    p.startNewSubPath(xa, yc);
+    p.lineTo(xa + t * 0.5f, yc - t * 0.5f); p.lineTo(xb - t * 0.5f, yc - t * 0.5f);
+    p.lineTo(xb, yc); p.lineTo(xb - t * 0.5f, yc + t * 0.5f); p.lineTo(xa + t * 0.5f, yc + t * 0.5f);
+    p.closeSubPath();
+    return p;
+}
+Path vSeg(float xc, float ya, float yb, float t) {
+    Path p;
+    p.startNewSubPath(xc, ya);
+    p.lineTo(xc + t * 0.5f, ya + t * 0.5f); p.lineTo(xc + t * 0.5f, yb - t * 0.5f);
+    p.lineTo(xc, yb); p.lineTo(xc - t * 0.5f, yb - t * 0.5f); p.lineTo(xc - t * 0.5f, ya + t * 0.5f);
+    p.closeSubPath();
+    return p;
+}
+// A diagonal bar from corner (x0,y0) of its quadrant box to the opposite corner
+// (x1,y1), `thick` wide measured across the bar, its ends cut square to the frame
+// (horizontal at the top/bottom edge, vertical at the side), which is how real
+// 14-segment digits shape the diagonals so they tuck into the corners.
+Path diagSeg(float x0, float y0, float x1, float y1, float thick) {
+    const float w = std::abs(x1 - x0), h = std::abs(y1 - y0), L = std::sqrt(w * w + h * h);
+    const float sx = x1 > x0 ? 1.0f : -1.0f, sy = y1 > y0 ? 1.0f : -1.0f;
+    const float dx = jmin(w * 0.6f, thick * L / h) * sx, dy = jmin(h * 0.6f, thick * L / w) * sy;
+    Path p;
+    p.startNewSubPath(x0, y0);
+    p.lineTo(x0 + dx, y0);
+    p.lineTo(x1, y1 - dy);
+    p.lineTo(x1, y1);
+    p.lineTo(x1 - dx, y1);
+    p.lineTo(x0, y0 + dy);
+    p.closeSubPath();
+    return p;
+}
+
+void fillSegments(Graphics& g, const Path& lit, const Path& unlit, const String& glowId) {
+    g.setColour(col::hex(kSegUnlit));
+    g.fillPath(unlit);
+    if (!lit.isEmpty()) {
+        cachedDropShadow(g, glowId, lit, col::hex(col::ledRed, 0.7f), 8, 0.0f);
+        g.setColour(col::hex(col::ledRed));
+        g.fillPath(lit);
+    }
+}
+
+AffineTransform digitTransform(Rectangle<float> box, float w, float h) {
+    return AffineTransform::translation(-w * 0.5f, -h * 0.5f)
+        .followedBy(AffineTransform::shear(-0.1f, 0.0f))
+        .translated(box.getCentreX(), box.getCentreY());
+}
+}  // namespace
+
+juce::uint16 alnumSegments(juce_wchar c) {
+    if (c >= 'a' && c <= 'z') c = c - 'a' + 'A';
+    if (c >= 'A' && c <= 'Z') return kAlpha[c - 'A'];
+    if (c >= '0' && c <= '9') return kDigits[c - '0'];
+    if (c == '-') return G1 | G2;
+    return 0;
+}
+
+void drawDigitHousing(Graphics& g, Rectangle<float> box) {
+    Path p;
+    p.addRoundedRectangle(box, 4.0f);
+    g.setColour(col::hex(0x0a0506));
+    g.fillPath(p);
+    Graphics::ScopedSaveState ss(g);
+    g.reduceClipRegion(p);
+    g.setGradientFill(ColourGradient(Colours::black.withAlpha(0.9f), 0.0f, box.getY(), Colours::transparentBlack, 0.0f, box.getY() + 5.0f, false));
+    g.fillRect(box.withHeight(5.0f));
+}
+
+// A real 7-segment digit: segments are hexagons on a 20 x 36 cell, sheared ~6
+// degrees like the unit's LED, lit #ff3b24 with a soft glow, unlit #2a0d0a.
+void drawSevenSegDigit(Graphics& g, Rectangle<float> box, int digit) {
+    static const uint8_t kSegs[10] = { 0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f };   // bit0=a .. bit6=g
+    const float w = 20.0f, h = 36.0f, t = 4.2f, gap = 0.7f;
+    const float l = t * 0.5f, r = w - t * 0.5f, m = h * 0.5f;
+    const Path seg[7] = {
+        hSeg(t * 0.5f, l + gap, r - gap, t),        // a
+        vSeg(r, t * 0.5f + gap, m - gap, t),        // b
+        vSeg(r, m + gap, h - t * 0.5f - gap, t),    // c
+        hSeg(h - t * 0.5f, l + gap, r - gap, t),    // d
+        vSeg(l, m + gap, h - t * 0.5f - gap, t),    // e
+        vSeg(l, t * 0.5f + gap, m - gap, t),        // f
+        hSeg(m, l + gap, r - gap, t),               // g
+    };
+    digit = jlimit(0, 9, digit);
+    const auto xf = digitTransform(box, w, h);
+    Path lit, unlit;
+    for (int s = 0; s < 7; ++s) ((kSegs[digit] >> s) & 1 ? lit : unlit).addPath(seg[s], xf);
+    fillSegments(g, lit, unlit, "digit" + String(digit));
+}
+
+// The 14-segment digit on a 26 x 36 cell: the same height as the 7-segment digit,
+// a thinner stroke (3.0 against 4.2, as on the 14-segment parts, whose frame carries
+// twice the segments), the centre verticals and the diagonals inside the four
+// quadrants (about 60 degrees, 2.2 wide), the middle bar split in two, and a round
+// decimal point at the lower right, outside the frame.
+void drawAlnumDigit(Graphics& g, Rectangle<float> box, juce_wchar c) {
+    const float w = 26.0f, h = 36.0f, t = 3.0f, gap = 0.6f;
+    const float l = t * 0.5f, r = w - t * 0.5f, m = h * 0.5f, cx = w * 0.5f;
+    const float dIn = 0.5f;   // diagonal inset from the frame's inner edges
+    const float qx0 = t + gap + dIn, qx1 = cx - t * 0.5f - gap - dIn;       // left quadrant x
+    const float qx2 = cx + t * 0.5f + gap + dIn, qx3 = w - t - gap - dIn;   // right quadrant x
+    const float qy0 = t + gap + dIn, qy1 = m - t * 0.5f - gap - dIn;        // upper quadrant y
+    const float qy2 = m + t * 0.5f + gap + dIn, qy3 = h - t - gap - dIn;    // lower quadrant y
+    const float dw = 2.2f;
+    const Path seg[14] = {
+        hSeg(t * 0.5f, l + gap, r - gap, t),            // a
+        vSeg(r, t * 0.5f + gap, m - gap, t),            // b
+        vSeg(r, m + gap, h - t * 0.5f - gap, t),        // c
+        hSeg(h - t * 0.5f, l + gap, r - gap, t),        // d
+        vSeg(l, m + gap, h - t * 0.5f - gap, t),        // e
+        vSeg(l, t * 0.5f + gap, m - gap, t),            // f
+        hSeg(m, l + gap, cx - gap, t),                  // g1
+        hSeg(m, cx + gap, r - gap, t),                  // g2
+        diagSeg(qx0, qy0, qx1, qy1, dw),                // h: upper left, corner to centre
+        vSeg(cx, t + gap, m - gap, t),                  // i: upper centre
+        diagSeg(qx3, qy0, qx2, qy1, dw),                // j: upper right
+        diagSeg(qx0, qy3, qx1, qy2, dw),                // k: lower left
+        vSeg(cx, m + gap, h - t - gap, t),              // l: lower centre
+        diagSeg(qx3, qy3, qx2, qy2, dw),                // m: lower right
+    };
+    const juce::uint16 mask = alnumSegments(c);
+    const auto xf = digitTransform(box, w, h);
+    Path lit, unlit;
+    for (int s = 0; s < 14; ++s) ((mask >> s) & 1 ? lit : unlit).addPath(seg[s], xf);
+    Path dp;   // decimal point: never lit
+    dp.addEllipse(w + 1.0f, h - 3.0f, 3.0f, 3.0f);
+    unlit.addPath(dp, xf);
+    fillSegments(g, lit, unlit, "alnum" + String::toHexString((int) mask));
+}
+
 // ---- LookAndFeel ------------------------------------------------------------------------
 
 AxLookAndFeel::AxLookAndFeel() {
@@ -495,12 +677,20 @@ void AxButton::focusLost(FocusChangeType) {
     repaint();
 }
 
-ModePill::ModePill(const String& text) : AxButton(text) {
-    setClickingTogglesState(true);
-    setRadioGroupId(0x4d4f4445);
+ModeButton::ModeButton() : AxButton("Open mode") {
+    setButtonText("OPEN MODE");
+    setDescription("On: Open, any block in any slot. Off: as the unit, which follows the unit's chain rules.");
+    setOn(true);
 }
 
-void ModePill::paintButton(Graphics& g, bool over, bool down) {
+void ModeButton::setOn(bool o) {
+    on = o;
+    setTitle(on ? "Open mode on" : "Open mode off: as the unit");
+    setToggleState(on, dontSendNotification);
+    repaint();
+}
+
+void ModeButton::paintButton(Graphics& g, bool over, bool down) {
     const auto r = getLocalBounds().toFloat();
     Path rr;
     rr.addRoundedRectangle(r, r.getHeight() * 0.5f);
@@ -514,13 +704,23 @@ void ModePill::paintButton(Graphics& g, bool over, bool down) {
         g.setColour(col::hex(col::groupBlue));
         g.drawRoundedRectangle(r.reduced(0.75f), r.getHeight() * 0.5f - 0.75f, 1.5f);
     }
-    const bool sel = getToggleState();
     const auto f = font(Face::Bold, 11.0f, 1.0f);
-    const float tw = textWidth(f, getButtonText());
-    const float x0 = (r.getWidth() - (7.0f + 7.0f + tw)) * 0.5f;
-    const float cy = r.getHeight() * 0.5f;
-    drawLed(g, { x0 + 3.5f, cy }, 7.0f, sel, 6.0f, 0.8f);
-    drawText(g, getButtonText(), f, sel ? Colours::white : col::hex(0xb9c3d3), x0 + 14.0f, baselineCentred(Face::Bold, 11.0f, cy));
+    const String text = getButtonText();
+    const float base = baselineCentred(Face::Bold, 11.0f, r.getCentreY());
+    if (on) {
+        // A lit legend: the text's own glow (the glyph outlines through the shadow
+        // cache), then the text in the LED red, a touch lighter at the core.
+        GlyphArrangement ga;
+        ga.addLineOfText(f, text, 0.0f, 0.0f);
+        Path glyphs;
+        ga.createPath(glyphs);
+        const float x0 = r.getCentreX() - textWidth(f, text) * 0.5f;
+        glyphs.applyTransform(AffineTransform::translation(x0, base));
+        cachedDropShadow(g, "modeLegend", glyphs, col::hex(col::ledRed, 0.85f), 5, 0.0f);
+        drawText(g, text, f, col::hex(0xff5a40), r.getCentreX(), base, Justification::horizontallyCentred);
+    } else {
+        drawText(g, text, f, col::hex(over ? 0x7a4a45 : 0x6a403b), r.getCentreX(), base, Justification::horizontallyCentred);
+    }
 }
 
 LedButton::LedButton() : AxButton("On") {

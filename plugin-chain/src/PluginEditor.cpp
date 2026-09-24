@@ -95,10 +95,19 @@ String groupFor(int type) {
 // ---- fixed design coordinates (the approved mockup, 820 x 660) ----------------
 const Rectangle<float> kPlate(14.0f, 12.0f, 792.0f, 183.0f);   // bottom at 195, the face's 1 px black line
 const Rectangle<int> kLcd(272, 39, 340, 107);   // 0.10.0: up from y 50, top aligned with the slot digit box, for the preset bar
-const Rectangle<int> kInputKnob(30, 94, 46, 46), kOutputKnob(94, 94, 46, 46);
-const Point<float> kPeakCentre(170.0f, 141.0f);
-const Rectangle<float> kDigitBox(750.0f, 39.0f, 40.0f, 54.0f);
-const Rectangle<int> kOpenPill(662, 122, 128, 26), kUnitPill(662, 156, 128, 26);
+// 0.11.0 build 23: the unit's layout -- Input / Output on the right with the Peak LED
+// between them, its centre on the line through the knobs' top edges (y 39, the LCD's
+// top); the OPEN MODE key under them on the preset bar's row (y 156..182); SLOT and
+// BANK on the left under the logo, their housings' bottoms on the same row (182).
+// Right block x 662..790, left block from x 30: 16 in from the plate either side.
+const Rectangle<int> kInputKnob(662, 39, 46, 46), kOutputKnob(744, 39, 46, 46);
+const Point<float> kPeakCentre(726.0f, 39.0f);
+constexpr float kIoLabelTop = 88.0f;       // INPUT / OUTPUT line box top (knob bottom + 3)
+constexpr int kIoReadoutY = 95;            // 60 x 24 readouts, text centre y 107
+constexpr float kPeakLabelTop = 52.0f;     // PEAK line box top (LED centre + 13, as before)
+const Rectangle<float> kSlotBox(30.0f, 128.0f, 40.0f, 54.0f), kBankBox(86.0f, 128.0f, 40.0f, 54.0f);
+constexpr float kDigitLabelTop = 115.0f;   // SLOT / BANK line box top (housing top - 13, as before)
+const Rectangle<int> kModeButton(662, 156, 128, 26);
 const Rectangle<float> kDetail(14.0f, 314.0f, 792.0f, 332.0f);
 constexpr float kHeaderCentreY = 353.0f;
 constexpr int kCellTop = 451, kCellX0 = 34, kCellPitch = 94, kCellW = 88;
@@ -109,7 +118,8 @@ constexpr float kTileLift = 4.0f;                  // a dragged tile rides this 
 const Rectangle<int> kChainRowArea(0, 198, 820, 116);   // the row plus the lifted tile's shadow, above the detail panel
 
 // Baselines of the static texts (CSS line-box model, see axui::baselineFromTop).
-const float kLogoBaseline = 26.0f + (30.0f - 1.088f * 34.0f) * 0.5f + 0.878f * 34.0f;   // "AX330", line-height 30
+const float kLogoBaseline = 26.0f + (30.0f - 1.088f * 34.0f) * 0.5f + 0.878f * 34.0f;   // "AX330G", line-height 30
+constexpr float kLogoOutline = 1.7f;   // the outlined G's visible stroke
 }  // namespace
 
 // =============================================================================
@@ -223,15 +233,11 @@ AxMainPanel::AxMainPanel(AX330GChainProcessor& p, axlcd::LcdDisplay& l)
 
     addAndMakeVisible(lcd);
 
-    for (auto* pill : { &openPill, &unitPill }) addAndMakeVisible(*pill);
-    openPill.setTitle("Mode: Open");
-    unitPill.setTitle("Mode: As the unit");
+    addAndMakeVisible(modeButton);
     modeAttachment = std::make_unique<ParameterAttachment>(*proc.apvts.getParameter("mode"), [this](float v) {
-        openPill.setToggleState(v < 0.5f, dontSendNotification);
-        unitPill.setToggleState(v >= 0.5f, dontSendNotification);
+        modeButton.setOn(v < 0.5f);   // "mode" 0 = Open, 1 = As the unit
     }, nullptr);
-    openPill.onClick = [this] { if (openPill.getToggleState()) modeAttachment->setValueAsCompleteGesture(0.0f); };
-    unitPill.onClick = [this] { if (unitPill.getToggleState()) modeAttachment->setValueAsCompleteGesture(1.0f); };
+    modeButton.onClick = [this] { modeAttachment->setValueAsCompleteGesture(modeButton.isOn() ? 1.0f : 0.0f); };
     modeAttachment->sendInitialUpdate();
 
     // --- CHAIN --------------------------------------------------------------------
@@ -303,12 +309,10 @@ void AxMainPanel::resized() {
     lcd.setBounds(kLcd);
     inputKnob->setBounds(kInputKnob);
     outputKnob->setBounds(kOutputKnob);
-    // Readouts: text line box top 157 (10 px Archivo, 10.9 tall) -> centre 162.4;
-    // a 60 x 24 hit area centred on it.
-    inputValue.setBounds(kInputKnob.getCentreX() - 30, 150, 60, 24);
-    outputValue.setBounds(kOutputKnob.getCentreX() - 30, 150, 60, 24);
-    openPill.setBounds(kOpenPill);
-    unitPill.setBounds(kUnitPill);
+    // Readouts: a 60 x 24 hit area under each label (knob top + 56, as in 0.9.0).
+    inputValue.setBounds(kInputKnob.getCentreX() - 30, kIoReadoutY, 60, 24);
+    outputValue.setBounds(kOutputKnob.getCentreX() - 30, kIoReadoutY, 60, 24);
+    modeButton.setBounds(kModeButton);
     if (drag.from >= 0) layoutDragTiles(false);
     else for (int i = 0; i < ax30g::N_SLOTS; ++i) tiles[(size_t) i]->setBounds(tileBounds(i));
     layoutDetail();
@@ -325,6 +329,11 @@ void AxMainPanel::poll() {
         tiles[(size_t) k]->setUnknownBlock(typeOf(k) == 0 ? proc.unknownBlockInSlot(k) : String());
     }
     if (presets != nullptr) presets->refresh();
+    {
+        const auto ref = proc.currentPreset();
+        const String b = bankOverride.isNotEmpty() ? bankOverride : (ref.valid ? axpresets::normaliseLetter(ref.bank) : String());
+        if (b != shownBank) { shownBank = b; repaint(kBankBox.toNearestInt().expanded(10)); }
+    }
     // A restored session (setStateInformation) may carry another selection.
     const int saved = jlimit(1, ax30g::N_SLOTS, (int) proc.apvts.state.getProperty("uiSelectedSlot", selected + 1));
     if (saved - 1 != selected) selectSlot(saved - 1, false);
@@ -338,7 +347,7 @@ void AxMainPanel::selectSlot(int k, bool writeState) {
     selected = k;
     for (int i = 0; i < ax30g::N_SLOTS; ++i) tiles[(size_t) i]->setState(i == selected, typeOf(i), onOf(i));
     rebuildDetail(true);
-    repaint(kDigitBox.toNearestInt().expanded(8));
+    repaint(kSlotBox.toNearestInt().expanded(10));
 }
 
 void AxMainPanel::rebuildDetail(bool slotChanged) {
@@ -420,7 +429,7 @@ void AxMainPanel::layoutDetail() {
 void AxMainPanel::setPeakLit(bool lit) {
     if (lit == peakLit) return;
     peakLit = lit;
-    repaint(Rectangle<int>(150, 121, 40, 40));
+    repaint(Rectangle<float>(40.0f, 40.0f).withCentre(kPeakCentre).toNearestInt());
 }
 
 // ---- painting ----------------------------------------------------------------------
@@ -456,34 +465,45 @@ void AxMainPanel::paintStatic(Graphics& g) const {
     insetEdge(g, plate, 1.0f, Colours::white.withAlpha(0.25f));
     insetEdge(g, plate, -2.0f, Colours::black.withAlpha(0.35f));
 
-    // Logo: "AX330" + a circled "G", then three narrow lines.
+    // Logo (0.11.0): "AX330G" in one font and size, the G an outline only, as the
+    // unit's silkscreen draws it: the glyph's own outline (GlyphArrangement -> Path),
+    // stroked INSIDE the letter (clipped to the glyph, stroke twice the visible width)
+    // so the outlined G keeps the solid letters' outer size. Visible stroke 1.7 units,
+    // 7 % of the 24.4-unit cap height. Then three narrow lines.
     {
         const auto big = font(Face::BlackItalic, 34.0f, -1.0f);
-        drawText(g, "AX330", big, Colours::white, 30.0f, kLogoBaseline);
-        const float gx = 30.0f + textWidth(big, "AX330") + 1.0f;   // margin-left 1px
-        const auto gf = font(Face::BlackItalic, 26.0f, -1.0f);
-        const float gw = textWidth(gf, "G") + 6.0f + 4.0f;          // padding 0 3px + 2px border
-        const float gh = 1.088f * 26.0f + 4.0f;
-        const float gy = kLogoBaseline - 0.878f * 26.0f - 2.0f;
+        GlyphArrangement ga;
+        ga.addLineOfText(big, "AX330G", 30.0f, kLogoBaseline);
+        Path solid, outline;
+        const int n = ga.getNumGlyphs();
+        for (int i = 0; i < n; ++i) {
+            Path gp;
+            ga.getGlyph(i).createPath(gp);
+            (i == n - 1 ? outline : solid).addPath(gp);
+        }
         g.setColour(Colours::white);
-        g.drawEllipse(gx + 1.0f, gy + 1.0f, gw - 2.0f, gh - 2.0f, 2.0f);
-        drawText(g, "G", gf, Colours::white, gx + 5.0f, kLogoBaseline);
+        g.fillPath(solid);
+        {
+            Graphics::ScopedSaveState ss(g);
+            g.reduceClipRegion(outline);
+            g.strokePath(outline, PathStrokeType(kLogoOutline * 2.0f, PathStrokeType::mitered));
+        }
         const auto sf = font(Face::NarrowBold, 9.0f, 0.9f);
         const char* lines[] = { "GUITAR", "HYPERFORMANCE", "PROCESSOR" };
         for (int i = 0; i < 3; ++i)
             drawText(g, lines[i], sf, hex(0xdfe8f7), 30.0f, baselineFromTop(Face::NarrowBold, 9.0f, 61.0f + 10.0f * (float) i, 10.0f));
     }
 
-    // Input / Output: knob shadows and labels.
+    // Input / Output: knob shadows and labels; PEAK under its LED.
     const auto capF = font(Face::NarrowBold, 10.0f, 1.0f);
     for (auto kr : { kInputKnob, kOutputKnob }) {
         Path e;
         e.addEllipse(kr.toFloat());
         dropShadow(g, e, Colours::black.withAlpha(0.6f), 3, 2.0f);
     }
-    drawText(g, "INPUT", capF, Colours::white, (float) kInputKnob.getCentreX() + 0.5f, baselineFromTop(Face::NarrowBold, 10.0f, 143.0f), Justification::horizontallyCentred);
-    drawText(g, "OUTPUT", capF, Colours::white, (float) kOutputKnob.getCentreX() + 0.5f, baselineFromTop(Face::NarrowBold, 10.0f, 143.0f), Justification::horizontallyCentred);
-    drawText(g, "PEAK", capF, Colours::white, kPeakCentre.x + 0.5f, baselineFromTop(Face::NarrowBold, 10.0f, 154.0f), Justification::horizontallyCentred);
+    drawText(g, "INPUT", capF, Colours::white, (float) kInputKnob.getCentreX() + 0.5f, baselineFromTop(Face::NarrowBold, 10.0f, kIoLabelTop), Justification::horizontallyCentred);
+    drawText(g, "OUTPUT", capF, Colours::white, (float) kOutputKnob.getCentreX() + 0.5f, baselineFromTop(Face::NarrowBold, 10.0f, kIoLabelTop), Justification::horizontallyCentred);
+    drawText(g, "PEAK", capF, Colours::white, kPeakCentre.x + 0.5f, baselineFromTop(Face::NarrowBold, 10.0f, kPeakLabelTop), Justification::horizontallyCentred);
 
     // LCD bezel: CSS "0 1px 0 rgba(255,255,255,0.18), 0 2px 4px rgba(0,0,0,0.7)", radius 5.
     {
@@ -496,23 +516,15 @@ void AxMainPanel::paintStatic(Graphics& g) const {
         g.fillPath(lcdShape);
     }
 
-    // Slot number display box and labels.
+    // SLOT and BANK displays: housings and labels (the digits are dynamic).
     const auto smallCap = font(Face::NarrowBold, 9.0f, 1.0f);
-    drawText(g, "SLOT", smallCap, Colours::white, kDigitBox.getCentreX() + 0.5f, baselineFromTop(Face::NarrowBold, 9.0f, 26.0f), Justification::horizontallyCentred);
+    drawText(g, "SLOT", smallCap, Colours::white, kSlotBox.getCentreX() + 0.5f, baselineFromTop(Face::NarrowBold, 9.0f, kDigitLabelTop), Justification::horizontallyCentred);
+    drawText(g, "BANK", smallCap, Colours::white, kBankBox.getCentreX() + 0.5f, baselineFromTop(Face::NarrowBold, 9.0f, kDigitLabelTop), Justification::horizontallyCentred);
+    drawDigitHousing(g, kSlotBox);
+    drawDigitHousing(g, kBankBox);
     {
-        Path box;
-        box.addRoundedRectangle(kDigitBox, 4.0f);
-        g.setColour(hex(0x0a0506));
-        g.fillPath(box);
-        Graphics::ScopedSaveState ss(g);
-        g.reduceClipRegion(box);
-        g.setGradientFill(ColourGradient(Colours::black.withAlpha(0.9f), 0.0f, kDigitBox.getY(), Colours::transparentBlack, 0.0f, kDigitBox.getY() + 5.0f, false));
-        g.fillRect(kDigitBox.withHeight(5.0f));
-    }
-    drawText(g, "MODE", smallCap, Colours::white, 790.0f - 1.0f, baselineFromTop(Face::NarrowBold, 9.0f, 108.0f), Justification::right);
-    for (auto pr : { kOpenPill, kUnitPill }) {
         Path pill;
-        pill.addRoundedRectangle(pr.toFloat(), 13.0f);
+        pill.addRoundedRectangle(kModeButton.toFloat(), 13.0f);
         dropShadow(g, pill, Colours::black.withAlpha(0.6f), 2, 2.0f);
     }
     // Preset bar (0.10.0): the keys' shadows, as the Mode pills'; the name field's
@@ -554,48 +566,11 @@ void AxMainPanel::paintStatic(Graphics& g) const {
     }
 }
 
-// A real 7-segment digit: segments are hexagons on a 20 x 36 cell, sheared
-// ~6 degrees like the unit's LED, lit #ff3b24 with a soft glow, unlit #2a0d0a.
-void AxMainPanel::paintSlotDigit(Graphics& g) const {
-    static const uint8_t kSegs[10] = { 0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f };   // bit0=a .. bit6=g
-    const float w = 20.0f, h = 36.0f, t = 4.2f, gap = 0.7f;
-    auto hSeg = [&](float yc, float xa, float xb) {
-        Path p;
-        p.startNewSubPath(xa, yc);
-        p.lineTo(xa + t * 0.5f, yc - t * 0.5f); p.lineTo(xb - t * 0.5f, yc - t * 0.5f);
-        p.lineTo(xb, yc); p.lineTo(xb - t * 0.5f, yc + t * 0.5f); p.lineTo(xa + t * 0.5f, yc + t * 0.5f);
-        p.closeSubPath();
-        return p;
-    };
-    auto vSeg = [&](float xc, float ya, float yb) {
-        Path p;
-        p.startNewSubPath(xc, ya);
-        p.lineTo(xc + t * 0.5f, ya + t * 0.5f); p.lineTo(xc + t * 0.5f, yb - t * 0.5f);
-        p.lineTo(xc, yb); p.lineTo(xc - t * 0.5f, yb - t * 0.5f); p.lineTo(xc - t * 0.5f, ya + t * 0.5f);
-        p.closeSubPath();
-        return p;
-    };
-    const float l = t * 0.5f, r = w - t * 0.5f, m = h * 0.5f;
-    const Path seg[7] = {
-        hSeg(t * 0.5f, l + gap, r - gap),        // a
-        vSeg(r, t * 0.5f + gap, m - gap),        // b
-        vSeg(r, m + gap, h - t * 0.5f - gap),    // c
-        hSeg(h - t * 0.5f, l + gap, r - gap),    // d
-        vSeg(l, m + gap, h - t * 0.5f - gap),    // e
-        vSeg(l, t * 0.5f + gap, m - gap),        // f
-        hSeg(m, l + gap, r - gap),               // g
-    };
-    const int digit = jlimit(1, 8, selected + 1);
-    const auto xf = AffineTransform::translation(-w * 0.5f, -h * 0.5f)
-                        .followedBy(AffineTransform::shear(-0.1f, 0.0f))
-                        .translated(kDigitBox.getCentreX(), kDigitBox.getCentreY());
-    Path lit, unlit;
-    for (int s = 0; s < 7; ++s) ((kSegs[digit] >> s) & 1 ? lit : unlit).addPath(seg[s], xf);
-    g.setColour(hex(0x2a0d0a));
-    g.fillPath(unlit);
-    axui::cachedDropShadow(g, "digit" + String(digit), lit, hex(axui::col::ledRed, 0.7f), 8, 0.0f);
-    g.setColour(hex(axui::col::ledRed));
-    g.fillPath(lit);
+// The SLOT digit (7-segment) and the BANK character (14-segment, "-" with no bank),
+// drawn by axui (src/ui/AxUi.h, "LED digit displays").
+void AxMainPanel::paintDigits(Graphics& g) const {
+    axui::drawSevenSegDigit(g, kSlotBox, jlimit(1, 8, selected + 1));
+    axui::drawAlnumDigit(g, kBankBox, shownBank.isNotEmpty() ? shownBank[0] : (juce_wchar) '-');
 }
 
 void AxMainPanel::paint(Graphics& g) {
@@ -651,7 +626,7 @@ void AxMainPanel::paint(Graphics& g) {
         g.fillPath(e);
     }
 
-    paintSlotDigit(g);
+    paintDigits(g);
 
     // Detail header texts.
     const String unknownHere = shownType <= 0 ? proc.unknownBlockInSlot(selected) : String();
@@ -798,7 +773,13 @@ void AxMainPanel::testTrigger(const String& what) {
         Button* b = nullptr;
         if (kind == "tile") b = tiles[(size_t) jlimit(0, 7, arg.getIntValue() - 1)].get();
         else if (kind == "led") b = &tiles[(size_t) jlimit(0, 7, arg.getIntValue() - 1)]->led;
-        else if (kind == "mode") b = arg == "unit" ? static_cast<Button*>(&unitPill) : static_cast<Button*>(&openPill);
+        else if (kind == "mode") { if ((arg == "unit") == modeButton.isOn()) b = &modeButton; else { std::fprintf(stderr, "UITRIGGER %s -> already\n", item.toRawUTF8()); continue; } }
+        else if (kind == "bankshow") {   // test hook: show this character on the BANK display ("" = the preset's)
+            bankOverride = arg.substring(0, 1).toUpperCase();
+            poll();
+            std::fprintf(stderr, "UITRIGGER %s -> shown\n", item.toRawUTF8());
+            continue;
+        }
         else if (kind == "stereo") b = arg == "stereo" ? static_cast<Button*>(&stereoIn.stereo) : static_cast<Button*>(&stereoIn.mono);
         else if (presets != nullptr && presets->testTrigger(kind, arg)) {
             std::fprintf(stderr, "UITRIGGER %s -> done\n", item.toRawUTF8());
@@ -838,7 +819,11 @@ void AxMainPanel::logLayout(const String& why, float scale) const {
     line("paint plate", kPlate);
     line("paint LCD bezel", kLcd.toFloat());
     line("paint peak LED", Rectangle<float>(11.0f, 11.0f).withCentre(kPeakCentre));
-    line("paint slot digit box", kDigitBox);
+    line("paint knob Input", kInputKnob.toFloat());
+    line("paint knob Output", kOutputKnob.toFloat());
+    line("paint SLOT housing", kSlotBox);
+    line("paint BANK housing", kBankBox);
+    line("paint mode key", kModeButton.toFloat());
     line("paint detail panel", kDetail);
     line("preset bar", axpresetui::PresetBar::frameInPanel().toFloat());
     if (presets != nullptr) {
@@ -848,11 +833,11 @@ void AxMainPanel::logLayout(const String& why, float scale) const {
         if (presets->sheet.isVisible()) line("preset sheet card", presets->sheet.cardBounds().toFloat());
     }
     for (int i = 0; i < ax30g::N_SLOTS; ++i) line("paint tile shadow " + String(i + 1), tileBounds(i).toFloat());
-    std::fprintf(stderr, "UILOG   baselines: logo %.2f, sublines %.2f/%.2f/%.2f, INPUT/OUTPUT %.2f, readouts (centre) %.2f, PEAK %.2f, SLOT %.2f, MODE %.2f, chain header %.2f\n",
+    std::fprintf(stderr, "UILOG   baselines: logo %.2f, sublines %.2f/%.2f/%.2f, INPUT/OUTPUT %.2f, readouts (centre) %.2f, PEAK %.2f, SLOT/BANK %.2f, chain header %.2f\n",
                  kLogoBaseline, axui::baselineFromTop(Face::NarrowBold, 9.0f, 61.0f, 10.0f), axui::baselineFromTop(Face::NarrowBold, 9.0f, 71.0f, 10.0f),
-                 axui::baselineFromTop(Face::NarrowBold, 9.0f, 81.0f, 10.0f), axui::baselineFromTop(Face::NarrowBold, 10.0f, 143.0f),
-                 inputValue.getBounds().toFloat().getCentreY(), axui::baselineFromTop(Face::NarrowBold, 10.0f, 154.0f),
-                 axui::baselineFromTop(Face::NarrowBold, 9.0f, 26.0f), axui::baselineFromTop(Face::NarrowBold, 9.0f, 108.0f), 208.0f + 1.035f * 11.0f);
+                 axui::baselineFromTop(Face::NarrowBold, 9.0f, 81.0f, 10.0f), axui::baselineFromTop(Face::NarrowBold, 10.0f, kIoLabelTop),
+                 inputValue.getBounds().toFloat().getCentreY(), axui::baselineFromTop(Face::NarrowBold, 10.0f, kPeakLabelTop),
+                 axui::baselineFromTop(Face::NarrowBold, 9.0f, kDigitLabelTop), 208.0f + 1.035f * 11.0f);
     std::fprintf(stderr, "UILOG   header: group baseline %.2f, name %.1f px baseline %.2f, Effect label right %.2f, Stereo In label right %.2f (%s), label baseline %.2f\n",
                  axui::baselineFromTop(Face::NarrowBold, 11.0f, 330.0f), nameFontPx,
                  axui::baselineFromTop(Face::Bold, nameFontPx, 330.0f + axui::lineEm(Face::NarrowBold) * 11.0f + 2.0f),
@@ -978,22 +963,22 @@ juce::String AX330GChainEditor::buildChainString() const {
     return parts.joinIntoString("-");
 }
 
-// Row 0 is the program line (0.10.0). The unit shows a program as its number
-// field then the name -- "U11 HOSTILE", "A11 AX-ZONE", "P 1 HOSTILE"
-// (docs/chain-rules-2026-09-17.md 6.3 and 8) -- so a preset shows as its number
-// in three digits ("012 ETHERBUNNY"), or "---" when it has none, then a space and
-// the name, cut at 16 characters. With no preset: "--- INIT". The unit has no
-// documented edited mark in play mode; while the preset is modified the last
-// character shown is "*" (right after the name, or in column 16). Characters
-// outside the LCD's ROM (0x20-0x7D) show as "?".
+// Row 0 is the program line. The unit shows a program as its bank/number field then
+// the name -- "U11 HOSTILE", "A11 AX-ZONE", "P 1 HOSTILE" (docs/chain-rules-2026-09-17.md
+// 6.3 and 8). 0.11.0 widens the field by one character: the bank letter and three
+// digits ("A001 CLEAN ROOM"), "A---" in a bank without a number, "----" without a bank
+// (Unfiled), then a space and the name, cut at 16 characters. With no preset:
+// "---- INIT". The unit has no documented edited mark in play mode; while the preset is
+// modified the last character shown is "*" (right after the name, or in column 16).
+// Characters outside the LCD's ROM (0x20-0x7D) show as "?".
 juce::String AX330GChainEditor::programLine(const AX330GChainProcessor::PresetRef& ref, bool modified) {
-    if (!ref.valid) return "--- INIT";
+    if (!ref.valid) return "---- INIT";
     String name;
     for (auto p = ref.name.getCharPointer(); !p.isEmpty();) {
         const juce_wchar c = p.getAndAdvance();
         name << ((c >= 0x20 && c <= 0x7d) ? String::charToString(c) : String("?"));
     }
-    String line = (ref.number >= 0 ? String(ref.number).paddedLeft('0', 3) : String("---")) + " " + name;
+    String line = axpresets::presetCode(axpresets::normaliseLetter(ref.bank), ref.number) + " " + name;
     line = line.substring(0, modified ? 15 : 16);
     return modified ? line + "*" : line;
 }

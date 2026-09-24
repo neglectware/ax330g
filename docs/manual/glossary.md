@@ -4,7 +4,9 @@ This glossary tells what each technical name in this manual means.
 
 | Term | Definition |
 |---|---|
+| 14-segment display | An LED display with 14 segments and a decimal point. It can show each letter in a different shape. The **BANK** display is of this type. |
 | 18-bit | A word length of 18 binary digits for each sample. The converters of the unit use this word length. |
+| 7-segment display | An LED display with seven segments. It shows digits. The **SLOT** display is of this type. |
 | Allpass filter | A filter that does not change the level of any frequency. It changes the phase. |
 | Ambience | The group of the unit that contains the delays and the reverb. |
 | Amplitude | The size of a signal, as a linear value, not in dB. |
@@ -14,6 +16,7 @@ This glossary tells what each technical name in this manual means.
 | Backlight | The light behind an LCD. |
 | Balance | The parameter that sets the mix of the dry signal and the wet signal. |
 | Band-pass filter | A filter that lets a band of frequencies through and decreases the frequencies above and below the band. |
+| Bank | A folder of presets with a letter from A to Z. Each preset in a bank has a number from 001 to 999. The unit also keeps its programs in banks. |
 | Behavioral emulation | A copy of what a device does, made from measurements of its output. It does not use the internal program of the device. |
 | Bitstream converter | A type of analog-to-digital converter that operates at a high rate with few bits, then filters the result. |
 | Black box | A device that you examine only through its input and output. |
@@ -94,6 +97,7 @@ This glossary tells what each technical name in this manual means.
 | Octave | A ratio of 2 between two frequencies. |
 | Odd harmonics | The harmonics at 3, 5, 7 and more times the fundamental frequency. |
 | One-pole filter | A first-order filter with one pole. |
+| Open mode | The mode in which each slot can hold any block, in any order. The **OPEN MODE** key sets it on or off. |
 | Oversampling | An operation at a sample rate higher than necessary, to make filters easier. |
 | Peak | The highest absolute value of a signal. |
 | Peak detector | A detector that follows the peaks of a signal, not its average. |
@@ -105,7 +109,7 @@ This glossary tells what each technical name in this manual means.
 | Pole | A value that sets the response of a filter. In a one-pole low-pass filter, a pole near 1 gives a low corner frequency. |
 | Pre-delay | The time between the input signal and the start of the reverb. |
 | Pre-emphasis | A filter that increases the treble before a converter. The unit uses it to decrease the noise at high frequencies. |
-| Preset | A file that holds the blocks, the parameter values and the Mode of the eight slots. The plugin equivalent of a program on the unit. |
+| Preset | A file that holds the blocks, the parameter values and the mode of the eight slots. The plugin equivalent of a program on the unit. |
 | Program | A stored set of chain and parameter values on the unit. |
 | Q | A number that shows how narrow the peak of a filter is. A high Q gives a narrow, high peak. |
 | Quantizer | A function that rounds a signal to a fixed word length. |

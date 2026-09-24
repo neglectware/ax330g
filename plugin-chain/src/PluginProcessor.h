@@ -147,7 +147,8 @@ public:
     // a reopened project shows the same name without reading the file again):
     // "presetKind" ("factory"/"user"; absent = no preset, the LCD shows INIT),
     // "presetFolder" ("" = Unfiled), "presetFile", "presetName", "presetNumber" (-1
-    // none), and "presetUnknown<k>" (k 1..8): the JSON of a slot whose block this
+    // none), "presetBank" (0.11.0: the folder's bank letter, "" none; the editor
+    // re-syncs it from the library when a bank letter changes), and "presetUnknown<k>" (k 1..8): the JSON of a slot whose block this
     // version does not know, written back on Save while that slot stays empty; it
     // moves with moveSlot() and is dropped when a block is chosen for the slot. The
     // modified flag is presetModified_, written into the saved state as
@@ -156,6 +157,7 @@ public:
         bool valid = false, factory = false;
         juce::String folder, fileName, name;
         int number = -1;
+        juce::String bank;   // bank letter "A".."Z", "" = none (0.11.0)
     };
     PresetRef currentPreset() const;
     bool isPresetModified() const noexcept { return presetModified_.load(std::memory_order_relaxed); }

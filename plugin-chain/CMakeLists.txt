@@ -109,6 +109,17 @@ foreach(preset IN LISTS AX_FACTORY_PRESETS)
   string(APPEND AX_FACTORY_BUNDLE "@@PRESET ${preset_rel}\n${preset_text}\n")
   set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${preset}")
 endforeach()
+# Bank letters (0.11.0 build 23): presets/factory/<Folder>/bank.json ({"letter": "A"}),
+# appended as "@@BANK <Folder>/bank.json" after the presets, the same text
+# Library::bundleFromDirectory() writes.
+file(GLOB AX_FACTORY_BANKS CONFIGURE_DEPENDS "${AX_FACTORY_DIR}/bank.json" "${AX_FACTORY_DIR}/*/bank.json")
+list(SORT AX_FACTORY_BANKS)
+foreach(bank IN LISTS AX_FACTORY_BANKS)
+  file(RELATIVE_PATH bank_rel "${AX_FACTORY_DIR}" "${bank}")
+  file(READ "${bank}" bank_text)
+  string(APPEND AX_FACTORY_BUNDLE "@@BANK ${bank_rel}\n${bank_text}\n")
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${bank}")
+endforeach()
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/factory/factory-presets.txt.new" "${AX_FACTORY_BUNDLE}")
 configure_file("${CMAKE_CURRENT_BINARY_DIR}/factory/factory-presets.txt.new"
                "${CMAKE_CURRENT_BINARY_DIR}/factory/factory-presets.txt" COPYONLY)

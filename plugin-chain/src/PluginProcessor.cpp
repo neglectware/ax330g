@@ -658,19 +658,21 @@ AX330GChainProcessor::PresetRef AX330GChainProcessor::currentPreset() const {
     r.fileName = st.getProperty("presetFile").toString();
     r.name = st.getProperty("presetName").toString();
     r.number = (int) st.getProperty("presetNumber", -1);
+    r.bank = st.getProperty("presetBank").toString();
     return r;
 }
 
 void AX330GChainProcessor::setCurrentPreset(const PresetRef& r, bool modified) {
     auto& st = apvts.state;
     if (!r.valid) {
-        for (auto id : { "presetKind", "presetFolder", "presetFile", "presetName", "presetNumber" }) st.removeProperty(id, nullptr);
+        for (auto id : { "presetKind", "presetFolder", "presetFile", "presetName", "presetNumber", "presetBank" }) st.removeProperty(id, nullptr);
     } else {
         st.setProperty("presetKind", r.factory ? "factory" : "user", nullptr);
         st.setProperty("presetFolder", r.folder, nullptr);
         st.setProperty("presetFile", r.fileName, nullptr);
         st.setProperty("presetName", r.name, nullptr);
         st.setProperty("presetNumber", r.number, nullptr);
+        st.setProperty("presetBank", r.bank, nullptr);
     }
     presetModified_.store(modified);
 }

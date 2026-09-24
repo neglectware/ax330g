@@ -62,6 +62,29 @@ void drawLed(juce::Graphics&, juce::Point<float> centre, float diameter, bool li
 void drawKnobBody(juce::Graphics&, juce::Rectangle<float> r, juce::Colour c1, juce::Colour c2, float stop,
                   float pointerW, float pointerH, float pointerTop, float angleRad, bool shadow);
 
+// ---- LED digit displays (0.11.0 build 23) ------------------------------------------
+// The SLOT and BANK displays are a matched pair of single-digit LED modules in the
+// same 40 x 54 housing: SLOT a 7-segment digit (unchanged from 0.9.0), BANK a
+// 14-segment alphanumeric digit modelled on a Kingbright PSC/PSA-class 0.56" single
+// digit (slanted segments, diagonals, centre verticals, split middle bar, decimal
+// point present but never lit). Both are sheared -0.1 (about 6 degrees, the SLOT
+// digit's slant), lit ledRed with a soft glow, unlit segments dark red (#2a0d0a).
+// Segment bits of the 14-segment digit (the common a..n naming):
+//   bit 0 a top, 1 b upper right, 2 c lower right, 3 d bottom, 4 e lower left,
+//   5 f upper left, 6 g1 middle left, 7 g2 middle right, 8 h upper-left diagonal,
+//   9 i upper centre, 10 j upper-right diagonal, 11 k lower-left diagonal,
+//   12 l lower centre, 13 m lower-right diagonal, 14 dp.
+// A..Z and 0..9 follow the usual 14-segment font (R has the diagonal leg, B and D
+// the centre verticals, Q the tail, 0 the slash, 5 the diagonal so it is not S);
+// "-" is g1+g2; anything else is blank.
+juce::uint16 alnumSegments(juce::juce_wchar);
+// The dark housing (a rounded box with an inner top shadow), as the SLOT box.
+void drawDigitHousing(juce::Graphics&, juce::Rectangle<float> box);
+// A 7-segment digit 0..9 centred in `box` (cell 20 x 36).
+void drawSevenSegDigit(juce::Graphics&, juce::Rectangle<float> box, int digit);
+// A 14-segment character centred in `box` (cell 24 x 36, the same height).
+void drawAlnumDigit(juce::Graphics&, juce::Rectangle<float> box, juce::juce_wchar);
+
 // ---- LookAndFeel ------------------------------------------------------------------
 class AxLookAndFeel : public juce::LookAndFeel_V4 {
 public:
@@ -151,10 +174,18 @@ protected:
     bool showFocusRing = false;
 };
 
-class ModePill : public AxButton {   // "OPEN" / "AS THE UNIT"
+// The single OPEN MODE key (0.11.0 build 23; replaces the OPEN / AS THE UNIT pair).
+// A dark pill whose legend lights: on (the "mode" parameter at Open) = the unit's LED
+// red with a slight glow, like a lit LED legend; off (As the unit) = a washed-out dark
+// red. A click toggles it; the editor writes the parameter.
+class ModeButton : public AxButton {
 public:
-    explicit ModePill(const juce::String& text);
+    ModeButton();
+    void setOn(bool);
+    bool isOn() const noexcept { return on; }
     void paintButton(juce::Graphics&, bool over, bool down) override;
+private:
+    bool on = true;
 };
 
 class LedButton : public AxButton {   // a slot tile's On light (9 px LED in a 24x24 hit area)
